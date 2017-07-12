@@ -1,3 +1,5 @@
+import { startTracking } from './geolocation';
+
 mapboxgl.accessToken = '';
 const map = new mapboxgl.Map({
   container: 'map', // container id
@@ -6,65 +8,7 @@ const map = new mapboxgl.Map({
   zoom: 11 // starting zoom
 });
 
-function startTracking() {
-  let markerItem;
-
-  const geojson = {
-    type: 'FeatureCollection',
-    features: [
-      {
-        id: 'currentPosition',
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [0, 0]
-        },
-        properties: {
-          title: 'CURRENT POSITION',
-          iconSize: [50, 50]
-        }
-      }
-    ]
-  };
-  let el = document.createElement('div');
-  el.className = 'marker';
-  let child1 = document.createElement('div');
-  child1.className = 'dot';
-  let child2 = document.createElement('div');
-  child2.className = 'pulse';
-  el.appendChild(child1);
-  el.appendChild(child2);
-  el.src = './icons/locator-yellow.svg';
-  const marker = geojson.features[0];
-  markerItem = new mapboxgl.Marker(el);
-
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(position =>
-      onPosition(position, markerItem)
-    );
-  } else {
-    alert("Sorry, your browser doesn't support geolocation!");
-  }
-
-  if (window.DeviceOrientationEvent) {
-    window.addEventListener('deviceorientation', _setHeading);
-  }
-  return markerItem;
-}
-
-function stopTracking() {
-  navigator.geolocation.clearWatch(this.state.watchPositionId);
-  window.removeEventListener('deviceorientation', _setHeading);
-}
-
-function onPosition(position, markerItem) {
-  markerItem.setLngLat([position.coords.longitude, position.coords.latitude]);
-  markerItem.addTo(map);
-}
-
-function _setHeading(e) {}
-
-function addAllLayers() {
+function addAllRoutes() {
   map.addSource('GFR', {
     type: 'geojson',
     data: 'http://188.226.154.37/routes/GFR.json'
@@ -93,7 +37,7 @@ function addAllLayers() {
       visibility: 'visible',
       'symbol-placement': 'line',
       'text-font': ['Open Sans Regular'],
-      'text-field': '{icr}', // part 2 of this is how to do it
+      'text-field': '{icr}',
       'text-size': 16
     },
     paint: {
@@ -203,13 +147,10 @@ function filterRoute(route) {
 map.on('load', function() {
   let origin = null;
   let destination = null;
-  let position = null;
 
-  position = startTracking();
+  startTracking(map);
 
-  addAllLayers();
-
-  map.addControl(new mapboxgl.GeolocateControl());
+  addAllRoutes();
 
   // create geocoders and add to map
   const geocoder = createGeocoder('origin');
