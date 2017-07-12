@@ -1,22 +1,24 @@
-mapboxgl.accessToken =
-  'pk.eyJ1IjoiYXJuYXVkd2V5dHMiLCJhIjoiY2o0cGt3d3oxMXl0cDMzcXNlbThnM3RtaCJ9.BMUyxqHH-FC69pW4U4YO9A';
-var map = new mapboxgl.Map({
+mapboxgl.accessToken = '';
+const map = new mapboxgl.Map({
   container: 'map', // container id
-  style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
+  style: 'https://openmaptiles.github.io/positron-gl-style/style-cdn.json', //stylesheet location
   center: [4.355975, 50.860633], // starting position
   zoom: 11 // starting zoom
 });
 
-map.on('load', function() {
-  map.addSource('route', {
+function addAllLayers() {
+  map.addSource('GFR', {
     type: 'geojson',
     data:
-      'https://raw.githubusercontent.com/oSoc17/rideaway-frontend-v2/master/GFR.geojson'
+      'https://raw.githubusercontent.com/oSoc17/rideaway-frontend-v2/master/src/GFR.geojson'
   });
   map.addLayer({
-    id: 'route',
+    id: 'GFR_routes',
     type: 'line',
-    source: 'route',
+    source: 'GFR',
+    layout: {
+      visibility: 'visible'
+    },
     paint: {
       'line-color': {
         type: 'identity',
@@ -27,14 +29,17 @@ map.on('load', function() {
     }
   });
   map.addLayer({
-    id: 'symbols',
+    id: 'GFR_symbols',
     type: 'symbol',
-    source: 'route',
+    source: 'GFR',
     layout: {
       'symbol-placement': 'line',
       'text-font': ['Open Sans Regular'],
       'text-field': '{icr}', // part 2 of this is how to do it
       'text-size': 16
+    },
+    layout: {
+      visibility: 'visible'
     },
     paint: {
       'text-color': {
@@ -43,99 +48,125 @@ map.on('load', function() {
       }
     }
   });
-  var origin = null;
-  var destination = null;
-  function addMarkers(origin, destination) {
-    map.addLayer({
-      id: 'points',
-      type: 'symbol',
-      source: {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: origin
-              },
-              properties: {
-                title: 'START',
-                icon: 'marker'
-              }
-            },
-            {
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: destination
-              },
-              properties: {
-                title: 'END',
-                icon: 'marker'
-              }
-            }
-          ]
+}
+
+function toggleLayer(id) {
+  let visibility = map.getLayoutProperty(id, 'visibility');
+  if (visibility === 'visible') {
+    visibility = 'none';
+  } else {
+    visibility = 'visible';
+  }
+  map.setLayoutProperty(id, 'visibility', visibility);
+}
+
+function addMarkers(origin, destination) {
+  const geojson = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: origin
+        },
+        properties: {
+          title: 'START',
+          iconSize: [50, 50]
         }
       },
-      layout: {
-        'icon-image': '{icon}-15',
-        'text-field': '{title}',
-        'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
-        'text-offset': [0, 0.6],
-        'text-anchor': 'top'
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: destination
+        },
+        properties: {
+          title: 'END',
+          iconSize: [50, 50]
+        }
       }
-    });
-  }
-  function calculateRoute(origin, destination, profile) {
-    // swap around values for the API
-    origin = [origin[1], origin[0]];
-    destination = [destination[1], destination[0]];
-    const url = `http://188.226.154.37/route?loc1=${origin}&loc2=${destination}&profile=${profile}`;
-    map.addLayer({
-      id: profile,
-      type: 'line',
-      source: {
-        type: 'geojson',
-        data: url
-      },
-      paint: {
-        'line-color': profile === 'networks' ? 'green' : 'yellow',
-        'line-width': 4
-      }
-    });
-  }
+    ]
+  };
+  geojson.features.forEach(marker => {
+    let el = document.createElement('img');
+    el.className = 'marker';
+    el.src = './icons/locator-yellow.svg';
+    el.style.width = marker.properties.iconSize[0] + 'px';
+    el.style.height = marker.properties.iconSize[1] + 'px';
+    new mapboxgl.Marker(el, {
+      offset: [
+        -marker.properties.iconSize[0] / 2,
+        -marker.properties.iconSize[1] / 2
+      ]
+    })
+      .setLngLat(marker.geometry.coordinates)
+      .addTo(map);
+  });
+}
+
+function calculateRoute(origin, destination, profile) {
+  // swap around values for the API
+  origin = [origin[1], origin[0]];
+  destination = [destination[1], destination[0]];
+  const url = `http://188.226.154.37/route?loc1=${origin}&loc2=${destination}&profile=${profile}`;
+  map.addLayer({
+    id: profile,
+    type: 'line',
+    source: {
+      type: 'geojson',
+      data: url
+    },
+    paint: {
+      'line-color': profile === 'networks' ? 'red' : 'grey',
+      'line-width': 4
+    }
+  });
+}
+
+function clearRoutes() {
+  map.removeLayer('networks');
+  map.removeLayer('shortest');
+  map.removeLayer('points');
+}
+
+function createGeocoder(placeholder) {
+  return new MapboxGeocoder({
+    accessToken:
+      'pk.eyJ1IjoiYXJuYXVkd2V5dHMiLCJhIjoiY2o0cGt3d3oxMXl0cDMzcXNlbThnM3RtaCJ9.BMUyxqHH-FC69pW4U4YO9A',
+    flyTo: false,
+    placeholder,
+    country: 'BE'
+  });
+}
+
+map.on('load', function() {
+  let origin = null;
+  let destination = null;
+
+  addAllLayers();
+
   map.addControl(new mapboxgl.GeolocateControl());
-  var geocoder = new MapboxGeocoder({
-    accessToken:
-      'pk.eyJ1IjoiYXJuYXVkd2V5dHMiLCJhIjoiY2o0cGt3d3oxMXl0cDMzcXNlbThnM3RtaCJ9.BMUyxqHH-FC69pW4U4YO9A',
-    flyTo: false,
-    placeholder: 'Origin',
-    country: 'BE'
-  });
-  var geocoder2 = new MapboxGeocoder({
-    accessToken:
-      'pk.eyJ1IjoiYXJuYXVkd2V5dHMiLCJhIjoiY2o0cGt3d3oxMXl0cDMzcXNlbThnM3RtaCJ9.BMUyxqHH-FC69pW4U4YO9A',
-    flyTo: false,
-    placeholder: 'Destination',
-    country: 'BE'
-  });
+
+  // create geocoders and add to map
+  const geocoder = createGeocoder('origin');
+  const geocoder2 = createGeocoder('destination');
   map.addControl(geocoder);
   map.addControl(geocoder2);
-  geocoder.on('result', getResult);
-  function getResult(result) {
-    origin = result.result.geometry.coordinates;
-    map.removeLayer('networks');
-    map.removeLayer('shortest');
-    map.removeLayer('points');
-  }
-  geocoder2.on('result', getResult2);
-  function getResult2(result) {
-    destination = result.result.geometry.coordinates;
-    console.log(origin, destination);
-    calculateRoute(origin, destination, 'networks');
+
+  // do events on result
+  geocoder.on('result', ({ result }) => (origin = setPoint(result)));
+  geocoder2.on('result', ({ result }) => {
+    console.log('geocoder2 result found!');
+    destination = setPoint(result);
     calculateRoute(origin, destination, 'shortest');
+    calculateRoute(origin, destination, 'networks');
     addMarkers(origin, destination);
+    toggleLayer('GFR_routes');
+    toggleLayer('GFR_symbols');
+  });
+
+  function setPoint(result) {
+    return result.geometry.coordinates;
   }
 });
