@@ -79,6 +79,7 @@ gulp.task('browser-sync', () => {
 
 gulp.task('copy', function() {
   gulp.src(SRC + '/GFR.geojson').pipe(gulp.dest(DEST));
+  gulp.src(SRC + '/icons/*').pipe(gulp.dest(DEST + '/icons'));
 });
 
 gulp.task('watch', function() {
