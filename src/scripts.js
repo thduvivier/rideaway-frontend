@@ -67,8 +67,7 @@ function _setHeading(e) {}
 function addAllLayers() {
   map.addSource('GFR', {
     type: 'geojson',
-    data:
-      'https://raw.githubusercontent.com/oSoc17/rideaway-frontend-v2/master/src/GFR.geojson'
+    data: 'http://188.226.154.37/routes/GFR.json'
   });
   map.addLayer({
     id: 'GFR_routes',
