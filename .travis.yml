@@ -1,0 +1,12 @@
+sudo: false
+language: node_js
+node_js:
+- '6.1'
+branches:
+  only:
+  - master
+script:
+- ./deploy.sh
+env:
+  global:
+    secure: ixdR8JikT+Dg6JamNM4uqCjEGFiRaPz3jseQWcwGmzJ6rADvws3p71AaCJKqE825y7tk8Aioca0Mg9b+IAlSm82FSeHQMG32XCbTe+b7u59dXPRLfUTxCoYfI1o8jX0xBxbUdx9VuVtvtf3OrcGSyqzalf03kohvRVBPWLNtnAYHaQrcOysMRQaW82QQ5MAcaA50ZfG121azBqeGPebtsJbj4kXrRU4/+NClM28f5eAq3RQ32R/EpmGoM1wgF++c2tsupfIXpV0kAz7yGzOQD2S9IchfYALLj2FcAzZ+YDlXOSJpsEyWUvOg4VLllJmdy972NwsZW8GGS1+BUpKfN7nFoSHjJFXyUTS4bj+oxOYsJi5eUsjsoEeOG4MCNRddLX+/CeXdVlOHDZBZ8KMhp75dWwoNvguVZ+IMGvZzDQgmYvhPaSRz2ewh0T871uNwc80ICxgsa/4KoBqX5/OSXt75H9yXZ/NrEMDH29fCUVqteVCR2NwoJ8O/mfv7ViJ+wCeQRzjczB5rZEFzQ74rYpBVmE8MQ+t+DCJYuKDvzyXgiJjECorxe6QExP+fcJ35BajuJ2hN6wnx3AW9QrsTcc0GP2KPeitvAYYq+L4NVPdU+nQ8hP6kwR6K+snKfQg9mhcdIn4TghYscm1YpDG3xPLti9JHkVcwb57TU/EKhVQ=
