@@ -39,6 +39,9 @@ git config user.email $GH_USERMAIL
 # Move our .git folder too safety!
 mv .git ../.git2
 
+# Clean out existing contents
+rm -rf $DIRECTORY/**/* || exit 0
+
 cd ..
 
 # Run our compile script (This sometimes completely cleanes out the build directory,
