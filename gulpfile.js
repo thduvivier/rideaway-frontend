@@ -6,7 +6,6 @@ var gulp = require('gulp'),
   source = require('vinyl-source-stream'),
   buffer = require('vinyl-buffer'),
   sourcemaps = require('gulp-sourcemaps'),
-  babel = require('gulp-babel'),
   gutil = require('gulp-util'),
   htmlmin = require('gulp-htmlmin'),
   sass = require('gulp-sass'),
@@ -49,6 +48,7 @@ gulp.task('scripts', function() {
   // set up the browserify instance on a task basis
   var b = browserify({
     entries: SRC + '/scripts.js',
+    transform: ['babelify'],
     debug: true
   });
 
@@ -59,7 +59,6 @@ gulp.task('scripts', function() {
       .pipe(buffer())
       .pipe(sourcemaps.init({ loadMaps: true }))
       // Add transformation tasks to the pipeline here.
-      .pipe(babel())
       .pipe(uglify())
       .on('error', gutil.log)
       .pipe(sourcemaps.write('./'))
