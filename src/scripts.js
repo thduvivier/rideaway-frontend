@@ -195,6 +195,11 @@ function createGeocoder(placeholder) {
   });
 }
 
+function filterRoute(route) {
+  map.setFilter('GFR_routes', ['==', 'icr', route]);
+  map.setFilter('GFR_symbols', ['==', 'icr', route]);
+}
+
 map.on('load', function() {
   let origin = null;
   let destination = null;
