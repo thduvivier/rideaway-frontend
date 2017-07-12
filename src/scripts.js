@@ -158,16 +158,24 @@ map.on('load', function() {
   map.addControl(geocoder);
   map.addControl(geocoder2);
 
-  // do events on result
-  geocoder.on('result', ({ result }) => (origin = setPoint(result)));
+  // fire functions on result
+  geocoder.on('result', ({ result }) => {
+    // result event fires twice for some reason, this prevents it
+    // from executing our code twice, resulting in errors
+    if (!origin || destination !== setPoint(result)) {
+      origin = setPoint(result);
+    }
+  });
   geocoder2.on('result', ({ result }) => {
-    console.log('geocoder2 result found!');
-    destination = setPoint(result);
-    calculateRoute(origin, destination, 'shortest');
-    calculateRoute(origin, destination, 'networks');
-    addMarkers(origin, destination);
-    toggleLayer('GFR_routes');
-    toggleLayer('GFR_symbols');
+    if (!destination || destination !== setPoint(result)) {
+      destination && clearRoutes();
+      destination = setPoint(result);
+      calculateRoute(origin, destination, 'shortest');
+      calculateRoute(origin, destination, 'networks');
+      addMarkers(origin, destination);
+      toggleLayer('GFR_routes');
+      toggleLayer('GFR_symbols');
+    }
   });
 
   function setPoint(result) {
