@@ -47,7 +47,7 @@ gulp.task('sass', function() {
 gulp.task('scripts', function() {
   // set up the browserify instance on a task basis
   var b = browserify({
-    entries: SRC + '/scripts.js',
+    entries: SRC + '/js/scripts.js',
     transform: ['babelify'],
     debug: true
   });
