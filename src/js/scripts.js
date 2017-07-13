@@ -192,10 +192,20 @@ function configureListItem(route) {
     const active = document.querySelector('.routelist-item--active');
     active && active.classList.remove('routelist-item--active');
     el.className += ' routelist-item--active';
-    route.name === 'All' ? removeFilter() : filterRoute(route.name);
+    filterRoute(route.name);
   });
 
   return el;
+}
+
+function configureAll() {
+  let el = getElementByClassName('routelist-all');
+  el.addEventListener('click', () => {
+    const active = document.querySelector('.routelist-item--active');
+    active && active.classList.remove('routelist-item--active');
+    el.className += ' routelist-item--active';
+    removeFilter();
+  });
 }
 
 function addFilters(features) {
@@ -206,8 +216,7 @@ function addFilters(features) {
       color: feat.properties.colour
     });
   });
-  //const all = configureListItem({ name: 'All' });
-  //menu.appendChild(all);
+  configureAll();
   sortBy(uniqBy(routes, 'name'), 'name').forEach(route => {
     if (route.name === 'G/C') {
       return;
@@ -216,9 +225,6 @@ function addFilters(features) {
     const el = configureListItem(route);
     menu.appendChild(el);
   });
-  /*const filler = document.createElement('li');
-  filler.className = 'flex-filler';
-  getElementByClassName('routelist-radial').appendChild(filler);*/
 }
 
 map.on('load', function() {
