@@ -26,7 +26,7 @@ gulp.task('html', function() {
 
 gulp.task('sass', function() {
   return gulp
-    .src(SRC + '/styles.scss')
+    .src(SRC + '/scss/styles.scss')
     .pipe(sass().on('error', sass.logError))
     .pipe(
       autoprefixer({
@@ -71,7 +71,6 @@ gulp.task('browser-sync', () => {
       baseDir: DEST,
       index: 'index.html'
     },
-    browser: ['google chrome'],
     notify: false
   });
 });
@@ -79,6 +78,7 @@ gulp.task('browser-sync', () => {
 gulp.task('copy', function() {
   gulp.src(SRC + '/GFR.geojson').pipe(gulp.dest(DEST));
   gulp.src(SRC + '/icons/*').pipe(gulp.dest(DEST + '/icons'));
+  gulp.src(SRC + '/fonts/*').pipe(gulp.dest(DEST + '/fonts'));
 });
 
 gulp.task('watch', function() {
