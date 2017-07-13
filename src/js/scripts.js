@@ -14,7 +14,7 @@ const map = new mapboxgl.Map({
 
 function showAllRoutes() {
   let geojson;
-  fetch('http://188.226.154.37/routes/GFR.json')
+  fetch('https://cyclerouting-api.osm.be/routes/GFR.json')
     .then(response => response.json())
     .then(json => {
       addAllRoutes(json);
@@ -109,7 +109,7 @@ function calculateRoute(origin, destination, profile) {
   // swap around values for the API
   origin = [origin[1], origin[0]];
   destination = [destination[1], destination[0]];
-  const url = `http://188.226.154.37/route?loc1=${origin}&loc2=${destination}&profile=${profile}`;
+  const url = `https://cyclerouting-api.osm.be/route?loc1=${origin}&loc2=${destination}&profile=${profile}`;
   map.addLayer({
     id: profile,
     type: 'line',
@@ -154,11 +154,41 @@ function removeFilter() {
   map.setFilter('GFR_symbols', null);
 }
 
+function configureStyle(el, color) {
+  const routeConfig = {
+    '1': 'radial',
+    '2': 'radial',
+    '3': 'radial',
+    '4': 'radial',
+    '5': 'radial',
+    '6': 'radial',
+    '7': 'radial',
+    '8': 'radial',
+    '9': 'radial',
+    '10': 'radial',
+    '11': 'radial',
+    '12': 'radial',
+    MM: 'transverse',
+    SZ: 'transverse',
+    CK: 'transverse',
+    PP: 'transverse',
+    A: 'loop',
+    B: 'loop',
+    C: 'loop'
+  };
+  el.className += '-' + routeConfig[el.innerHTML];
+  el.style.backgroundColor = color;
+  return el;
+}
+
 function addFilters(features) {
   let menu = getElementByClassName('routelist');
-  let routeNames = [];
+  let routes = [{}];
   features.forEach(feat => {
-    routeNames.push(feat.properties.icr);
+    routes.push({
+      name: feat.properties.icr,
+      color: feat.properties.colour
+    });
   });
   let all = document.createElement('li');
   all.className = 'routelist-item routelist-item--active';
@@ -170,15 +200,17 @@ function addFilters(features) {
     removeFilter();
   });
   menu.appendChild(all);
-  uniq(routeNames).forEach(route => {
+  uniq(routes).forEach(route => {
+    console.log(route);
     let el = document.createElement('li');
     el.className = 'routelist-item';
-    el.innerHTML = route;
+    el.innerHTML = route.name;
+    el = configureStyle(el, route.color);
     el.addEventListener('click', () => {
       const active = document.querySelector('.routelist-item--active');
       active.classList.remove('routelist-item--active');
       el.className += ' routelist-item--active';
-      filterRoute(route);
+      filterRoute(route.name);
     });
     menu.appendChild(el);
   });

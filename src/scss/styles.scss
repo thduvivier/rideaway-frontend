@@ -41,6 +41,8 @@ body {
 
 .routelist-item {
   cursor: pointer;
+  text-align: center;
+  display: inline-block;
 }
 
 .routelist-item:not(:first-child) {
@@ -49,6 +51,24 @@ body {
 
 .routelist-item--active {
   color: $primary_color;
+}
+
+.routelist-item-radial {
+  width: 3em;
+  height: 3em;
+  border-radius: 5px;
+}
+
+.routelist-item-transverse {
+  height: 2em;
+  width: 4em;
+  border-radius: 5px;
+}
+
+.routelist-item-loop {
+  height: 3em;
+  width: 3em;
+  border-radius: 50%;
 }
 
 .mapboxgl-ctrl-geocoder {
