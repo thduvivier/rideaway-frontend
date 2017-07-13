@@ -1,4 +1,5 @@
 import { startTracking } from './geolocation';
+import { registerEvents } from './events';
 
 mapboxgl.accessToken = '';
 const map = new mapboxgl.Map({
@@ -59,7 +60,7 @@ function toggleLayer(id) {
   map.setLayoutProperty(id, 'visibility', visibility);
 }
 
-function addMarkers(origin, destination) {
+function addMarker(LatLng) {
   const geojson = {
     type: 'FeatureCollection',
     features: [
@@ -67,41 +68,26 @@ function addMarkers(origin, destination) {
         type: 'Feature',
         geometry: {
           type: 'Point',
-          coordinates: origin
+          coordinates: LatLng
         },
         properties: {
-          title: 'START',
-          iconSize: [50, 50]
-        }
-      },
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: destination
-        },
-        properties: {
-          title: 'END',
           iconSize: [50, 50]
         }
       }
     ]
   };
-  geojson.features.forEach(marker => {
-    let el = document.createElement('img');
-    el.className = 'marker';
-    el.src = './icons/locator-yellow.svg';
-    el.style.width = marker.properties.iconSize[0] + 'px';
-    el.style.height = marker.properties.iconSize[1] + 'px';
-    new mapboxgl.Marker(el, {
-      offset: [
-        -marker.properties.iconSize[0] / 2,
-        -marker.properties.iconSize[1] / 2
-      ]
-    })
-      .setLngLat(marker.geometry.coordinates)
-      .addTo(map);
-  });
+  const marker = geojson.features[0];
+  let el = document.createElement('img');
+  el.className = 'marker';
+  el.src = './icons/locator-yellow.svg';
+  el.style.width = marker.properties.iconSize[0] + 'px';
+  el.style.height = marker.properties.iconSize[1] + 'px';
+  return new mapboxgl.Marker(el, {
+    offset: [
+      -marker.properties.iconSize[0] / 2,
+      -marker.properties.iconSize[1] / 2
+    ]
+  }).setLngLat(marker.geometry.coordinates);
 }
 
 function calculateRoute(origin, destination, profile) {
@@ -125,8 +111,8 @@ function calculateRoute(origin, destination, profile) {
 
 function clearRoutes() {
   map.removeLayer('networks');
+  map.getSource('networks');
   map.removeLayer('shortest');
-  map.removeLayer('points');
 }
 
 function createGeocoder(placeholder) {
@@ -147,8 +133,12 @@ function filterRoute(route) {
 map.on('load', function() {
   let origin = null;
   let destination = null;
+  let markerO = null;
+  let markerD = null;
 
   startTracking(map);
+
+  registerEvents(map);
 
   addAllRoutes();
 
@@ -163,20 +153,27 @@ map.on('load', function() {
     // result event fires twice for some reason, this prevents it
     // from executing our code twice, resulting in errors
     if (!origin || destination !== setPoint(result)) {
+      markerO && markerO.remove();
       origin = setPoint(result);
+      markerO = addMarker(origin);
+      markerO.addTo(map);
     }
   });
   geocoder2.on('result', ({ result }) => {
     if (!destination || destination !== setPoint(result)) {
       destination && clearRoutes();
+      markerD && markerD.remove();
       destination = setPoint(result);
+      markerD = addMarker(destination);
+      markerD.addTo(map);
       calculateRoute(origin, destination, 'shortest');
       calculateRoute(origin, destination, 'networks');
-      addMarkers(origin, destination);
       toggleLayer('GFR_routes');
       toggleLayer('GFR_symbols');
     }
   });
+
+  filterRoute('A');
 
   function setPoint(result) {
     return result.geometry.coordinates;
