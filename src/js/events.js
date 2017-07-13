@@ -1,7 +1,4 @@
-function getElementByClassName(className) {
-  const elements = document.getElementsByClassName(className);
-  return elements[0];
-}
+import { getElementByClassName } from './lib';
 
 export function registerEvents(map) {
   getElementByClassName('center-btn').addEventListener('click', () => {

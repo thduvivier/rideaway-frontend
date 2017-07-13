@@ -1,3 +1,6 @@
+import 'whatwg-fetch';
+
+import { getElementByClassName, uniq } from './lib';
 import { startTracking } from './geolocation';
 import { registerEvents } from './events';
 
@@ -9,10 +12,22 @@ const map = new mapboxgl.Map({
   zoom: 11 // starting zoom
 });
 
-function addAllRoutes() {
+function showAllRoutes() {
+  let geojson;
+  fetch('http://188.226.154.37/routes/GFR.json')
+    .then(response => response.json())
+    .then(json => {
+      addAllRoutes(json);
+    })
+    .catch(ex => console.log(ex));
+}
+
+function addAllRoutes(geojson) {
+  addFilters(geojson.features);
+
   map.addSource('GFR', {
     type: 'geojson',
-    data: 'http://188.226.154.37/routes/GFR.json'
+    data: geojson
   });
   map.addLayer({
     id: 'GFR_routes',
@@ -125,9 +140,48 @@ function createGeocoder(placeholder) {
   });
 }
 
+function setPoint(result) {
+  return result.geometry.coordinates;
+}
+
 function filterRoute(route) {
   map.setFilter('GFR_routes', ['==', 'icr', route]);
   map.setFilter('GFR_symbols', ['==', 'icr', route]);
+}
+
+function removeFilter() {
+  map.setFilter('GFR_routes', null);
+  map.setFilter('GFR_symbols', null);
+}
+
+function addFilters(features) {
+  let menu = getElementByClassName('routelist');
+  let routeNames = [];
+  features.forEach(feat => {
+    routeNames.push(feat.properties.icr);
+  });
+  let all = document.createElement('li');
+  all.className = 'routelist-item routelist-item--active';
+  all.innerHTML = 'All';
+  all.addEventListener('click', () => {
+    const active = document.querySelector('.routelist-item--active');
+    active.classList.remove('routelist-item--active');
+    all.className += ' routelist-item--active';
+    removeFilter();
+  });
+  menu.appendChild(all);
+  uniq(routeNames).forEach(route => {
+    let el = document.createElement('li');
+    el.className = 'routelist-item';
+    el.innerHTML = route;
+    el.addEventListener('click', () => {
+      const active = document.querySelector('.routelist-item--active');
+      active.classList.remove('routelist-item--active');
+      el.className += ' routelist-item--active';
+      filterRoute(route);
+    });
+    menu.appendChild(el);
+  });
 }
 
 map.on('load', function() {
@@ -135,12 +189,13 @@ map.on('load', function() {
   let destination = null;
   let markerO = null;
   let markerD = null;
+  let routes = null;
 
   startTracking(map);
 
   registerEvents(map);
 
-  addAllRoutes();
+  routes = showAllRoutes();
 
   // create geocoders and add to map
   const geocoder = createGeocoder('origin');
@@ -172,10 +227,4 @@ map.on('load', function() {
       toggleLayer('GFR_symbols');
     }
   });
-
-  filterRoute('A');
-
-  function setPoint(result) {
-    return result.geometry.coordinates;
-  }
 });
