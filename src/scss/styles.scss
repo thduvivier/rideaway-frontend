@@ -26,6 +26,7 @@ body {
   width: 30vw;
   background: $secondary_color;
   padding: 0 2em;
+  overflow: auto;
 }
 
 .menu-title {
@@ -33,20 +34,33 @@ body {
   font-size: 20px;
 }
 
+.routelists {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
 .routelist {
+  display: flex;
+  align-content: center;
+  flex-flow: row wrap;
+  justify-content: space-around;
   padding: 0;
   list-style: none;
   color: $white;
 }
 
 .routelist-item {
+  margin: 0.2em;
   cursor: pointer;
-  text-align: center;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.routelist-item:not(:first-child) {
-  margin-top: 0.75em;
+.flex-filler {
+  height: 0;
+  flex: 1 0 0;
 }
 
 .routelist-item--active {
@@ -61,7 +75,7 @@ body {
 
 .routelist-item-transverse {
   height: 2em;
-  width: 4em;
+  width: 3em;
   border-radius: 5px;
 }
 

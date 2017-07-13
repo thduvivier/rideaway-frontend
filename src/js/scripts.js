@@ -1,8 +1,32 @@
 import 'whatwg-fetch';
+import { uniqBy, sortBy } from 'lodash';
 
-import { getElementByClassName, uniq } from './lib';
+import { getElementByClassName } from './lib';
 import { startTracking } from './geolocation';
 import { registerEvents } from './events';
+
+const routeConfig = {
+  All: 'all',
+  '1': 'radial',
+  '2': 'radial',
+  '3': 'radial',
+  '4': 'radial',
+  '5': 'radial',
+  '6': 'radial',
+  '7': 'radial',
+  '8': 'radial',
+  '9': 'radial',
+  '10': 'radial',
+  '11': 'radial',
+  '12': 'radial',
+  MM: 'transverse',
+  SZ: 'transverse',
+  CK: 'transverse',
+  PP: 'transverse',
+  A: 'loop',
+  B: 'loop',
+  C: 'loop'
+};
 
 mapboxgl.accessToken = '';
 const map = new mapboxgl.Map({
@@ -154,66 +178,47 @@ function removeFilter() {
   map.setFilter('GFR_symbols', null);
 }
 
-function configureStyle(el, color) {
-  const routeConfig = {
-    '1': 'radial',
-    '2': 'radial',
-    '3': 'radial',
-    '4': 'radial',
-    '5': 'radial',
-    '6': 'radial',
-    '7': 'radial',
-    '8': 'radial',
-    '9': 'radial',
-    '10': 'radial',
-    '11': 'radial',
-    '12': 'radial',
-    MM: 'transverse',
-    SZ: 'transverse',
-    CK: 'transverse',
-    PP: 'transverse',
-    A: 'loop',
-    B: 'loop',
-    C: 'loop'
-  };
-  el.className += '-' + routeConfig[el.innerHTML];
-  el.style.backgroundColor = color;
+function configureListItem(route) {
+  let el = document.createElement('li');
+  el.className = 'routelist-item';
+  let child = document.createElement('span');
+  child.innerHTML = route.name;
+  el.appendChild(child);
+  el.className += ' routelist-item-' + routeConfig[el.firstChild.innerHTML];
+  el.style.backgroundColor = route.color;
+
+  // event listener
+  el.addEventListener('click', () => {
+    const active = document.querySelector('.routelist-item--active');
+    active && active.classList.remove('routelist-item--active');
+    el.className += ' routelist-item--active';
+    route.name === 'All' ? removeFilter() : filterRoute(route.name);
+  });
+
   return el;
 }
 
 function addFilters(features) {
-  let menu = getElementByClassName('routelist');
-  let routes = [{}];
+  let routes = [];
   features.forEach(feat => {
     routes.push({
       name: feat.properties.icr,
       color: feat.properties.colour
     });
   });
-  let all = document.createElement('li');
-  all.className = 'routelist-item routelist-item--active';
-  all.innerHTML = 'All';
-  all.addEventListener('click', () => {
-    const active = document.querySelector('.routelist-item--active');
-    active.classList.remove('routelist-item--active');
-    all.className += ' routelist-item--active';
-    removeFilter();
-  });
-  menu.appendChild(all);
-  uniq(routes).forEach(route => {
-    console.log(route);
-    let el = document.createElement('li');
-    el.className = 'routelist-item';
-    el.innerHTML = route.name;
-    el = configureStyle(el, route.color);
-    el.addEventListener('click', () => {
-      const active = document.querySelector('.routelist-item--active');
-      active.classList.remove('routelist-item--active');
-      el.className += ' routelist-item--active';
-      filterRoute(route.name);
-    });
+  //const all = configureListItem({ name: 'All' });
+  //menu.appendChild(all);
+  sortBy(uniqBy(routes, 'name'), 'name').forEach(route => {
+    if (route.name === 'G/C') {
+      return;
+    }
+    const menu = getElementByClassName('routelist-' + routeConfig[route.name]);
+    const el = configureListItem(route);
     menu.appendChild(el);
   });
+  const filler = document.createElement('li');
+  filler.className = 'flex-filler';
+  getElementByClassName('routelist-radial').appendChild(filler);
 }
 
 map.on('load', function() {
@@ -221,13 +226,12 @@ map.on('load', function() {
   let destination = null;
   let markerO = null;
   let markerD = null;
-  let routes = null;
 
   startTracking(map);
 
   registerEvents(map);
 
-  routes = showAllRoutes();
+  showAllRoutes();
 
   // create geocoders and add to map
   const geocoder = createGeocoder('origin');
