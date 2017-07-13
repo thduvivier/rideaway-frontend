@@ -216,9 +216,9 @@ function addFilters(features) {
     const el = configureListItem(route);
     menu.appendChild(el);
   });
-  const filler = document.createElement('li');
+  /*const filler = document.createElement('li');
   filler.className = 'flex-filler';
-  getElementByClassName('routelist-radial').appendChild(filler);
+  getElementByClassName('routelist-radial').appendChild(filler);*/
 }
 
 map.on('load', function() {
