@@ -100,12 +100,17 @@ function addAllRoutes(geojson) {
   });
 }
 
-function toggleLayer(id) {
-  let visibility = map.getLayoutProperty(id, 'visibility');
-  if (visibility === 'visible') {
-    visibility = 'none';
+function toggleLayer(id, showLayer) {
+  let visibility;
+  if (showLayer === undefined) {
+    visibility = map.getLayoutProperty(id, 'visibility');
+    if (visibility === 'visible') {
+      visibility = 'none';
+    } else {
+      visibility = 'visible';
+    }
   } else {
-    visibility = 'visible';
+    visibility = showLayer;
   }
   map.setLayoutProperty(id, 'visibility', visibility);
 }
@@ -155,18 +160,24 @@ function calculateRoute(origin, destination, profile) {
   origin = [origin[1], origin[0]];
   destination = [destination[1], destination[0]];
   const url = `https://cyclerouting-api.osm.be/route?loc1=${origin}&loc2=${destination}&profile=${profile}`;
-  map.addLayer({
-    id: profile,
-    type: 'line',
-    source: {
-      type: 'geojson',
-      data: url
-    },
-    paint: {
-      'line-color': profile === 'networks' ? 'red' : 'grey',
-      'line-width': 4
-    }
-  });
+  // check if profile already exists
+  const calculatedRoute = map.getSource(profile);
+  if (calculatedRoute) {
+    calculatedRoute.setData(url);
+  } else {
+    map.addLayer({
+      id: profile,
+      type: 'line',
+      source: {
+        type: 'geojson',
+        data: url
+      },
+      paint: {
+        'line-color': profile === 'networks' ? 'red' : 'grey',
+        'line-width': 4
+      }
+    });
+  }
 }
 
 /*
@@ -322,8 +333,10 @@ map.on('load', function() {
       markerD.addTo(map);
       calculateRoute(origin, destination, 'shortest');
       calculateRoute(origin, destination, 'networks');
-      toggleLayer('GFR_routes');
-      toggleLayer('GFR_symbols');
+
+      // always hide the layer
+      toggleLayer('GFR_routes', 'none');
+      toggleLayer('GFR_symbols', 'none');
     }
   });
 });
