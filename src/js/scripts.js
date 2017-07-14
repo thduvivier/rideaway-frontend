@@ -36,6 +36,10 @@ const map = new mapboxgl.Map({
   zoom: 11 // starting zoom
 });
 
+/*
+* Uses fetch to get the JSON
+* Calls addAllRoutes(json)
+*/
 function showAllRoutes() {
   let geojson;
   fetch('https://cyclerouting-api.osm.be/routes/GFR.json')
@@ -46,6 +50,9 @@ function showAllRoutes() {
     .catch(ex => console.log(ex));
 }
 
+/*
+* Adds the filters and adds all of the routes to the map
+*/
 function addAllRoutes(geojson) {
   addFilters(geojson.features);
 
@@ -53,6 +60,8 @@ function addAllRoutes(geojson) {
     type: 'geojson',
     data: geojson
   });
+
+  // actual routes
   map.addLayer({
     id: 'GFR_routes',
     type: 'line',
@@ -69,6 +78,8 @@ function addAllRoutes(geojson) {
       'line-opacity': 0.3
     }
   });
+
+  // route identifiers
   map.addLayer({
     id: 'GFR_symbols',
     type: 'symbol',
@@ -99,6 +110,10 @@ function toggleLayer(id) {
   map.setLayoutProperty(id, 'visibility', visibility);
 }
 
+/*
+* Adds a yellow marker to the map
+* @param LatLng Array[Lat, Lng]
+*/
 function addMarker(LatLng) {
   const geojson = {
     type: 'FeatureCollection',
@@ -129,6 +144,12 @@ function addMarker(LatLng) {
   }).setLngLat(marker.geometry.coordinates);
 }
 
+/*
+* Calculates a route and shows it on the map
+* @param origin Array[Lat, Lng]
+* @param destination Array[Lat, Lng]
+* @param profile String
+*/
 function calculateRoute(origin, destination, profile) {
   // swap around values for the API
   origin = [origin[1], origin[0]];
@@ -148,12 +169,19 @@ function calculateRoute(origin, destination, profile) {
   });
 }
 
+/*
+* Clears the routes
+*/
 function clearRoutes() {
   map.removeLayer('networks');
-  map.getSource('networks');
   map.removeLayer('shortest');
 }
 
+/*
+* Returns a geocoder object
+* @param placeholder String
+* @returns MapboxGeocoder object
+*/
 function createGeocoder(placeholder) {
   return new MapboxGeocoder({
     accessToken:
@@ -164,20 +192,37 @@ function createGeocoder(placeholder) {
   });
 }
 
+/*
+* Converts a result object to coordinates
+* @param result Object{result: {geometry: coordinates: Array[Lat, Lng]}}
+* @returns Array[Lat, Lng]
+*/
 function setPoint(result) {
   return result.geometry.coordinates;
 }
 
+/*
+* Filters out the routes to a single route
+* @param route String
+*/
 function filterRoute(route) {
   map.setFilter('GFR_routes', ['==', 'icr', route]);
   map.setFilter('GFR_symbols', ['==', 'icr', route]);
 }
 
+/*
+* Removes all the filters from the map
+*/
 function removeFilter() {
   map.setFilter('GFR_routes', null);
   map.setFilter('GFR_symbols', null);
 }
 
+/*
+* Configures a ListItem for the routemenu
+* @param route Object{name: string, colour: string}
+* @return el Element the configured html element
+*/
 function configureListItem(route) {
   let el = document.createElement('li');
   el.className = 'routelist-item';
@@ -198,6 +243,9 @@ function configureListItem(route) {
   return el;
 }
 
+/*
+* Configures the all button
+*/
 function configureAll() {
   let el = getElementByClassName('routelist-all');
   el.addEventListener('click', () => {
@@ -208,7 +256,12 @@ function configureAll() {
   });
 }
 
+/*
+* Adds a filter option for every route to the menu
+* @param features Array[{}] all the routes
+*/
 function addFilters(features) {
+  // get the properties we need
   let routes = [];
   features.forEach(feat => {
     routes.push({
@@ -217,6 +270,7 @@ function addFilters(features) {
     });
   });
   configureAll();
+  // uniqBy to remove duplicates, sortBy to sort them in a good order
   sortBy(uniqBy(routes, 'name'), 'name').forEach(route => {
     if (route.name === 'G/C') {
       return;
@@ -227,14 +281,17 @@ function addFilters(features) {
   });
 }
 
+// executes when the map is loading
 map.on('load', function() {
   let origin = null;
   let destination = null;
   let markerO = null;
   let markerD = null;
 
+  // start stracking the user
   startTracking(map);
 
+  // register any buttons
   registerEvents(map);
 
   showAllRoutes();
