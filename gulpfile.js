@@ -71,7 +71,8 @@ gulp.task('browser-sync', () => {
       baseDir: DEST,
       index: 'index.html'
     },
-    notify: false
+    notify: false,
+    open: false
   });
 });
 
