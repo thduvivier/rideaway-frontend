@@ -1,16 +1,6 @@
-function createMarker() {
-  const geojson = {
-    type: 'FeatureCollection',
-    features: [
-      {
-        id: 'currentPosition',
-        type: 'Feature',
-        geometry: { type: 'Point', coordinates: [0, 0] },
-        properties: { iconSize: [50, 50] }
-      }
-    ]
-  };
+import mapboxgl from 'mapbox-gl';
 
+function createMarker() {
   // create our pulsating dot
   let el = document.createElement('div');
   el.className = 'marker';
@@ -39,7 +29,7 @@ export function startTracking(map) {
   }
 }
 
-function stopTracking() {
+export function stopTracking() {
   navigator.geolocation.clearWatch(this.state.watchPositionId);
   window.removeEventListener('deviceorientation', _setHeading);
 }
@@ -49,4 +39,6 @@ function onPosition(position, marker, map) {
   marker.addTo(map);
 }
 
-function _setHeading(e) {}
+function _setHeading(e) {
+  console.log(e);
+}
