@@ -1,9 +1,12 @@
+import mapboxgl from 'mapbox-gl';
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import 'whatwg-fetch';
-import { uniqBy, sortBy } from 'lodash';
+import _ from 'lodash';
 
 import { getElementByClassName } from './lib';
 import { startTracking } from './geolocation';
-import { registerEvents } from './events';
+//import { registerEvents } from './events';
+import '../scss/styles.scss';
 
 const routeConfig = {
   All: 'all',
@@ -41,7 +44,6 @@ const map = new mapboxgl.Map({
 * Calls addAllRoutes(json)
 */
 function showAllRoutes() {
-  let geojson;
   fetch('https://cyclerouting-api.osm.be/routes/GFR.json')
     .then(response => response.json())
     .then(json => {
@@ -282,7 +284,7 @@ function addFilters(features) {
   });
   configureAll();
   // uniqBy to remove duplicates, sortBy to sort them in a good order
-  sortBy(uniqBy(routes, 'name'), 'name').forEach(route => {
+  _.sortBy(_.uniqBy(routes, 'name'), 'name').forEach(route => {
     if (route.name === 'G/C') {
       return;
     }
@@ -303,7 +305,7 @@ map.on('load', function() {
   startTracking(map);
 
   // register any buttons
-  registerEvents(map);
+  // registerEvents(map);
 
   showAllRoutes();
 
