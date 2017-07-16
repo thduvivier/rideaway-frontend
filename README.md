@@ -3,12 +3,12 @@
 Install and run the dev version:
 ```sh
 $ npm install
-$ npm start
+$ npm run dev
 ```
 
 Compile a production version in the build folder:
 ```sh
-$ npm build
+$ npm run prod
 ```
 
 This project is an excellent demonstration of the power of OSM to support an advanced mobile app that assists in the navigation of cyclists through the Brussel’s regional cycling network.
