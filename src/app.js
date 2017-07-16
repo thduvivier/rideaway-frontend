@@ -142,7 +142,7 @@ function addMarker(LatLng) {
   const marker = geojson.features[0];
   let el = document.createElement('img');
   el.className = 'marker';
-  el.src = './icons/locator-yellow.svg';
+  el.src = icons.LocatorYellow;
   el.style.width = marker.properties.iconSize[0] + 'px';
   el.style.height = marker.properties.iconSize[1] + 'px';
   return new mapboxgl.Marker(el, {
@@ -203,7 +203,8 @@ function createGeocoder(placeholder) {
       'pk.eyJ1IjoiYXJuYXVkd2V5dHMiLCJhIjoiY2o0cGt3d3oxMXl0cDMzcXNlbThnM3RtaCJ9.BMUyxqHH-FC69pW4U4YO9A',
     flyTo: false,
     placeholder,
-    country: 'BE'
+    country: 'BE',
+    bbox: [4.225015, 50.74915, 4.524909, 50.938001]
   });
 }
 
