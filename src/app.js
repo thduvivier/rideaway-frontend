@@ -306,6 +306,32 @@ function addFilters(features) {
   });
 }
 
+function showMyLocationSuggestion(input) {
+  const suggestions = input.parentElement.querySelector('.suggestions');
+  // if the option doesn't exist, add it
+  if (!input.parentElement.querySelector('.mylocation')) {
+    const el = document.createElement('li');
+    el.className = 'mylocation';
+    const a = document.createElement('a');
+    a.innerHTML = 'My location';
+    a.addEventListener('mousedown', e => {
+      input.value = 'My location';
+    });
+    el.appendChild(a);
+    suggestions.appendChild(el);
+  }
+  suggestions.style.display = 'block';
+}
+
+function hideMyLocationSuggestion(input) {
+  const suggestions = input.parentElement.querySelector('.suggestions');
+  suggestions.style.display = 'none';
+}
+
+function setLocation(location) {
+  console.log(location);
+}
+
 // executes when the map is loading
 map.on('load', function() {
   getElementByClassName('marker-white').src = icons.NavWhite;
@@ -332,6 +358,7 @@ map.on('load', function() {
   geocoder.on('result', ({ result }) => {
     // result event fires twice for some reason, this prevents it
     // from executing our code twice, resulting in errors
+    // https://github.com/mapbox/mapbox-gl-geocoder/issues/99
     if (!origin || destination !== setPoint(result)) {
       markerO && markerO.remove();
       origin = setPoint(result);
@@ -365,5 +392,20 @@ map.on('load', function() {
   geocoder2.on('clear', () => {
     clearRoutes(markerD);
     destination = null;
+  });
+
+  const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
+  inputs.forEach(input => {
+    input.addEventListener('focus', () => {
+      showMyLocationSuggestion(input);
+    });
+    input.addEventListener('keyup', e => {
+      if (input.value.length === 0) {
+        showMyLocationSuggestion(input);
+      }
+    });
+    input.addEventListener('focusout', () => {
+      hideMyLocationSuggestion(input);
+    });
   });
 });
