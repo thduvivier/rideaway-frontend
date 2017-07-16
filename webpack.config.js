@@ -15,6 +15,7 @@ module.exports = {
     filename: 'app.bundle.js'
   },
   module: {
+    noParse: /(mapbox-gl)\.js$/,
     rules: [
       {
         test: /\.scss$/,
@@ -44,7 +45,7 @@ module.exports = {
         test: /\.(jpg|png|svg|woff)$/,
         loader: 'file-loader',
         options: {
-          name: '[path][name].[hash].[ext]'
+          name: 'static/[name].[hash].[ext]'
         }
       }
     ]
