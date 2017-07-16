@@ -25,13 +25,13 @@ export function startTracking(map) {
   }
 
   if (window.DeviceOrientationEvent) {
-    window.addEventListener('deviceorientation', _setHeading);
+    window.addEventListener('deviceorientation', e => _setHeading(e, map));
   }
 }
 
 export function stopTracking() {
   navigator.geolocation.clearWatch(this.state.watchPositionId);
-  window.removeEventListener('deviceorientation', _setHeading);
+  window.removeEventListener('deviceorientation', () => _setHeading(map));
 }
 
 function onPosition(position, marker, map) {
@@ -39,6 +39,6 @@ function onPosition(position, marker, map) {
   marker.addTo(map);
 }
 
-function _setHeading(e) {
+function _setHeading(e, map) {
   console.log(e);
 }
