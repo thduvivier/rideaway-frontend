@@ -187,9 +187,16 @@ function calculateRoute(origin, destination, profile) {
 /*
 * Clears the routes
 */
-function clearRoutes() {
-  map.removeLayer('networks');
-  map.removeLayer('shortest');
+function clearRoutes(marker) {
+  if (map.getSource('networks')) {
+    map.removeLayer('networks');
+    map.removeSource('networks');
+  }
+  if (map.getSource('shortest')) {
+    map.removeLayer('shortest');
+    map.removeSource('shortest');
+  }
+  marker.remove();
 }
 
 /*
@@ -328,21 +335,33 @@ map.on('load', function() {
       origin = setPoint(result);
       markerO = addMarker(origin);
       markerO.addTo(map);
+
+      // calculate route if destination is filled in
+      destination && calculateRoute(origin, destination, 'shortest');
+      destination && calculateRoute(origin, destination, 'networks');
     }
   });
   geocoder2.on('result', ({ result }) => {
     if (!destination || destination !== setPoint(result)) {
-      destination && clearRoutes();
       markerD && markerD.remove();
       destination = setPoint(result);
       markerD = addMarker(destination);
       markerD.addTo(map);
-      calculateRoute(origin, destination, 'shortest');
-      calculateRoute(origin, destination, 'networks');
+
+      origin && calculateRoute(origin, destination, 'shortest');
+      origin && calculateRoute(origin, destination, 'networks');
 
       // always hide the layer
       toggleLayer('GFR_routes', 'none');
       toggleLayer('GFR_symbols', 'none');
     }
+  });
+  geocoder.on('clear', () => {
+    clearRoutes(markerO);
+    origin = null;
+  });
+  geocoder2.on('clear', () => {
+    clearRoutes(markerD);
+    destination = null;
   });
 });
