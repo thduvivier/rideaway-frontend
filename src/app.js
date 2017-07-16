@@ -231,6 +231,8 @@ function setPoint(result) {
 function filterRoute(route) {
   map.setFilter('GFR_routes', ['==', 'icr', route]);
   map.setFilter('GFR_symbols', ['==', 'icr', route]);
+  map.setLayoutProperty('GFR_routes', 'visibility', 'visible');
+  map.setLayoutProperty('GFR_symbols', 'visibility', 'visible');
 }
 
 /*
