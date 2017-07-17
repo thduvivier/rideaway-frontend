@@ -5,16 +5,19 @@
   <meta charset='utf-8' />
   <title>Rideaway</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <meta name="defaultLanguage" content="en-US">
+  <meta name="availableLanguages" content="nl, en-US, fr">
+  <link rel="localization" href="./locales/rideaway.{locale}.ftl">
 </head>
 
 <body>
   <div class="menu">
-    <h1 class="menu-title">Choose a route</h1>
+    <h1 class="menu-title" data-l10n-id="routes-choose"></h1>
     <div class="menu-btn-close"></div>
     <div class="routelists">
       <div class="routelist-top">
-        <div class="routelist-all routelist-item--active">All</div>
-        <div class="routelist-none">None</div>
+        <div class="routelist-all routelist-item--active" data-l10n-id="routes-all"></div>
+        <div class="routelist-none" data-l10n-id="routes-none"></div>
       </div>
       <ul class="routelist routelist-radial"></ul>
       <ul class="routelist routelist-transverse"></ul>
