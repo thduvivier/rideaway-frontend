@@ -163,7 +163,6 @@ function calculateRoute(origin, destination, profile) {
   destination = [destination[1], destination[0]];
   const url = `https://cyclerouting-api.osm.be/route?loc1=${origin}&loc2=${destination}&profile=${profile}`;
   fetchJSON(url).then(json => {
-    console.log(json);
     // check if profile already exists
     const calculatedRoute = map.getSource(profile);
     if (calculatedRoute) {
@@ -177,7 +176,13 @@ function calculateRoute(origin, destination, profile) {
           data: json.route
         },
         paint: {
-          'line-color': profile === 'networks' ? 'red' : 'grey',
+          'line-color':
+            profile === 'shortest'
+              ? 'yellow'
+              : {
+                  type: 'identity',
+                  property: 'colour'
+                },
           'line-width': 4
         },
         layout: {
@@ -243,6 +248,8 @@ function filterRoute(route) {
 * Removes all the filters from the map
 */
 function removeFilter() {
+  toggleLayer('GFR_routes', 'visible');
+  toggleLayer('GFR_symbols', 'visible');
   map.setFilter('GFR_routes', null);
   map.setFilter('GFR_symbols', null);
 }
@@ -267,21 +274,36 @@ function configureListItem(route) {
     active && active.classList.remove('routelist-item--active');
     el.className += ' routelist-item--active';
     filterRoute(route.name);
+    collapseMenu();
   });
-
   return el;
+}
+
+function collapseMenu() {
+  const menu = document.querySelector('.menu');
+  menu.style.transform = `translateX(-${menu.offsetWidth}px)`;
 }
 
 /*
 * Configures the all button
 */
 function configureAll() {
-  let el = getElementByClassName('routelist-all');
-  el.addEventListener('click', () => {
+  let all = document.querySelector('.routelist-all');
+  all.addEventListener('click', () => {
     const active = document.querySelector('.routelist-item--active');
     active && active.classList.remove('routelist-item--active');
-    el.className += ' routelist-item--active';
+    all.className += ' routelist-item--active';
     removeFilter();
+    collapseMenu();
+  });
+  let none = document.querySelector('.routelist-none');
+  none.addEventListener('click', () => {
+    const active = document.querySelector('.routelist-item--active');
+    active && active.classList.remove('routelist-item--active');
+    none.className += ' routelist-item--active';
+    toggleLayer('GFR_routes', 'none');
+    toggleLayer('GFR_symbols', 'none');
+    collapseMenu();
   });
 }
 
@@ -300,7 +322,10 @@ function addFilters(features) {
   });
   configureAll();
   // uniqBy to remove duplicates, sortBy to sort them in a good order
-  _.sortBy(_.uniqBy(routes, 'name'), 'name').forEach(route => {
+  const routesSorted = _.uniqBy(routes, 'name').sort((a, b) => {
+    return a.name.localeCompare(b.name, undefined, { numeric: true });
+  });
+  routesSorted.forEach(route => {
     if (route.name === 'G/C') {
       return;
     }
@@ -422,7 +447,6 @@ map.on('load', function() {
   });
 
   document.querySelector('.menu-btn-close').addEventListener('click', () => {
-    const menu = document.querySelector('.menu');
-    menu.style.transform = `translateX(-${menu.offsetWidth}px)`;
+    collapseMenu();
   });
 });
