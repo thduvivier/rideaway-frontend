@@ -39,6 +39,4 @@ function onPosition(position, marker, map) {
   marker.addTo(map);
 }
 
-function _setHeading(e, map) {
-  console.log(e);
-}
+function _setHeading(e, map) {}
