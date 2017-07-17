@@ -11,7 +11,7 @@ function createMarker() {
   el.appendChild(child1);
   el.appendChild(child2);
 
-  return new mapboxgl.Marker(el);
+  return new mapboxgl.Marker(el, { offset: [-10 / 2, -10] });
 }
 
 export function startTracking(map) {
