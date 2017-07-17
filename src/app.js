@@ -163,6 +163,7 @@ function calculateRoute(origin, destination, profile) {
   destination = [destination[1], destination[0]];
   const url = `https://cyclerouting-api.osm.be/route?loc1=${origin}&loc2=${destination}&profile=${profile}`;
   fetchJSON(url).then(json => {
+    console.log(json);
     // check if profile already exists
     const calculatedRoute = map.getSource(profile);
     if (calculatedRoute) {
@@ -178,6 +179,9 @@ function calculateRoute(origin, destination, profile) {
         paint: {
           'line-color': profile === 'networks' ? 'red' : 'grey',
           'line-width': 4
+        },
+        layout: {
+          'line-cap': 'round'
         }
       });
     }
