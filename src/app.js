@@ -42,16 +42,17 @@ const map = new mapboxgl.Map({
 });
 
 /*
-* Uses fetch to get the JSON
-* Calls addAllRoutes(json)
+* Fetch a JSON
+* @param {String} url
+* @returns json
 */
-function showAllRoutes() {
-  fetch('https://cyclerouting-api.osm.be/routes/GFR.json')
-    .then(response => response.json())
-    .then(json => {
-      addAllRoutes(json);
-    })
-    .catch(ex => console.log(ex));
+function fetchJSON(url) {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then(response => response.json())
+      .then(json => resolve(json))
+      .catch(ex => reject(ex));
+  });
 }
 
 /*
@@ -161,24 +162,26 @@ function calculateRoute(origin, destination, profile) {
   origin = [origin[1], origin[0]];
   destination = [destination[1], destination[0]];
   const url = `https://cyclerouting-api.osm.be/route?loc1=${origin}&loc2=${destination}&profile=${profile}`;
-  // check if profile already exists
-  const calculatedRoute = map.getSource(profile);
-  if (calculatedRoute) {
-    calculatedRoute.setData(url);
-  } else {
-    map.addLayer({
-      id: profile,
-      type: 'line',
-      source: {
-        type: 'geojson',
-        data: url
-      },
-      paint: {
-        'line-color': profile === 'networks' ? 'red' : 'grey',
-        'line-width': 4
-      }
-    });
-  }
+  fetchJSON(url).then(json => {
+    // check if profile already exists
+    const calculatedRoute = map.getSource(profile);
+    if (calculatedRoute) {
+      calculatedRoute.setData(url);
+    } else {
+      map.addLayer({
+        id: profile,
+        type: 'line',
+        source: {
+          type: 'geojson',
+          data: json.route
+        },
+        paint: {
+          'line-color': profile === 'networks' ? 'red' : 'grey',
+          'line-width': 4
+        }
+      });
+    }
+  });
 }
 
 /*
@@ -343,7 +346,10 @@ map.on('load', function() {
   // register any buttons
   // registerEvents(map);
 
-  showAllRoutes();
+  // show all the routes on the map
+  fetchJSON('https://cyclerouting-api.osm.be/routes/GFR.json').then(json =>
+    addAllRoutes(json)
+  );
 
   // create geocoders and add to map
   const geocoder = createGeocoder('origin');
@@ -404,5 +410,15 @@ map.on('load', function() {
     input.addEventListener('focusout', () => {
       hideMyLocationSuggestion(input);
     });
+  });
+
+  // mobile menu
+  document.querySelector('.menu-btn-open').addEventListener('click', () => {
+    document.querySelector('.menu').style.transform = 'translateX(0)';
+  });
+
+  document.querySelector('.menu-btn-close').addEventListener('click', () => {
+    const menu = document.querySelector('.menu');
+    menu.style.transform = `translateX(-${menu.offsetWidth}px)`;
   });
 });
