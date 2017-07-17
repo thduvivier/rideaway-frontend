@@ -146,10 +146,7 @@ function addMarker(LatLng) {
   el.style.width = marker.properties.iconSize[0] + 'px';
   el.style.height = marker.properties.iconSize[1] + 'px';
   return new mapboxgl.Marker(el, {
-    offset: [
-      -marker.properties.iconSize[0] / 2,
-      -marker.properties.iconSize[1] / 2
-    ]
+    offset: [-marker.properties.iconSize[0] / 2, -marker.properties.iconSize[1]]
   }).setLngLat(marker.geometry.coordinates);
 }
 
