@@ -22,6 +22,12 @@ const map = new mapboxgl.Map({
   zoom: 11 // starting zoom
 });
 
+let places = {
+  origin: null,
+  destination: null,
+  userPosition: null
+};
+
 /*
 * Fetch a JSON
 * @param {String} url
@@ -152,11 +158,17 @@ function calculateRoute(origin, destination, profile) {
           'line-width': 4
         },
         layout: {
-          'line-cap': 'round'
+          'line-cap': 'round',
+          visibility: 'none'
         }
       });
     }
   });
+}
+
+function organiseRoutes() {
+  toggleLayer(map, 'networks', 'visible');
+  toggleLayer(map, 'shortest', 'visible');
 }
 
 /*
@@ -175,6 +187,13 @@ function createGeocoder(placeholder) {
   });
 }
 
+function configureGeocoders() {
+  const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
+  inputs.forEach(input => {
+    input.setAttribute('data-l10n-id', `${input.placeholder}-input`);
+  });
+}
+
 /*
 * Converts a result object to coordinates
 * @param result Object{result: {geometry: coordinates: Array[Lat, Lng]}}
@@ -185,20 +204,17 @@ function setPoint(result) {
 }
 
 function updatePosition(position) {
-  window.userPosition = position;
+  places.userPosition = position;
 }
 
-function setLocation(location) {
-  console.log(location);
+function setPlace(place) {
+  places[place] = places.userPosition;
 }
 
 // executes when the map is loading
 map.on('load', function() {
-  let origin = null;
-  let destination = null;
   let markerO = null;
   let markerD = null;
-  let userPosition = null;
 
   // start stracking the user
   startTracking(map, updatePosition);
@@ -213,46 +229,52 @@ map.on('load', function() {
   const geocoder2 = createGeocoder('destination');
   map.addControl(geocoder);
   map.addControl(geocoder2);
+  configureGeocoders();
 
-  configureAllElements(map);
+  configureAllElements(map, setPlace);
 
   // fire functions on result
   geocoder.on('result', ({ result }) => {
     // result event fires twice for some reason, this prevents it
     // from executing our code twice, resulting in errors
     // https://github.com/mapbox/mapbox-gl-geocoder/issues/99
-    if (!origin || destination !== setPoint(result)) {
+    if (!places.origin || places.destination !== setPoint(result)) {
       markerO && markerO.remove();
-      origin = setPoint(result);
-      markerO = addMarker(origin);
+      places.origin = setPoint(result);
+      markerO = addMarker(places.origin);
       markerO.addTo(map);
 
       // calculate route if destination is filled in
-      destination && calculateRoute(origin, destination, 'shortest');
-      destination && calculateRoute(origin, destination, 'networks');
+      places.destination &&
+        calculateRoute(places.origin, places.destination, 'networks');
+      places.destination &&
+        calculateRoute(places.origin, places.destination, 'shortest');
     }
   });
   geocoder2.on('result', ({ result }) => {
-    if (!destination || destination !== setPoint(result)) {
+    if (!places.destination || places.destination !== setPoint(result)) {
       markerD && markerD.remove();
-      destination = setPoint(result);
-      markerD = addMarker(destination);
+      places.destination = setPoint(result);
+      markerD = addMarker(places.destination);
       markerD.addTo(map);
 
-      origin && calculateRoute(origin, destination, 'shortest');
-      origin && calculateRoute(origin, destination, 'networks');
+      places.origin &&
+        calculateRoute(places.origin, places.destination, 'networks');
+      places.origin &&
+        calculateRoute(places.origin, places.destination, 'shortest');
 
       // always hide the layer
       toggleLayer(map, 'GFR_routes', 'none');
       toggleLayer(map, 'GFR_symbols', 'none');
+      document.querySelector('.routelist-none').click();
     }
   });
   geocoder.on('clear', () => {
-    clearRoutes(markerO);
-    origin = null;
+    clearRoutes(map, markerO);
+    places.origin = null;
   });
   geocoder2.on('clear', () => {
-    clearRoutes(markerD);
-    destination = null;
+    clearRoutes(map, markerD);
+    places.destination = null;
   });
 });
