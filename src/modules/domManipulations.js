@@ -68,7 +68,7 @@ function showMyLocationSuggestion(input) {
   // if the option doesn't exist, add it
   if (!input.parentElement.querySelector('.mylocation')) {
     const el = document.createElement('li');
-    el.className = 'mylocation';
+    el.className = 'mylocation active';
     const a = document.createElement('a');
     a.innerHTML = 'My location';
     a.addEventListener('mousedown', e => {
@@ -96,7 +96,7 @@ function configureMobileMenu() {
   });
 }
 
-function configureInputs() {
+function configureInputs(setPlace) {
   const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
   inputs.forEach(input => {
     input.addEventListener('focus', () => {
@@ -106,8 +106,16 @@ function configureInputs() {
       if (input.value.length === 0) {
         showMyLocationSuggestion(input);
       }
+      if (
+        e.key === 'Enter' &&
+        (input.value === '' || input.value === 'My location')
+      ) {
+        input.value = 'My location';
+        setPlace(input.placeholder);
+        input.blur();
+      }
     });
-    input.addEventListener('focusout', () => {
+    input.addEventListener('focusout', e => {
       hideMyLocationSuggestion(input);
     });
   });
@@ -143,12 +151,12 @@ export function addFilters(features) {
   });
 }
 
-export function configureAllElements(mapboxmap) {
+export function configureAllElements(mapboxmap, setPlace) {
   map = mapboxmap;
   document.querySelector('.center-btn').addEventListener('click', () => {
-    window.userPosition &&
-      map.flyTo({ center: window.userPosition, zoom: [15] });
+    places.userPosition &&
+      map.flyTo({ center: places.userPosition, zoom: [15] });
   });
   configureMobileMenu();
-  configureInputs();
+  configureInputs(setPlace);
 }
