@@ -8,31 +8,11 @@ import icons from './icons';
 
 import { getElementByClassName } from './modules/lib';
 import { startTracking } from './modules/geolocation';
-//import { registerEvents } from './events';
+import { addFilters, configureAllElements } from './modules/domManipulations';
+import { toggleLayer, clearRoutes } from './modules/mapManipulations';
 import './scss/styles.scss';
 
-const routeConfig = {
-  All: 'all',
-  '1': 'radial',
-  '2': 'radial',
-  '3': 'radial',
-  '4': 'radial',
-  '5': 'radial',
-  '6': 'radial',
-  '7': 'radial',
-  '8': 'radial',
-  '9': 'radial',
-  '10': 'radial',
-  '11': 'radial',
-  '12': 'radial',
-  MM: 'transverse',
-  SZ: 'transverse',
-  CK: 'transverse',
-  PP: 'transverse',
-  A: 'loop',
-  B: 'loop',
-  C: 'loop'
-};
+document.querySelector('.marker-white').src = icons.NavWhite;
 
 mapboxgl.accessToken = '';
 const map = new mapboxgl.Map({
@@ -104,21 +84,6 @@ function addAllRoutes(geojson) {
       }
     }
   });
-}
-
-function toggleLayer(id, showLayer) {
-  let visibility;
-  if (showLayer === undefined) {
-    visibility = map.getLayoutProperty(id, 'visibility');
-    if (visibility === 'visible') {
-      visibility = 'none';
-    } else {
-      visibility = 'visible';
-    }
-  } else {
-    visibility = showLayer;
-  }
-  map.setLayoutProperty(id, 'visibility', visibility);
 }
 
 /*
@@ -195,21 +160,6 @@ function calculateRoute(origin, destination, profile) {
 }
 
 /*
-* Clears the routes
-*/
-function clearRoutes(marker) {
-  if (map.getSource('networks')) {
-    map.removeLayer('networks');
-    map.removeSource('networks');
-  }
-  if (map.getSource('shortest')) {
-    map.removeLayer('shortest');
-    map.removeSource('shortest');
-  }
-  marker.remove();
-}
-
-/*
 * Returns a geocoder object
 * @param placeholder String
 * @returns MapboxGeocoder object
@@ -234,128 +184,8 @@ function setPoint(result) {
   return result.geometry.coordinates;
 }
 
-/*
-* Filters out the routes to a single route
-* @param route String
-*/
-function filterRoute(route) {
-  map.setFilter('GFR_routes', ['==', 'icr', route]);
-  map.setFilter('GFR_symbols', ['==', 'icr', route]);
-  map.setLayoutProperty('GFR_routes', 'visibility', 'visible');
-  map.setLayoutProperty('GFR_symbols', 'visibility', 'visible');
-}
-
-/*
-* Removes all the filters from the map
-*/
-function removeFilter() {
-  toggleLayer('GFR_routes', 'visible');
-  toggleLayer('GFR_symbols', 'visible');
-  map.setFilter('GFR_routes', null);
-  map.setFilter('GFR_symbols', null);
-}
-
-/*
-* Configures a ListItem for the routemenu
-* @param route Object{name: string, colour: string}
-* @return el Element the configured html element
-*/
-function configureListItem(route) {
-  let el = document.createElement('li');
-  el.className = 'routelist-item';
-  let child = document.createElement('span');
-  child.innerHTML = route.name;
-  el.appendChild(child);
-  el.className += ' routelist-item-' + routeConfig[el.firstChild.innerHTML];
-  el.style.backgroundColor = route.color;
-
-  // event listener
-  el.addEventListener('click', () => {
-    const active = document.querySelector('.routelist-item--active');
-    active && active.classList.remove('routelist-item--active');
-    el.className += ' routelist-item--active';
-    filterRoute(route.name);
-    collapseMenu();
-  });
-  return el;
-}
-
-function collapseMenu() {
-  const menu = document.querySelector('.menu');
-  menu.style.transform = `translateX(-${menu.offsetWidth}px)`;
-}
-
-/*
-* Configures the all button
-*/
-function configureAll() {
-  let all = document.querySelector('.routelist-all');
-  all.addEventListener('click', () => {
-    const active = document.querySelector('.routelist-item--active');
-    active && active.classList.remove('routelist-item--active');
-    all.className += ' routelist-item--active';
-    removeFilter();
-    collapseMenu();
-  });
-  let none = document.querySelector('.routelist-none');
-  none.addEventListener('click', () => {
-    const active = document.querySelector('.routelist-item--active');
-    active && active.classList.remove('routelist-item--active');
-    none.className += ' routelist-item--active';
-    toggleLayer('GFR_routes', 'none');
-    toggleLayer('GFR_symbols', 'none');
-    collapseMenu();
-  });
-}
-
-/*
-* Adds a filter option for every route to the menu
-* @param features Array[{}] all the routes
-*/
-function addFilters(features) {
-  // get the properties we need
-  let routes = [];
-  features.forEach(feat => {
-    routes.push({
-      name: feat.properties.icr,
-      color: feat.properties.colour
-    });
-  });
-  configureAll();
-  // uniqBy to remove duplicates, sortBy to sort them in a good order
-  const routesSorted = _.uniqBy(routes, 'name').sort((a, b) => {
-    return a.name.localeCompare(b.name, undefined, { numeric: true });
-  });
-  routesSorted.forEach(route => {
-    if (route.name === 'G/C') {
-      return;
-    }
-    const menu = getElementByClassName('routelist-' + routeConfig[route.name]);
-    const el = configureListItem(route);
-    menu.appendChild(el);
-  });
-}
-
-function showMyLocationSuggestion(input) {
-  const suggestions = input.parentElement.querySelector('.suggestions');
-  // if the option doesn't exist, add it
-  if (!input.parentElement.querySelector('.mylocation')) {
-    const el = document.createElement('li');
-    el.className = 'mylocation';
-    const a = document.createElement('a');
-    a.innerHTML = 'My location';
-    a.addEventListener('mousedown', e => {
-      input.value = 'My location';
-    });
-    el.appendChild(a);
-    suggestions.appendChild(el);
-  }
-  suggestions.style.display = 'block';
-}
-
-function hideMyLocationSuggestion(input) {
-  const suggestions = input.parentElement.querySelector('.suggestions');
-  suggestions.style.display = 'none';
+function updatePosition(position) {
+  window.userPosition = position;
 }
 
 function setLocation(location) {
@@ -364,17 +194,14 @@ function setLocation(location) {
 
 // executes when the map is loading
 map.on('load', function() {
-  getElementByClassName('marker-white').src = icons.NavWhite;
   let origin = null;
   let destination = null;
   let markerO = null;
   let markerD = null;
+  let userPosition = null;
 
   // start stracking the user
-  startTracking(map);
-
-  // register any buttons
-  // registerEvents(map);
+  startTracking(map, updatePosition);
 
   // show all the routes on the map
   fetchJSON('https://cyclerouting-api.osm.be/routes/GFR.json').then(json =>
@@ -386,6 +213,8 @@ map.on('load', function() {
   const geocoder2 = createGeocoder('destination');
   map.addControl(geocoder);
   map.addControl(geocoder2);
+
+  configureAllElements(map);
 
   // fire functions on result
   geocoder.on('result', ({ result }) => {
@@ -414,8 +243,8 @@ map.on('load', function() {
       origin && calculateRoute(origin, destination, 'networks');
 
       // always hide the layer
-      toggleLayer('GFR_routes', 'none');
-      toggleLayer('GFR_symbols', 'none');
+      toggleLayer(map, 'GFR_routes', 'none');
+      toggleLayer(map, 'GFR_symbols', 'none');
     }
   });
   geocoder.on('clear', () => {
@@ -425,29 +254,5 @@ map.on('load', function() {
   geocoder2.on('clear', () => {
     clearRoutes(markerD);
     destination = null;
-  });
-
-  const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
-  inputs.forEach(input => {
-    input.addEventListener('focus', () => {
-      showMyLocationSuggestion(input);
-    });
-    input.addEventListener('keyup', e => {
-      if (input.value.length === 0) {
-        showMyLocationSuggestion(input);
-      }
-    });
-    input.addEventListener('focusout', () => {
-      hideMyLocationSuggestion(input);
-    });
-  });
-
-  // mobile menu
-  document.querySelector('.menu-btn-open').addEventListener('click', () => {
-    document.querySelector('.menu').style.transform = 'translateX(0)';
-  });
-
-  document.querySelector('.menu-btn-close').addEventListener('click', () => {
-    collapseMenu();
   });
 });
