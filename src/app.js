@@ -150,7 +150,7 @@ function calculateRoute(origin, destination, profile) {
         paint: {
           'line-color':
             profile === 'shortest'
-              ? 'yellow'
+              ? 'lightgrey'
               : {
                   type: 'identity',
                   property: 'colour'
