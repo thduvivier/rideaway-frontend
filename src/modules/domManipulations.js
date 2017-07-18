@@ -111,7 +111,7 @@ function configureInputs(setPlace) {
         (input.value === '' || input.value === 'My location')
       ) {
         input.value = 'My location';
-        setPlace(input.placeholder);
+        setPlace(input.getAttribute('data-l10n-id'));
         input.blur();
       }
     });

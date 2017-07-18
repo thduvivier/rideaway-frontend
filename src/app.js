@@ -207,7 +207,13 @@ function updatePosition(position) {
 }
 
 function setPlace(place) {
-  places[place] = places.userPosition;
+  let placeActual;
+  if (place === 'origin-input') {
+    placeActual = 'origin';
+  } else {
+    placeActual = 'destination';
+  }
+  places[placeActual] = places.userPosition;
 }
 
 // executes when the map is loading
