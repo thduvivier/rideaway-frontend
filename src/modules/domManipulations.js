@@ -145,6 +145,10 @@ export function addFilters(features) {
 
 export function configureAllElements(mapboxmap) {
   map = mapboxmap;
+  document.querySelector('.center-btn').addEventListener('click', () => {
+    window.userPosition &&
+      map.flyTo({ center: window.userPosition, zoom: [15] });
+  });
   configureMobileMenu();
   configureInputs();
 }
