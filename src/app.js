@@ -158,8 +158,7 @@ function calculateRoute(origin, destination, profile) {
           'line-width': 4
         },
         layout: {
-          'line-cap': 'round',
-          visibility: 'none'
+          'line-cap': 'round'
         }
       });
     }
@@ -276,5 +275,13 @@ map.on('load', function() {
   geocoder2.on('clear', () => {
     clearRoutes(map, markerD);
     places.destination = null;
+  });
+
+  document.querySelector('.center-btn').addEventListener('click', () => {
+    places.userPosition &&
+      map.flyTo({
+        center: places.userPosition,
+        zoom: [15]
+      });
   });
 });
