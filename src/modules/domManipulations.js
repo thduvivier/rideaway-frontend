@@ -208,7 +208,7 @@ export function showNavigationBox(origin, destination) {
   const destinationS = [destination[1], destination[0]];
 
   buttonNav.addEventListener('click', () => {
-    location.href = `navigation.html?loc1=${originS}loc2=${destinationS}`;
+    location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
   });
   buttonNav.style.transform = 'translateY(-50px)';
   buttonNav.style.backgroundColor = colors.secondary;
