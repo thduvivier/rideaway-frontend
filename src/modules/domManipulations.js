@@ -203,8 +203,12 @@ export function showNavigationBox(origin, destination) {
   const img = document.createElement('img');
   buttonNav.appendChild(img);
   buttonNav.className = 'nav-btn';
+
+  const originS = [origin[1], origin[0]];
+  const destinationS = [destination[1], destination[0]];
+
   buttonNav.addEventListener('click', () => {
-    location.href = `navigation?loc1=${origin}loc2=${destination}`;
+    location.href = `navigation.html?loc1=${originS}loc2=${destinationS}`;
   });
   buttonNav.style.transform = 'translateY(-50px)';
   buttonNav.style.backgroundColor = colors.secondary;
