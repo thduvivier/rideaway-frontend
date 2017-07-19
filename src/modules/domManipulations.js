@@ -65,14 +65,16 @@ function configureListItem(route) {
 
 function showMyLocationSuggestion(input) {
   const suggestions = input.parentElement.querySelector('.suggestions');
+  const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
   // if the option doesn't exist, add it
-  if (!input.parentElement.querySelector('.mylocation')) {
+  const myLoc = input.parentElement.querySelector('.mylocation');
+  if (!myLoc) {
     const el = document.createElement('li');
     el.className = 'mylocation active';
     const a = document.createElement('a');
-    a.innerHTML = 'My location';
+    a.setAttribute('data-l10n-id', 'suggestion-location');
     a.addEventListener('mousedown', e => {
-      input.value = 'My location';
+      input.value = a.innerHTML;
     });
     el.appendChild(a);
     suggestions.appendChild(el);
@@ -111,7 +113,13 @@ function configureInputs(setPlace) {
         (input.value === '' || input.value === 'My location')
       ) {
         input.value = 'My location';
-        setPlace(input.getAttribute('data-l10n-id'));
+        const place = input.getAttribute('data-l10n-id').replace('-input', '');
+        if (place === 'origin') {
+          hideMyLocationSuggestion(inputs[1]);
+        } else {
+          hideMyLocationSuggestion(inputs[0]);
+        }
+        setPlace(place);
         input.blur();
       }
     });
