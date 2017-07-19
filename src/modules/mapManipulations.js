@@ -23,9 +23,9 @@ export function removeFilter(map) {
 * Clears the routes
 */
 export function clearRoutes(map, marker) {
-  if (map.getSource('networks')) {
-    map.removeLayer('networks');
-    map.removeSource('networks');
+  if (map.getSource('brussels')) {
+    map.removeLayer('brussels');
+    map.removeSource('brussels');
   }
   if (map.getSource('shortest')) {
     map.removeLayer('shortest');

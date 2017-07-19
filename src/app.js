@@ -131,9 +131,9 @@ function addMarker(LatLng) {
 */
 function calculateRoute(origin, destination, profile) {
   // swap around values for the API
-  origin = [origin[1], origin[0]];
-  destination = [destination[1], destination[0]];
-  const url = `https://cyclerouting-api.osm.be/route?loc1=${origin}&loc2=${destination}&profile=${profile}`;
+  const originS = [origin[1], origin[0]];
+  const destinationS = [destination[1], destination[0]];
+  const url = `https://cyclerouting-api.osm.be/route?loc1=${originS}&loc2=${destinationS}&profile=${profile}`;
   fetchJSON(url).then(json => {
     // check if profile already exists
     const calculatedRoute = map.getSource(profile);
@@ -162,14 +162,28 @@ function calculateRoute(origin, destination, profile) {
         }
       });
     }
-    if (profile === 'shortest' && map.getSource('networks')) {
-      map.moveLayer('shortest', 'networks');
+    if (profile === 'shortest' && map.getSource('brussels')) {
+      map.moveLayer('shortest', 'brussels');
     }
+
+    // sets the bounding box correctly
+    let bbox = [];
+    if (origin[0] > destination[0] && origin[1] > destination[1]) {
+      bbox = [destination, origin];
+    } else if (origin[0] < destination[0] && origin[1] > destination[1]) {
+      bbox = [[origin[0], destination[1]], [destination[0], origin[1]]];
+    } else if (origin[0] > destination[0] && origin[1] < destination[1]) {
+      bbox = [[destination[0], origin[1]], [origin[0], destination[1]]];
+    } else {
+      bbox = [origin, destination];
+    }
+
+    map.fitBounds(bbox, { padding: 100 });
   });
 }
 
 function organiseRoutes() {
-  toggleLayer(map, 'networks', 'visible');
+  toggleLayer(map, 'brussels', 'visible');
   toggleLayer(map, 'shortest', 'visible');
 }
 
@@ -250,7 +264,7 @@ map.on('load', function() {
       places.destination &&
         calculateRoute(places.origin, places.destination, 'shortest');
       places.destination &&
-        calculateRoute(places.origin, places.destination, 'networks');
+        calculateRoute(places.origin, places.destination, 'brussels');
     }
   });
   geocoder2.on('result', ({ result }) => {
@@ -263,7 +277,7 @@ map.on('load', function() {
       places.origin &&
         calculateRoute(places.origin, places.destination, 'shortest');
       places.origin &&
-        calculateRoute(places.origin, places.destination, 'networks');
+        calculateRoute(places.origin, places.destination, 'brussels');
 
       // always hide the layer
       toggleLayer(map, 'GFR_routes', 'none');
