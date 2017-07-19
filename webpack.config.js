@@ -60,7 +60,10 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new CopyWebpackPlugin([{ from: 'public/locales', to: 'locales' }]),
+    new CopyWebpackPlugin([
+      { from: 'public/locales', to: 'locales' },
+      { from: 'public/nav' }
+    ]),
     new HtmlWebpackPlugin({
       minify: {
         collapseWhitespace: true
