@@ -241,7 +241,6 @@ map.on('load', function() {
     // from executing our code twice, resulting in errors
     // https://github.com/mapbox/mapbox-gl-geocoder/issues/99
     if (!places.origin || places.origin !== setPoint(result)) {
-      console.log('setting origin...');
       markerO && markerO.remove();
       places.origin = setPoint(result);
       markerO = addMarker(places.origin);
@@ -256,7 +255,6 @@ map.on('load', function() {
   });
   geocoder2.on('result', ({ result }) => {
     if (!places.destination || places.destination !== setPoint(result)) {
-      console.log('settings destination...');
       markerD && markerD.remove();
       places.destination = setPoint(result);
       markerD = addMarker(places.destination);
