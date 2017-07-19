@@ -246,7 +246,7 @@ map.on('load', function() {
     // result event fires twice for some reason, this prevents it
     // from executing our code twice, resulting in errors
     // https://github.com/mapbox/mapbox-gl-geocoder/issues/99
-    if (!places.origin || places.destination !== setPoint(result)) {
+    if (!places.origin || places.origin !== setPoint(result)) {
       console.log('setting origin...');
       markerO && markerO.remove();
       places.origin = setPoint(result);
