@@ -66,12 +66,16 @@ function configureListItem(route) {
 function showMyLocationSuggestion(input) {
   const suggestions = input.parentElement.querySelector('.suggestions');
   const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
+
   // if the option doesn't exist, add it
   const myLoc = input.parentElement.querySelector('.mylocation');
+
+  // need to access the link for the translation
+  const a = document.createElement('a');
+
   if (!myLoc) {
     const el = document.createElement('li');
     el.className = 'mylocation active';
-    const a = document.createElement('a');
     a.setAttribute('data-l10n-id', 'suggestion-location');
     a.addEventListener('mousedown', e => {
       input.value = a.innerHTML;
@@ -79,6 +83,28 @@ function showMyLocationSuggestion(input) {
     el.appendChild(a);
     suggestions.appendChild(el);
   }
+
+  // don't show my location if the one of the inputs is already showing it
+  // disgusting if statements, because of the translations this is pretty hard
+  // tbh you need a new geocoder component, hooking into the mapbox one sucks,
+  // maybe try forking the mapbox one
+  /*if (input.getAttribute('data-l10n-id').replace('-input', '') === 'origin') {
+    if (
+      inputs[1].value !== '' &&
+      inputs[1].value ===
+        suggestions.querySelector('.mylocation').firstChild.innerHTML
+    ) {
+      return;
+    }
+  } else {
+    if (
+      inputs[0].value !== '' &&
+      inputs[0].value ===
+        suggestions.querySelector('.mylocation').firstChild.innerHTML
+    ) {
+      return;
+    }
+  }*/
   suggestions.style.display = 'block';
 }
 
@@ -101,6 +127,7 @@ function configureMobileMenu() {
 function configureInputs(setPlace) {
   const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
   inputs.forEach(input => {
+    const place = input.getAttribute('data-l10n-id').replace('-input', '');
     input.addEventListener('focus', () => {
       showMyLocationSuggestion(input);
     });
@@ -113,7 +140,6 @@ function configureInputs(setPlace) {
         (input.value === '' || input.value === 'My location')
       ) {
         input.value = 'My location';
-        const place = input.getAttribute('data-l10n-id').replace('-input', '');
         if (place === 'origin') {
           hideMyLocationSuggestion(inputs[1]);
         } else {
