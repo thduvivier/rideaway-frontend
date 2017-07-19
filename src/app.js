@@ -162,6 +162,9 @@ function calculateRoute(origin, destination, profile) {
         }
       });
     }
+    if (profile === 'shortest' && map.getSource('networks')) {
+      map.moveLayer('shortest', 'networks');
+    }
   });
 }
 
@@ -207,13 +210,7 @@ function updatePosition(position) {
 }
 
 function setPlace(place) {
-  let placeActual;
-  if (place === 'origin-input') {
-    placeActual = 'origin';
-  } else {
-    placeActual = 'destination';
-  }
-  places[placeActual] = places.userPosition;
+  places[place] = places.userPosition;
 }
 
 // executes when the map is loading
@@ -243,7 +240,7 @@ map.on('load', function() {
     // result event fires twice for some reason, this prevents it
     // from executing our code twice, resulting in errors
     // https://github.com/mapbox/mapbox-gl-geocoder/issues/99
-    if (!places.origin || places.destination !== setPoint(result)) {
+    if (!places.origin || places.origin !== setPoint(result)) {
       markerO && markerO.remove();
       places.origin = setPoint(result);
       markerO = addMarker(places.origin);
@@ -251,9 +248,9 @@ map.on('load', function() {
 
       // calculate route if destination is filled in
       places.destination &&
-        calculateRoute(places.origin, places.destination, 'networks');
-      places.destination &&
         calculateRoute(places.origin, places.destination, 'shortest');
+      places.destination &&
+        calculateRoute(places.origin, places.destination, 'networks');
     }
   });
   geocoder2.on('result', ({ result }) => {
@@ -264,9 +261,9 @@ map.on('load', function() {
       markerD.addTo(map);
 
       places.origin &&
-        calculateRoute(places.origin, places.destination, 'networks');
-      places.origin &&
         calculateRoute(places.origin, places.destination, 'shortest');
+      places.origin &&
+        calculateRoute(places.origin, places.destination, 'networks');
 
       // always hide the layer
       toggleLayer(map, 'GFR_routes', 'none');
