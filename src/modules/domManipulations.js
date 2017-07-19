@@ -63,7 +63,7 @@ function configureListItem(route) {
   return el;
 }
 
-function showMyLocationSuggestion(input) {
+function showMyLocationSuggestion(input, setPlace) {
   const suggestions = input.parentElement.querySelector('.suggestions');
   const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
 
@@ -79,6 +79,7 @@ function showMyLocationSuggestion(input) {
     a.setAttribute('data-l10n-id', 'suggestion-location');
     a.addEventListener('mousedown', e => {
       input.value = a.innerHTML;
+      setPlace(input.getAttribute('data-l10n-id').replace('-input', ''));
     });
     el.appendChild(a);
     suggestions.appendChild(el);
@@ -129,11 +130,11 @@ function configureInputs(setPlace) {
   inputs.forEach(input => {
     const place = input.getAttribute('data-l10n-id').replace('-input', '');
     input.addEventListener('focus', () => {
-      showMyLocationSuggestion(input);
+      showMyLocationSuggestion(input, setPlace);
     });
     input.addEventListener('keyup', e => {
       if (input.value.length === 0) {
-        showMyLocationSuggestion(input);
+        showMyLocationSuggestion(input, setPlace);
       }
       if (
         e.key === 'Enter' &&
