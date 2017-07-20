@@ -31,7 +31,7 @@ export function clearRoutes(map, marker) {
     map.removeLayer('shortest');
     map.removeSource('shortest');
   }
-  marker.remove();
+  marker && marker.remove();
 }
 
 export function toggleLayer(map, id, showLayer) {

@@ -65,6 +65,16 @@ function configureListItem(route) {
   return el;
 }
 
+function showCloseButton(geocoder) {
+  if (geocoder === 'origin') {
+    document.querySelector(
+      'div:nth-of-type(1) .geocoder-icon.geocoder-icon-close'
+    ).style.display =
+      'block';
+  } else {
+  }
+}
+
 function showMyLocationSuggestion(input, setPlace) {
   const suggestions = input.parentElement.querySelector('.suggestions');
   const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
@@ -81,7 +91,9 @@ function showMyLocationSuggestion(input, setPlace) {
     a.setAttribute('data-l10n-id', 'suggestion-location');
     a.addEventListener('mousedown', e => {
       input.value = a.innerHTML;
-      setPlace(input.getAttribute('data-l10n-id').replace('-input', ''));
+      const place = input.getAttribute('data-l10n-id').replace('-input', '');
+      showCloseButton(place);
+      setPlace(place);
     });
     el.appendChild(a);
     suggestions.appendChild(el);
@@ -144,8 +156,10 @@ function configureInputs(setPlace) {
       ) {
         input.value = 'My location';
         if (place === 'origin') {
+          showCloseButton('origin');
           hideMyLocationSuggestion(inputs[1]);
         } else {
+          showCloseButton('destination');
           hideMyLocationSuggestion(inputs[0]);
         }
         setPlace(place);
