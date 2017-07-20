@@ -193,27 +193,22 @@ export function configureAllElements(mapboxmap, setPlace) {
   configureInputs(setPlace);
 }
 
-export function showNavigationBox(origin, destination) {
+export function showNavigationBox(oldHandler, navHandler) {
   const navBox = document.querySelector('.navigation-box');
   const button = document.querySelector('.center-btn');
   button.style.display = 'none';
   document.querySelector('#map').style.height = 'calc(100vh - 100px)';
 
-  const buttonNav = document.createElement('button');
-  const img = document.createElement('img');
-  buttonNav.appendChild(img);
-  buttonNav.className = 'nav-btn';
+  const buttonNav = document.querySelector('.nav-btn');
 
-  const originS = [origin[1], origin[0]];
-  const destinationS = [destination[1], destination[0]];
+  oldHandler && buttonNav.removeEventListener('click', oldHandler);
+  buttonNav.addEventListener('click', navHandler);
 
-  buttonNav.addEventListener('click', () => {
-    location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
-  });
-  buttonNav.style.transform = 'translateY(-50px)';
-  buttonNav.style.backgroundColor = colors.secondary;
-  buttonNav.firstChild.src = icons.NavWhite;
   navBox.style.transform = 'translateY(0)';
+}
 
-  document.querySelector('body').appendChild(buttonNav);
+export function hideNavigationBox() {
+  const navBox = document.querySelector('.navigation-box');
+  document.querySelector('#map').style.height = '100vh';
+  navBox.style.transform = 'translateY(150px)';
 }

@@ -11,12 +11,14 @@ import { startTracking } from './modules/geolocation';
 import {
   addFilters,
   configureAllElements,
-  showNavigationBox
+  showNavigationBox,
+  hideNavigationBox
 } from './modules/domManipulations';
 import { toggleLayer, clearRoutes } from './modules/mapManipulations';
 import './scss/styles.scss';
 
 document.querySelector('.marker-white').src = icons.Center;
+document.querySelector('.nav-white').src = icons.NavWhite;
 
 mapboxgl.accessToken = '';
 const map = new mapboxgl.Map({
@@ -31,6 +33,10 @@ let places = {
   origin: null,
   destination: null,
   userPosition: null
+};
+
+let handlers = {
+  nav: null
 };
 
 /*
@@ -185,13 +191,27 @@ function calculateRoute(origin, destination, profile) {
 
     map.fitBounds(bbox, { padding: 150 });
 
-    showNavigationBox(origin, destination);
+    const oldHandler = handlers.nav;
+
+    handlers.nav = () => {
+      const { origin, destination } = places;
+      const originS = [origin[1], origin[0]];
+      const destinationS = [destination[1], destination[0]];
+
+      location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
+    };
+
+    showNavigationBox(oldHandler, handlers.nav);
   });
 }
 
 function organiseRoutes() {
   toggleLayer(map, 'brussels', 'visible');
   toggleLayer(map, 'shortest', 'visible');
+}
+
+function handler(origin, destination) {
+  console.log(this);
 }
 
 /*
@@ -272,7 +292,6 @@ map.on('load', function() {
       if (places.destination) {
         calculateRoute(places.origin, places.destination, 'shortest');
         calculateRoute(places.origin, places.destination, 'brussels');
-        showNavigationBox();
       }
     }
   });
@@ -286,7 +305,6 @@ map.on('load', function() {
       if (places.origin) {
         calculateRoute(places.origin, places.destination, 'shortest');
         calculateRoute(places.origin, places.destination, 'brussels');
-        showNavigationBox();
       }
 
       // always hide the layer
@@ -298,10 +316,12 @@ map.on('load', function() {
   geocoder.on('clear', () => {
     clearRoutes(map, markerO);
     places.origin = null;
+    hideNavigationBox();
   });
   geocoder2.on('clear', () => {
     clearRoutes(map, markerD);
     places.destination = null;
+    hideNavigationBox();
   });
 
   document.querySelector('.center-btn').addEventListener('click', () => {
