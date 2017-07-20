@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Rideaway</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+    crossorigin="anonymous">
+  <link href='index.css' rel='stylesheet' />
+  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+  <script src="test-route.js"></script>
+</head>
+
+<body>
+  <div class="container">
+
+
+    <div id="next-instruction">
+      <div id="next-instruction-road">
+        <div id="next-instruction-road-ref" class="road-square">3</div>
+      </div>
+      <div id="next-instruction-arrow">
+        <img id="next-instruction-arrow-img" src="./assets/arrow.svg"></img>
+      </div>
+
+
+    </div>
+
+    <div id="next-instruction-distance">300m.</div>
+
+    <button id="goto-map" class="round-button"></button>
+    <button id="close-navigation" class="round-button"></button>
+
+    <div id="current-road" class="centered">
+      <div id="current-road-ref" class="road-square">3</div>
+      <div id="swoosh">
+        <img id="swoosh-left" src="./assets/swoosh-left.svg"></img>
+        <img id="swoosh-right" src="./assets/swoosh-right.svg"></img>
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+
+  <div id="debug">
+    Current distance:
+    <div id="distance"></div>km <br/> Current time:
+    <div id="time"></div> seconds <br/> Next instruction:
+    <div id="instruction"></div> <br/> Next colour:
+    <div id="nextColour" class="colorbox"></div>
+    Route colour:
+    <div id="routeColour" class="colorbox"></div>
+    <p id="debug-console"></p>
+
+    <div id="distanceNextContainer">
+      <div id="distanceNext"></div>
+    </div>
+    <div id="bikecircle">
+      <div id="direction"></div>
+      <img id="bike" src="./assets/bike.svg"></img>
+    </div>
+  </div>
+</body>
+
+<script src="app.js"></script>
+
+</html>
