@@ -165,6 +165,9 @@ function initialize(){
         setTimeout(step, 50);
         //startTracking();
     });
+    document.getElementById("close-navigation").addEventListener("click", function(){
+        location.href = "index.html"
+    })
 }
 
 function step (){ 
