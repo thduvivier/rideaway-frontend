@@ -177,31 +177,37 @@ function calculateRoute(origin, destination, profile) {
       map.moveLayer('shortest', 'brussels');
     }
 
-    // sets the bounding box correctly
-    let bbox = [];
-    if (origin[0] > destination[0] && origin[1] > destination[1]) {
-      bbox = [destination, origin];
-    } else if (origin[0] < destination[0] && origin[1] > destination[1]) {
-      bbox = [[origin[0], destination[1]], [destination[0], origin[1]]];
-    } else if (origin[0] > destination[0] && origin[1] < destination[1]) {
-      bbox = [[destination[0], origin[1]], [origin[0], destination[1]]];
-    } else {
-      bbox = [origin, destination];
+    if (profile === 'brussels') {
+      // sets the bounding box correctly
+      let bbox = [];
+      if (origin[0] > destination[0] && origin[1] > destination[1]) {
+        bbox = [destination, origin];
+      } else if (origin[0] < destination[0] && origin[1] > destination[1]) {
+        bbox = [[origin[0], destination[1]], [destination[0], origin[1]]];
+      } else if (origin[0] > destination[0] && origin[1] < destination[1]) {
+        bbox = [[destination[0], origin[1]], [origin[0], destination[1]]];
+      } else {
+        bbox = [origin, destination];
+      }
+
+      map.fitBounds(bbox, {
+        padding: 150
+      });
+
+      const oldHandler = handlers.nav;
+
+      handlers.nav = () => {
+        const { origin, destination } = places;
+        const originS = [origin[1], origin[0]];
+        const destinationS = [destination[1], destination[0]];
+
+        location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
+      };
+
+      const lastFeature = json.route.features[json.route.features.length - 1];
+      const { properties: { distance, time } } = lastFeature;
+      showNavigationBox(oldHandler, handlers.nav, distance, time);
     }
-
-    map.fitBounds(bbox, { padding: 150 });
-
-    const oldHandler = handlers.nav;
-
-    handlers.nav = () => {
-      const { origin, destination } = places;
-      const originS = [origin[1], origin[0]];
-      const destinationS = [destination[1], destination[0]];
-
-      location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
-    };
-
-    showNavigationBox(oldHandler, handlers.nav);
   });
 }
 
