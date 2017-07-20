@@ -5,6 +5,7 @@ import {
   toggleLayer,
   removeFilter
 } from './mapManipulations';
+import { displayDistance, displayTime, displayArrival } from './lib';
 import icons from '../icons';
 
 let map;
@@ -193,11 +194,15 @@ export function configureAllElements(mapboxmap, setPlace) {
   configureInputs(setPlace);
 }
 
-export function showNavigationBox(oldHandler, navHandler) {
-  const navBox = document.querySelector('.navigation-box');
+export function showNavigationBox(oldHandler, navHandler, distance, time) {
+  const navBox = document.querySelector('.nav-box');
   const button = document.querySelector('.center-btn');
   button.style.display = 'none';
-  document.querySelector('#map').style.height = 'calc(100vh - 100px)';
+  document.querySelector('#map').style.height = 'calc(100vh - 150px)';
+
+  document.querySelector('.nav-distance').innerHTML = displayDistance(distance);
+  document.querySelector('.nav-time').innerHTML = displayTime(time);
+  document.querySelector('.nav-arrival').innerHTML = displayArrival(time);
 
   const buttonNav = document.querySelector('.nav-btn');
 
@@ -208,7 +213,7 @@ export function showNavigationBox(oldHandler, navHandler) {
 }
 
 export function hideNavigationBox() {
-  const navBox = document.querySelector('.navigation-box');
+  const navBox = document.querySelector('.nav-box');
   document.querySelector('#map').style.height = '100vh';
-  navBox.style.transform = 'translateY(150px)';
+  navBox.style.transform = 'translateY(200px)';
 }

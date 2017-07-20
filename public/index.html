@@ -12,8 +12,10 @@
 
 <body>
   <div class="menu">
-    <h1 class="menu-title" data-l10n-id="routes-choose"></h1>
-    <div class="menu-btn-close"></div>
+    <div class="menu-top">
+      <h1 class="menu-title" data-l10n-id="routes-choose"></h1>
+      <div class="menu-btn-close"></div>
+    </div>
     <div class="routelists">
       <div class="routelist-top">
         <div class="routelist-all routelist-item--active" data-l10n-id="routes-all"></div>
@@ -26,8 +28,22 @@
   </div>
   <div class="menu-btn-open"></div>
   <div id='map'></div>
-  <div class="navigation-box">
-    <button class="nav-btn"><img alt="marker icon" class="nav-white"></button>
+  <div class="nav-box">
+    <ul class="nav-list">
+      <li>
+        <div>Travel time</div>
+        <div class="nav-time"></div>
+      </li>
+      <li>
+        <div>Distance</div>
+        <div class="nav-distance"></div>
+      </li>
+      <li>
+        <div>Arrival time</div>
+        <div class="nav-arrival"></div>
+      </li>
+      </dl>
+      <button class="nav-btn"><img alt="marker icon" class="nav-white"></button>
   </div>
   <button class="center-btn"><img class="marker-white" alt="marker icon"></button>
 </body>

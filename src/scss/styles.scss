@@ -17,6 +17,7 @@ body {
   padding: 0;
   display: flex;
   font-family: 'Circular Std Black';
+  overflow: hidden;
 }
 
 .mapboxgl-ctrl-top-right {
@@ -281,7 +282,7 @@ body {
 
 .nav-btn {
   position: absolute;
-  bottom: 75px;
+  bottom: 125px;
   right: 2em;
   background: $secondary_color;
   border: none;
@@ -300,12 +301,38 @@ body {
   }
 }
 
-.navigation-box {
-  transform: translateY(150px);
+.nav-list {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 2em;
+  margin-right: 2em;
+
+  li {
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-between;
+
+    div:nth-child(2) {
+      color: $white;
+      padding-right: 3em;
+    }
+  }
+
+  li:not(:first-child) {
+    border-top: 1px solid $white;
+  }
+
+  div {
+    display: inline-block;
+  }
+}
+
+.nav-box {
+  transform: translateY(200px);
   position: absolute;
   bottom: 0;
   right: 0;
-  height: 100px;
+  height: 150px;
   width: 70vw;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   background-color: $primary_color;
@@ -317,12 +344,25 @@ body {
   white-space: nowrap;
 }
 
+.mapboxgl-ctrl-attrib.mapboxgl-compact {
+  margin: 0;
+
+  a {
+    display: none;
+  }
+}
+
 @media (max-width: 800px) {
   .menu {
     width: calc(66vw - 4em);
     position: absolute;
     transform: translateX(calc(-66vw - 4em));
     transition: transform ease-in-out 0.5s;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+
+    .menu-top {
+      margin: 1em 0;
+    }
 
     .menu-btn-close {
       display: block;
@@ -347,7 +387,7 @@ body {
     }
   }
 
-  .navigation-box {
+  .nav-box {
     width: 100vw;
   }
 }
