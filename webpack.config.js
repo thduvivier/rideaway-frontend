@@ -45,8 +45,9 @@ module.exports = {
       {
         test: /\.(jpg|png|svg|woff)$/,
         loader: 'file-loader',
+        // don't use [hash] because of seperation
         options: {
-          name: 'static/[name].[hash].[ext]'
+          name: 'static/[name].[ext]'
         }
       }
     ]
