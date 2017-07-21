@@ -260,6 +260,7 @@ function updatePosition(position) {
     ).style.display =
       'none';
     document.querySelector('.center-btn--icon').style.display = 'block';
+    document.querySelector('.center-btn').disabled = false;
   }
   places.userPosition = position;
 }
