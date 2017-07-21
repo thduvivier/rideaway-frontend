@@ -4,3 +4,6 @@ routes-none = Geen
 origin-input.placeholder = Startpunt
 destination-input.placeholder = Eindpunt
 suggestion-location = Mijn locatie
+nav-time = Reistijd
+nav-distance = Afstand
+nav-arrival = Aankomst
