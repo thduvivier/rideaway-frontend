@@ -230,4 +230,5 @@ export function hideNavigationBox() {
   const navBox = document.querySelector('.nav-box');
   document.querySelector('#map').style.height = '100vh';
   navBox.style.transform = 'translateY(200px)';
+  document.querySelector('.center-btn').style.display = 'block';
 }

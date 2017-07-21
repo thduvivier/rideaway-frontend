@@ -17,7 +17,7 @@ import {
 import { toggleLayer, clearRoutes } from './modules/mapManipulations';
 import './scss/styles.scss';
 
-document.querySelector('.marker-white').src = icons.Center;
+document.querySelector('.center-btn--icon').src = icons.Center;
 document.querySelector('.nav-white').src = icons.NavWhite;
 
 mapboxgl.accessToken = '';
@@ -178,6 +178,20 @@ function calculateRoute(origin, destination, profile) {
     }
 
     if (profile === 'brussels') {
+      const oldHandler = handlers.nav;
+
+      handlers.nav = () => {
+        const { origin, destination } = places;
+        const originS = [origin[1], origin[0]];
+        const destinationS = [destination[1], destination[0]];
+
+        location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
+      };
+
+      const lastFeature = json.route.features[json.route.features.length - 1];
+      const { properties: { distance, time } } = lastFeature;
+      showNavigationBox(oldHandler, handlers.nav, distance, time);
+
       // sets the bounding box correctly
       let bbox = [];
       if (origin[0] > destination[0] && origin[1] > destination[1]) {
@@ -193,20 +207,6 @@ function calculateRoute(origin, destination, profile) {
       map.fitBounds(bbox, {
         padding: 150
       });
-
-      const oldHandler = handlers.nav;
-
-      handlers.nav = () => {
-        const { origin, destination } = places;
-        const originS = [origin[1], origin[0]];
-        const destinationS = [destination[1], destination[0]];
-
-        location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
-      };
-
-      const lastFeature = json.route.features[json.route.features.length - 1];
-      const { properties: { distance, time } } = lastFeature;
-      showNavigationBox(oldHandler, handlers.nav, distance, time);
     }
   });
 }
@@ -253,6 +253,14 @@ function setPoint(result) {
 }
 
 function updatePosition(position) {
+  // hide loader icon and show center button
+  if (!places.userPosition) {
+    document.querySelector(
+      '.center-btn .sk-spinner.sk-spinner-pulse'
+    ).style.display =
+      'none';
+    document.querySelector('.center-btn--icon').style.display = 'block';
+  }
   places.userPosition = position;
 }
 
