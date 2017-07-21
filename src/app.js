@@ -101,6 +101,8 @@ function addAllRoutes(geojson) {
       }
     }
   });
+
+  document.querySelector('.main-loading').style.display = 'none';
 }
 
 /*

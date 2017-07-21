@@ -3,6 +3,7 @@
 @import '../../node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 @import './colors';
+@import './double-bounce';
 @import './pulse';
 
 @font-face {
@@ -19,6 +20,17 @@ body {
   display: flex;
   font-family: 'Circular Std Black';
   overflow: hidden;
+}
+
+.main-loading {
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  z-index: 99;
+  background: $primary_color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mapboxgl-ctrl-top-right {
