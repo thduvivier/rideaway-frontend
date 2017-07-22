@@ -26,3 +26,9 @@ export const colors = {
   secondary: '#385188',
   white: '#fff'
 };
+
+export const urls = {
+  mapStyle: 'https://openmaptiles.github.io/positron-gl-style/style-cdn.json',
+  network: 'https://cyclenetworks.osm.be/brumob/data/network.geojson',
+  route: 'https://cyclerouting-api.osm.be'
+};
