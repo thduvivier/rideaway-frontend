@@ -13,7 +13,8 @@ let map;
 function collapseMenu() {
   if (window.innerWidth <= 800) {
     const menu = document.querySelector('.menu');
-    menu.style.transform = `translateX(-${menu.offsetWidth}px)`;
+    document.querySelector('.dimmed').style.display = 'none';
+    menu.style.transform = `translateX(-${menu.offsetWidth + 6}px)`;
   }
 }
 
@@ -132,6 +133,7 @@ function configureMobileMenu() {
   // mobile menu
   document.querySelector('.menu-btn-open').addEventListener('click', () => {
     document.querySelector('.menu').style.transform = 'translateX(0)';
+    document.querySelector('.dimmed').style.display = 'block';
   });
 
   document.querySelector('.menu-btn-close').addEventListener('click', () => {
