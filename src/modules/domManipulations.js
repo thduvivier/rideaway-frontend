@@ -103,7 +103,7 @@ function showMyLocationSuggestion(input, setPlace) {
   // don't show my location if the one of the inputs is already showing it
   // disgusting if statements, because of the translations this is pretty hard
   // tbh you need a new geocoder component, hooking into the mapbox one sucks,
-  // maybe try forking the mapbox one
+  // maybe try forking the mapbox one to add a my location functionality
   /*if (input.getAttribute('data-l10n-id').replace('-input', '') === 'origin') {
     if (
       inputs[1].value !== '' &&
@@ -183,7 +183,7 @@ export function addFilters(features) {
   let routes = [];
   features.forEach(feat => {
     routes.push({
-      name: feat.properties.icr,
+      name: feat.properties.ref,
       color: feat.properties.colour
     });
   });
@@ -193,7 +193,12 @@ export function addFilters(features) {
     return a.name.localeCompare(b.name, undefined, { numeric: true });
   });
   routesSorted.forEach(route => {
+    // ignore this unfinished route
     if (route.name === 'G/C') {
+      return;
+    }
+    // don't add filter buttons for a or b routes
+    if (route.name.includes('a') || route.name.includes('b')) {
       return;
     }
     const menu = document.querySelector(
