@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/oSoc17/rideaway-frontend.svg?branch=master)](https://travis-ci.org/oSoc17/rideaway-frontend)
-![Dependencies](https://david-dm.org/oSoc17/rideaway-frontend.svg)
+[![Dependencies](https://david-dm.org/oSoc17/rideaway-frontend.svg)](https://david-dm.org/oSoc17/rideaway-frontend)
 [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey.svg)](https://opensource.org/licenses/MIT)
 
 # Rideaway Frontend
