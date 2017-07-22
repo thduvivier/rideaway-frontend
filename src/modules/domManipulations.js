@@ -77,17 +77,20 @@ function showCloseButton(geocoder) {
 }
 
 function showMyLocationSuggestion(input, setPlace) {
+  if (!window.userLocated) {
+    return;
+  }
+
   const suggestions = input.parentElement.querySelector('.suggestions');
   const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
 
   // if the option doesn't exist, add it
   const myLoc = input.parentElement.querySelector('.mylocation');
 
-  // need to access the link for the translation
-  const a = document.createElement('a');
-
   if (!myLoc) {
     const el = document.createElement('li');
+    // need to access the link for the translation
+    const a = document.createElement('a');
     el.className = 'mylocation active';
     a.setAttribute('data-l10n-id', 'suggestion-location');
     a.addEventListener('mousedown', e => {

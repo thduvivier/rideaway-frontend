@@ -259,6 +259,7 @@ function setPoint(result) {
 function updatePosition(position) {
   // hide loader icon and show center button
   if (!places.userPosition) {
+    window.userLocated = true;
     document.querySelector(
       '.center-btn .sk-spinner.sk-spinner-pulse'
     ).style.display =
