@@ -3,8 +3,14 @@
 * @param route String
 */
 export function filterRoute(map, route) {
-  map.setFilter('GFR_routes', ['==', 'icr', route]);
-  map.setFilter('GFR_symbols', ['==', 'icr', route]);
+  const filter = [
+    'any',
+    ['==', 'ref', route],
+    ['==', 'ref', route + 'a'],
+    ['==', 'ref', route + 'b']
+  ];
+  map.setFilter('GFR_routes', filter);
+  map.setFilter('GFR_symbols', filter);
   map.setLayoutProperty('GFR_routes', 'visibility', 'visible');
   map.setLayoutProperty('GFR_symbols', 'visibility', 'visible');
 }
@@ -31,7 +37,7 @@ export function clearRoutes(map, marker) {
     map.removeLayer('shortest');
     map.removeSource('shortest');
   }
-  marker.remove();
+  marker && marker.remove();
 }
 
 export function toggleLayer(map, id, showLayer) {

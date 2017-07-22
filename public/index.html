@@ -7,10 +7,18 @@
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
   <meta name="defaultLanguage" content="en-US">
   <meta name="availableLanguages" content="nl, en-US, fr">
+  <meta name="theme-color" content="#fbba00" />
   <link rel="localization" href="./locales/rideaway.{locale}.ftl">
 </head>
 
 <body>
+  <div class="main-loading">
+    <div class="sk-double-bounce">
+      <div class="sk-child sk-double-bounce1"></div>
+      <div class="sk-child sk-double-bounce2"></div>
+    </div>
+  </div>
+  <div class="dimmed"></div>
   <div class="menu">
     <div class="menu-top">
       <h1 class="menu-title" data-l10n-id="routes-choose"></h1>
@@ -31,21 +39,20 @@
   <div class="nav-box">
     <ul class="nav-list">
       <li>
-        <div>Travel time</div>
+        <div data-l10n-id="nav-time"></div>
         <div class="nav-time"></div>
       </li>
       <li>
-        <div>Distance</div>
+        <div data-l10n-id="nav-distance"></div>
         <div class="nav-distance"></div>
       </li>
       <li>
-        <div>Arrival time</div>
+        <div data-l10n-id="nav-arrival"></div>
         <div class="nav-arrival"></div>
       </li>
-      </dl>
-      <button class="nav-btn"><img alt="marker icon" class="nav-white"></button>
+      <button class="nav-btn"><img alt="marker white" class="nav-white"></button>
   </div>
-  <button class="center-btn"><img class="marker-white" alt="marker icon"></button>
+  <button class="center-btn" disabled><div class="sk-spinner sk-spinner-pulse"></div><img class="center-btn--icon" alt="marker icon"></button>
 </body>
 
 </html>

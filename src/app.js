@@ -5,6 +5,7 @@ import _ from 'lodash';
 import 'l20n';
 
 import icons from './icons';
+import { urls } from './constants';
 
 import { getElementByClassName } from './modules/lib';
 import { startTracking } from './modules/geolocation';
@@ -15,15 +16,16 @@ import {
   hideNavigationBox
 } from './modules/domManipulations';
 import { toggleLayer, clearRoutes } from './modules/mapManipulations';
+
 import './scss/styles.scss';
 
-document.querySelector('.marker-white').src = icons.Center;
+document.querySelector('.center-btn--icon').src = icons.Center;
 document.querySelector('.nav-white').src = icons.NavWhite;
 
 mapboxgl.accessToken = '';
 const map = new mapboxgl.Map({
   container: 'map', // container id
-  style: 'https://openmaptiles.github.io/positron-gl-style/style-cdn.json', //stylesheet location
+  style: urls.mapStyle, //stylesheet location
   center: [4.355975, 50.860633], // starting position
   zoom: 11, // starting zoom
   attributionControl: false
@@ -101,6 +103,8 @@ function addAllRoutes(geojson) {
       }
     }
   });
+
+  document.querySelector('.main-loading').style.display = 'none';
 }
 
 /*
@@ -144,7 +148,7 @@ function calculateRoute(origin, destination, profile) {
   // swap around values for the API
   const originS = [origin[1], origin[0]];
   const destinationS = [destination[1], destination[0]];
-  const url = `https://cyclerouting-api.osm.be/route?loc1=${originS}&loc2=${destinationS}&profile=${profile}`;
+  const url = `${urls.route}/route?loc1=${originS}&loc2=${destinationS}&profile=${profile}`;
   fetchJSON(url).then(json => {
     // check if profile already exists
     const calculatedRoute = map.getSource(profile);
@@ -178,6 +182,20 @@ function calculateRoute(origin, destination, profile) {
     }
 
     if (profile === 'brussels') {
+      const oldHandler = handlers.nav;
+
+      handlers.nav = () => {
+        const { origin, destination } = places;
+        const originS = [origin[1], origin[0]];
+        const destinationS = [destination[1], destination[0]];
+
+        location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
+      };
+
+      const lastFeature = json.route.features[json.route.features.length - 1];
+      const { properties: { distance, time } } = lastFeature;
+      showNavigationBox(oldHandler, handlers.nav, distance, time);
+
       // sets the bounding box correctly
       let bbox = [];
       if (origin[0] > destination[0] && origin[1] > destination[1]) {
@@ -193,20 +211,6 @@ function calculateRoute(origin, destination, profile) {
       map.fitBounds(bbox, {
         padding: 150
       });
-
-      const oldHandler = handlers.nav;
-
-      handlers.nav = () => {
-        const { origin, destination } = places;
-        const originS = [origin[1], origin[0]];
-        const destinationS = [destination[1], destination[0]];
-
-        location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
-      };
-
-      const lastFeature = json.route.features[json.route.features.length - 1];
-      const { properties: { distance, time } } = lastFeature;
-      showNavigationBox(oldHandler, handlers.nav, distance, time);
     }
   });
 }
@@ -253,6 +257,16 @@ function setPoint(result) {
 }
 
 function updatePosition(position) {
+  // hide loader icon and show center button
+  if (!places.userPosition) {
+    window.userLocated = true;
+    document.querySelector(
+      '.center-btn .sk-spinner.sk-spinner-pulse'
+    ).style.display =
+      'none';
+    document.querySelector('.center-btn--icon').style.display = 'block';
+    document.querySelector('.center-btn').disabled = false;
+  }
   places.userPosition = position;
 }
 
@@ -270,9 +284,7 @@ map.on('load', function() {
   startTracking(map, updatePosition);
 
   // show all the routes on the map
-  fetchJSON('https://cyclerouting-api.osm.be/routes/GFR.json').then(json =>
-    addAllRoutes(json)
-  );
+  fetchJSON(urls.network).then(json => addAllRoutes(json));
 
   // create geocoders and add to map
   const geocoder = createGeocoder('origin');

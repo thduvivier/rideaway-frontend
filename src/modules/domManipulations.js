@@ -13,7 +13,8 @@ let map;
 function collapseMenu() {
   if (window.innerWidth <= 800) {
     const menu = document.querySelector('.menu');
-    menu.style.transform = `translateX(-${menu.offsetWidth}px)`;
+    document.querySelector('.dimmed').style.display = 'none';
+    menu.style.transform = `translateX(-${menu.offsetWidth + 6}px)`;
   }
 }
 
@@ -65,23 +66,38 @@ function configureListItem(route) {
   return el;
 }
 
+function showCloseButton(geocoder) {
+  if (geocoder === 'origin') {
+    document.querySelector(
+      'div:nth-of-type(1) .geocoder-icon.geocoder-icon-close'
+    ).style.display =
+      'block';
+  } else {
+  }
+}
+
 function showMyLocationSuggestion(input, setPlace) {
+  if (!window.userLocated) {
+    return;
+  }
+
   const suggestions = input.parentElement.querySelector('.suggestions');
   const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
 
   // if the option doesn't exist, add it
   const myLoc = input.parentElement.querySelector('.mylocation');
 
-  // need to access the link for the translation
-  const a = document.createElement('a');
-
   if (!myLoc) {
     const el = document.createElement('li');
+    // need to access the link for the translation
+    const a = document.createElement('a');
     el.className = 'mylocation active';
     a.setAttribute('data-l10n-id', 'suggestion-location');
     a.addEventListener('mousedown', e => {
       input.value = a.innerHTML;
-      setPlace(input.getAttribute('data-l10n-id').replace('-input', ''));
+      const place = input.getAttribute('data-l10n-id').replace('-input', '');
+      showCloseButton(place);
+      setPlace(place);
     });
     el.appendChild(a);
     suggestions.appendChild(el);
@@ -90,7 +106,7 @@ function showMyLocationSuggestion(input, setPlace) {
   // don't show my location if the one of the inputs is already showing it
   // disgusting if statements, because of the translations this is pretty hard
   // tbh you need a new geocoder component, hooking into the mapbox one sucks,
-  // maybe try forking the mapbox one
+  // maybe try forking the mapbox one to add a my location functionality
   /*if (input.getAttribute('data-l10n-id').replace('-input', '') === 'origin') {
     if (
       inputs[1].value !== '' &&
@@ -120,6 +136,7 @@ function configureMobileMenu() {
   // mobile menu
   document.querySelector('.menu-btn-open').addEventListener('click', () => {
     document.querySelector('.menu').style.transform = 'translateX(0)';
+    document.querySelector('.dimmed').style.display = 'block';
   });
 
   document.querySelector('.menu-btn-close').addEventListener('click', () => {
@@ -144,8 +161,10 @@ function configureInputs(setPlace) {
       ) {
         input.value = 'My location';
         if (place === 'origin') {
+          showCloseButton('origin');
           hideMyLocationSuggestion(inputs[1]);
         } else {
+          showCloseButton('destination');
           hideMyLocationSuggestion(inputs[0]);
         }
         setPlace(place);
@@ -167,7 +186,7 @@ export function addFilters(features) {
   let routes = [];
   features.forEach(feat => {
     routes.push({
-      name: feat.properties.icr,
+      name: feat.properties.ref,
       color: feat.properties.colour
     });
   });
@@ -177,7 +196,12 @@ export function addFilters(features) {
     return a.name.localeCompare(b.name, undefined, { numeric: true });
   });
   routesSorted.forEach(route => {
+    // ignore this unfinished route
     if (route.name === 'G/C') {
+      return;
+    }
+    // don't add filter buttons for a or b routes
+    if (route.name.includes('a') || route.name.includes('b')) {
       return;
     }
     const menu = document.querySelector(
@@ -216,4 +240,5 @@ export function hideNavigationBox() {
   const navBox = document.querySelector('.nav-box');
   document.querySelector('#map').style.height = '100vh';
   navBox.style.transform = 'translateY(200px)';
+  document.querySelector('.center-btn').style.display = 'block';
 }

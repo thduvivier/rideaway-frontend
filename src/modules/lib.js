@@ -37,5 +37,5 @@ export function displayArrival(s) {
   var h = arrival.getHours();
   var m = arrival.getMinutes();
 
-  return `${h}:${m}`;
+  return `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
 }
