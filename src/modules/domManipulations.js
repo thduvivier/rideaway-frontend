@@ -1,4 +1,4 @@
-import { routeConfig, colors } from '../constants';
+import { routeConfig, colors, center } from '../constants';
 import {
   clearRoutes,
   filterRoute,
@@ -62,6 +62,15 @@ function configureListItem(route) {
     el.className += ' routelist-item--active';
     filterRoute(map, route.name);
     collapseMenu();
+
+    // only recenter the map if the route isn't calculated
+    if (map.getSource('brussels')) {
+      const visible = map.getLayoutProperty('brussels', 'visibility');
+      if (!visible || visible === 'visible') {
+        return;
+      }
+    }
+    map.flyTo({ center: center.latlng, zoom: [center.zoom] });
   });
   return el;
 }
