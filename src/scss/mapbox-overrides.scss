@@ -21,6 +21,7 @@
   border-radius: 30px;
   box-shadow: none;
   font-family: 'Circular Std Black';
+  min-width: 0;
 
   .geocoder-pin-right * {
     z-index: auto;
