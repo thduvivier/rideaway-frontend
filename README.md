@@ -4,7 +4,7 @@
 
 # Rideaway Frontend
 
-Install and run the dev version:
+Install and run the dev version, server available at `localhost:3000`:
 ```sh
 $ npm install
 $ npm run dev
