@@ -32,3 +32,5 @@ export const urls = {
   network: 'https://cyclenetworks.osm.be/brumob/data/network.geojson',
   route: 'https://cyclerouting-api.osm.be'
 };
+
+export const center = { latlng: [4.355975, 50.860633], zoom: 11 };
