@@ -52,12 +52,11 @@ body {
 .menu-btn-open {
   z-index: 1;
   cursor: pointer;
-  position: absolute;
   display: none;
-  top: 0;
-  left: 20px;
+  vertical-align: middle;
   width: 40px;
-  height: 104px;
+  height: 100%;
+  margin-left: 2em;
   background: url('../icons/hamburger.svg');
   background-position: center;
   background-size: contain;
@@ -72,6 +71,7 @@ body {
   padding: 0 2em;
   overflow: auto;
   box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 
   .menu-btn-close {
     display: none;
@@ -263,7 +263,7 @@ body {
   right: 0;
   height: 150px;
   width: 70vw;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   background-color: $primary_color;
 }
 
@@ -273,7 +273,6 @@ body {
     position: absolute;
     transform: translateX(-85vw);
     transition: transform ease-in-out 0.5s;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
     .menu-top {
       margin: 1em 0;
@@ -285,7 +284,7 @@ body {
   }
 
   .menu-btn-open {
-    display: block;
+    display: inline-block;
   }
 
   #map {

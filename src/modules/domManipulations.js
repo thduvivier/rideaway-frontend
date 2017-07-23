@@ -133,11 +133,16 @@ function hideMyLocationSuggestion(input) {
 }
 
 function configureMobileMenu() {
+  const menuOpen = document.createElement('div');
+  menuOpen.className = 'menu-btn-open';
   // mobile menu
-  document.querySelector('.menu-btn-open').addEventListener('click', () => {
+  menuOpen.addEventListener('click', () => {
     document.querySelector('.menu').style.transform = 'translateX(0)';
     document.querySelector('.dimmed').style.display = 'block';
   });
+  // insert menu button before
+  const control = document.querySelector('.mapboxgl-ctrl-top-right');
+  control.insertBefore(menuOpen, control.childNodes[0]);
 
   document.querySelector('.menu-btn-close').addEventListener('click', () => {
     collapseMenu();
