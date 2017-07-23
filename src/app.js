@@ -5,7 +5,7 @@ import _ from 'lodash';
 import 'l20n';
 
 import icons from './icons';
-import { urls } from './constants';
+import { urls, center } from './constants';
 
 import { getElementByClassName } from './modules/lib';
 import { startTracking } from './modules/geolocation';
@@ -26,8 +26,8 @@ mapboxgl.accessToken = '';
 const map = new mapboxgl.Map({
   container: 'map', // container id
   style: urls.mapStyle, //stylesheet location
-  center: [4.355975, 50.860633], // starting position
-  zoom: 11, // starting zoom
+  center: center.latlng, // starting position
+  zoom: center.zoom, // starting zoom
   attributionControl: false
 });
 
