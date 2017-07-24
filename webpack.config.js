@@ -64,7 +64,8 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: 'public/manifest.json' },
       { from: 'public/locales', to: 'locales' },
-      { from: 'public/nav' }
+      { from: 'public/nav' },
+      { from: 'public/favicons' }
     ]),
     new HtmlWebpackPlugin({
       minify: {
