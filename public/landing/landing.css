@@ -1,0 +1,74 @@
+@font-face {
+  font-family: 'Circular Std Black';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Circular Std Black'),
+    url('./static/CircularStd-Black.woff') format('woff');
+}
+
+body {
+  font-family: 'Circular Std Black';
+  background-color: #fbba00;
+  color: #fff;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  height: 100vh;
+}
+
+.left {
+  display: inline-block;
+  width: 50%;
+  margin-right: 0.5em;
+}
+
+.right {
+  width: calc(50% - 0.5em);
+  float: right;
+}
+
+.title {
+  font-size: 40px;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  margin-top: 5px;
+  font-size: 35px;
+  color: #385188;
+}
+
+.text {
+  line-height: 30px;
+}
+
+.screens {
+  background: url('./assets/phone.png');
+  background-position: center;
+  background-size: cover;
+  padding: 23.5% 23.6% 23.5% 23.3%;
+}
+
+.carousel-item img {
+  width: 100%;
+}
+
+@media (max-width: 950px) {
+  .container {
+    margin: 0 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .container div {
+    width: 100%;
+  }
+}
