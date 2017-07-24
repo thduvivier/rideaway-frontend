@@ -1,17 +1,8 @@
-export function uniq(a) {
-  var prims = { boolean: {}, number: {}, string: {} },
-    objs = [];
-
-  return a.filter(function(item) {
-    var type = typeof item;
-    if (type in prims)
-      return prims[type].hasOwnProperty(item)
-        ? false
-        : (prims[type][item] = true);
-    else return objs.indexOf(item) >= 0 ? false : objs.push(item);
-  });
-}
-
+/*
+* Displays the distance a string format
+* @param int m - The distance in meters
+* @returns string distance - Formatted distance
+*/
 export function displayDistance(m) {
   if (m < 1000) {
     return `${Math.round(m)} m`;
@@ -19,6 +10,11 @@ export function displayDistance(m) {
   return `${Math.round(m / 100) / 10} km`;
 }
 
+/*
+* Display the time in a string format
+* @param int s - The time in seconds
+* @returns string time - Formatted time
+*/
 export function displayTime(s) {
   if (s < 60) {
     return `1 min`;
@@ -31,6 +27,11 @@ export function displayTime(s) {
   return `${h} h ${m} min`;
 }
 
+/*
+* Display the arrival time formatted in a string
+* @param int s - The time in seconds
+* @returns string arrival - Formatted arrival time
+*/
 export function displayArrival(s) {
   const arrival = new Date(Date.now() + s * 1000);
 
@@ -38,4 +39,31 @@ export function displayArrival(s) {
   var m = arrival.getMinutes();
 
   return `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
+}
+
+/*
+* Gets a paramtername
+* @param string paramterName - Paramter
+* @returns {} param - The param
+*/
+export function findGetParameter(parameterName) {
+  var result = null,
+    tmp = [];
+  location.search.substr(1).split('&').forEach(function(item) {
+    tmp = item.split('=');
+    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+  });
+  return result;
+}
+
+/*
+* Swaps around the values in a 2 value array
+* @param Array[int, int] array - The array to swap
+* @returns Array[int, int] swapped - The swapped array
+*/
+export function swapArrayValues(array) {
+  const array2 = [];
+  array2.push(array[1]);
+  array2.push(array[0]);
+  return array2;
 }
