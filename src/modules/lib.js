@@ -40,3 +40,30 @@ export function displayArrival(s) {
 
   return `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}`;
 }
+
+/*
+* Gets a paramtername
+* @param string paramterName - Paramter
+* @returns {} param - The param
+*/
+export function findGetParameter(parameterName) {
+  var result = null,
+    tmp = [];
+  location.search.substr(1).split('&').forEach(function(item) {
+    tmp = item.split('=');
+    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+  });
+  return result;
+}
+
+/*
+* Swaps around the values in a 2 value array
+* @param Array[int, int] array - The array to swap
+* @returns Array[int, int] swapped - The swapped array
+*/
+export function swapArrayValues(array) {
+  const array2 = [];
+  array2.push(array[1]);
+  array2.push(array[0]);
+  return array2;
+}
