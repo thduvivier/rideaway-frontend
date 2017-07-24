@@ -1,3 +1,4 @@
+// imports
 import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import 'whatwg-fetch';
@@ -7,7 +8,6 @@ import 'l20n';
 import icons from './icons';
 import { urls, center } from './constants';
 
-import { getElementByClassName } from './modules/lib';
 import { startTracking } from './modules/geolocation';
 import {
   addFilters,
@@ -19,9 +19,11 @@ import { toggleLayer, clearRoutes } from './modules/mapManipulations';
 
 import './scss/styles.scss';
 
+// Initial stuff
 document.querySelector('.center-btn--icon').src = icons.Center;
 document.querySelector('.nav-white').src = icons.NavWhite;
 
+// Create a mapbox
 mapboxgl.accessToken = '';
 const map = new mapboxgl.Map({
   container: 'map', // container id
@@ -31,20 +33,22 @@ const map = new mapboxgl.Map({
   attributionControl: false
 });
 
+// Global variables
 let places = {
   origin: null,
   destination: null,
   userPosition: null
 };
 
+// Global handlers
 let handlers = {
   nav: null
 };
 
 /*
 * Fetch a JSON
-* @param {String} url
-* @returns json
+* @param String url - The url to fetch from
+* @returns Object json - The fetched JSON
 */
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
@@ -57,16 +61,19 @@ function fetchJSON(url) {
 
 /*
 * Adds the filters and adds all of the routes to the map
+* @param Object geojson - The geojson routes to add
 */
 function addAllRoutes(geojson) {
+  // Add filters for the routes
   addFilters(geojson.features);
 
+  // Add source
   map.addSource('GFR', {
     type: 'geojson',
     data: geojson
   });
 
-  // actual routes
+  // Add layer
   map.addLayer({
     id: 'GFR_routes',
     type: 'line',
@@ -84,7 +91,7 @@ function addAllRoutes(geojson) {
     }
   });
 
-  // route identifiers
+  // Add layer with route symbols
   map.addLayer({
     id: 'GFR_symbols',
     type: 'symbol',
@@ -104,14 +111,17 @@ function addAllRoutes(geojson) {
     }
   });
 
+  // Remove the loading screen
   document.querySelector('.main-loading').style.display = 'none';
 }
 
 /*
 * Adds a yellow marker to the map
-* @param LatLng Array[Lat, Lng]
+* @param Array[int, int] LatLng - The coords
+* @returns mapboxgl.Marker marker - The marker
 */
 function addMarker(LatLng) {
+  // create Geojson with the coords
   const geojson = {
     type: 'FeatureCollection',
     features: [
@@ -127,12 +137,16 @@ function addMarker(LatLng) {
       }
     ]
   };
+
+  // Configure HTML marker
   const marker = geojson.features[0];
   let el = document.createElement('img');
   el.className = 'marker';
   el.src = icons.LocatorYellow;
   el.style.width = marker.properties.iconSize[0] + 'px';
   el.style.height = marker.properties.iconSize[1] + 'px';
+
+  // Return marker so we can reuse it
   return new mapboxgl.Marker(el, {
     offset: [-marker.properties.iconSize[0] / 2, -marker.properties.iconSize[1]]
   }).setLngLat(marker.geometry.coordinates);
@@ -140,21 +154,25 @@ function addMarker(LatLng) {
 
 /*
 * Calculates a route and shows it on the map
-* @param origin Array[Lat, Lng]
-* @param destination Array[Lat, Lng]
-* @param profile String
+* @param Array[int, int] origin - The LatLng Coords
+* @param Array[int, int] destination - The LagLng Coords
+* @param String profile - The routing profile
 */
 function calculateRoute(origin, destination, profile) {
-  // swap around values for the API
+  // Swap around values for the API
   const originS = [origin[1], origin[0]];
   const destinationS = [destination[1], destination[0]];
+
+  // Construct the url
   const url = `${urls.route}/route?loc1=${originS}&loc2=${destinationS}&profile=${profile}`;
   fetchJSON(url).then(json => {
-    // check if profile already exists
+    // Check if profile already exists
     const calculatedRoute = map.getSource(profile);
     if (calculatedRoute) {
+      // Just set the data
       calculatedRoute.setData(url);
     } else {
+      // Add a new layer
       map.addLayer({
         id: profile,
         type: 'line',
@@ -177,13 +195,17 @@ function calculateRoute(origin, destination, profile) {
         }
       });
     }
+
+    // Move the network layer always on top
     if (profile === 'shortest' && map.getSource('brussels')) {
       map.moveLayer('shortest', 'brussels');
     }
 
+    // If the profile is brussels, initiate the nav stuff
     if (profile === 'brussels') {
       const oldHandler = handlers.nav;
 
+      // Set the new handler
       handlers.nav = () => {
         const { origin, destination } = places;
         const originS = [origin[1], origin[0]];
@@ -194,6 +216,8 @@ function calculateRoute(origin, destination, profile) {
 
       const lastFeature = json.route.features[json.route.features.length - 1];
       const { properties: { distance, time } } = lastFeature;
+
+      // Show the navigation box, change the handler
       showNavigationBox(oldHandler, handlers.nav, distance, time);
 
       // sets the bounding box correctly
@@ -208,6 +232,7 @@ function calculateRoute(origin, destination, profile) {
         bbox = [origin, destination];
       }
 
+      // Fit the map to the route
       map.fitBounds(bbox, {
         padding: 150
       });
@@ -215,19 +240,10 @@ function calculateRoute(origin, destination, profile) {
   });
 }
 
-function organiseRoutes() {
-  toggleLayer(map, 'brussels', 'visible');
-  toggleLayer(map, 'shortest', 'visible');
-}
-
-function handler(origin, destination) {
-  console.log(this);
-}
-
 /*
 * Returns a geocoder object
-* @param placeholder String
-* @returns MapboxGeocoder object
+* @param String placeholder - The placeholder for the geocoder
+* @returns MapboxGeocoder geocoder - The geocoder
 */
 function createGeocoder(placeholder) {
   return new MapboxGeocoder({
@@ -240,6 +256,9 @@ function createGeocoder(placeholder) {
   });
 }
 
+/*
+* Set the data attribute on the geocoders for the translations
+*/
 function configureGeocoders() {
   const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
   inputs.forEach(input => {
@@ -249,13 +268,17 @@ function configureGeocoders() {
 
 /*
 * Converts a result object to coordinates
-* @param result Object{result: {geometry: coordinates: Array[Lat, Lng]}}
-* @returns Array[Lat, Lng]
+* @param Object{result: {geometry: coordinates: Array[Lat, Lng]}} result - The result from the geocoder
+* @returns Array[int, int] LatLng Array - Array with the coords
 */
 function setPoint(result) {
   return result.geometry.coordinates;
 }
 
+/*
+* Updates the position variable and holds some other functions
+* @param Array[int, int] position - The position of the user
+*/
 function updatePosition(position) {
   // hide loader icon and show center button
   if (!places.userPosition) {
@@ -270,32 +293,41 @@ function updatePosition(position) {
   places.userPosition = position;
 }
 
+/*
+* Sets the origin/dest as the userPosition
+* @param string place - Origin/Destination
+*/
 function setPlace(place) {
   places[place] = places.userPosition;
 }
 
-// executes when the map is loading
+// Executes when the map loaded
 map.on('load', function() {
+  // Change the position of the copyright controls
   map.addControl(new mapboxgl.AttributionControl(), 'bottom-left');
+
+  // Initialize the markers
   let markerO = null;
   let markerD = null;
 
-  // start stracking the user
+  // Start stracking the user
   startTracking(map, updatePosition);
 
-  // show all the routes on the map
+  // Show all the routes on the map
   fetchJSON(urls.network).then(json => addAllRoutes(json));
 
-  // create geocoders and add to map
+  // Create geocoders and add to map
   const geocoder = createGeocoder('origin');
   const geocoder2 = createGeocoder('destination');
   map.addControl(geocoder);
   map.addControl(geocoder2);
+  // Configure the geocoders
   configureGeocoders();
 
+  // Configure all the other elements
   configureAllElements(map, setPlace);
 
-  // fire functions on result
+  // Fire functions on result
   geocoder.on('result', ({ result }) => {
     // result event fires twice for some reason, this prevents it
     // from executing our code twice, resulting in errors
@@ -306,7 +338,7 @@ map.on('load', function() {
       markerO = addMarker(places.origin);
       markerO.addTo(map);
 
-      // calculate route if destination is filled in
+      // Calculate route if destination is filled in
       if (places.destination) {
         calculateRoute(places.origin, places.destination, 'shortest');
         calculateRoute(places.origin, places.destination, 'brussels');
@@ -325,12 +357,13 @@ map.on('load', function() {
         calculateRoute(places.origin, places.destination, 'brussels');
       }
 
-      // always hide the layer
+      // Always hide the layer
       toggleLayer(map, 'GFR_routes', 'none');
       toggleLayer(map, 'GFR_symbols', 'none');
       document.querySelector('.routelist-none').click();
     }
   });
+  // Functions fired when the geocoder is cleared
   geocoder.on('clear', () => {
     clearRoutes(map, markerO);
     places.origin = null;
@@ -342,6 +375,7 @@ map.on('load', function() {
     hideNavigationBox();
   });
 
+  // Configure the center button
   document.querySelector('.center-btn').addEventListener('click', () => {
     places.userPosition &&
       map.flyTo({
