@@ -191,27 +191,28 @@ function update(location){
 
     document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';
     if (instruction.properties.type === "leave"){
-        document.getElementById("next-instruction-road-ref").innerHTML = '' + "Verlaat fietsnetwerk";
-        document.getElementById("next-instruction-road-ref").style["width"] = "100vh";
+        document.getElementById("next-instruction-message").innerHTML = '' + "Verlaat het fietsnetwerk";
+        document.getElementById("next-instruction-message").style["display"] = "block"
+        document.getElementById("next-instruction-road-ref").style["display"] = "none";
     }
     else if (instruction.properties.type === "stop"){
-        document.getElementById("next-instruction-road-ref").innerHTML = '' + "Bestemming";
-        document.getElementById("next-instruction-road-ref").style["width"] = "100vh";
+        document.getElementById("next-instruction-message").innerHTML = '' + "Bestemming";
+        
     }
     else {
+        document.getElementById("next-instruction-message").style["display"] = "none"
+        document.getElementById("next-instruction-road-ref").style["display"] = "";
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
     }
 
     if (instruction.properties.type === "enter"){
-        document.getElementById("current-road-ref").innerHTML = '' + "Navigeer naar het fietsnetwerk";
-        document.getElementById("current-road-ref").style["width"] = "100vh";
+        document.getElementById("current-road-ref").style["display"] = "none";
+        document.getElementById("current-road-message").style["display"] = "block";
     }
     else {
-        document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.ref;
-        document.getElementById("current-road-ref").style["width"] = "50px";
+        document.getElementById("current-road-ref").style["display"] = "";
+        document.getElementById("current-road-message").style["display"] = "none";
     }
-
-    document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.ref;
 
     if (instruction.properties.colour)  {
         document.getElementById("current-road").style["background-color"] = instruction.properties.colour;
