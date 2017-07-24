@@ -65,7 +65,8 @@ module.exports = {
       { from: 'public/manifest.json' },
       { from: 'public/locales', to: 'locales' },
       { from: 'public/nav' },
-      { from: 'public/favicons' }
+      { from: 'public/favicons' },
+      { from: 'public/landing' }
     ]),
     new HtmlWebpackPlugin({
       minify: {
