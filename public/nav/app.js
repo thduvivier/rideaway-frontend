@@ -190,18 +190,25 @@ function update(location){
 
 
     document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';
-    if (instruction.properties.type === "stop"){
+    if (instruction.properties.type === "leave"){
+        document.getElementById("next-instruction-road-ref").innerHTML = '' + "Verlaat fietsnetwerk";
+        document.getElementById("next-instruction-road-ref").style["width"] = "100vh";
+    }
+    else if (instruction.properties.type === "stop"){
         document.getElementById("next-instruction-road-ref").innerHTML = '' + "Bestemming";
-        document.getElementById("next-instruction-road-ref").style["width"] = "250px";
+        document.getElementById("next-instruction-road-ref").style["width"] = "100vh";
     }
     else {
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
     }
-    if (instruction.properties.type === "start"){
-        document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.instruction;
+
+    if (instruction.properties.type === "enter"){
+        document.getElementById("current-road-ref").innerHTML = '' + "Navigeer naar het fietsnetwerk";
+        document.getElementById("current-road-ref").style["width"] = "100vh";
     }
     else {
         document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.ref;
+        document.getElementById("current-road-ref").style["width"] = "50px";
     }
 
     document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.ref;
