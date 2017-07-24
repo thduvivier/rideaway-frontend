@@ -7,3 +7,6 @@ suggestion-location = Mijn locatie
 nav-time = Reistijd
 nav-distance = Afstand
 nav-arrival = Aankomst
+instr-enter = Navigeer naar het fietsnetwerk
+instr-leave = Verlaat het fietsnetwerk
+instr-destination = Bestemming

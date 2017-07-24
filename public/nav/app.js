@@ -191,16 +191,15 @@ function update(location){
 
     document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';
     if (instruction.properties.type === "leave"){
-        document.getElementById("next-instruction-message").innerHTML = '' + "Verlaat het fietsnetwerk";
-        document.getElementById("next-instruction-message").style["display"] = "block"
+        document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-leave");
+        document.getElementById("next-instruction-message").style["display"] = "block";
         document.getElementById("next-instruction-road-ref").style["display"] = "none";
     }
     else if (instruction.properties.type === "stop"){
-        document.getElementById("next-instruction-message").innerHTML = '' + "Bestemming";
-        
+        document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-destination");        
     }
     else {
-        document.getElementById("next-instruction-message").style["display"] = "none"
+        document.getElementById("next-instruction-message").style["display"] = "none";
         document.getElementById("next-instruction-road-ref").style["display"] = "";
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
     }
