@@ -37,10 +37,10 @@ const loc1 = findGetParameter('loc1');
 const loc2 = findGetParameter('loc2');
 if (loc1 && loc2) {
   places.origin = swapArrayValues(
-    loc1.split(',').map(coord => parseInt(coord))
+    loc1.split(',').map(coord => parseFloat(coord))
   );
   places.destination = swapArrayValues(
-    loc2.split(',').map(coord => parseInt(coord))
+    loc2.split(',').map(coord => parseFloat(coord))
   );
 }
 
