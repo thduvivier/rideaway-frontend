@@ -15,23 +15,10 @@ import {
   showNavigationBox,
   hideNavigationBox
 } from './modules/domManipulations';
+import { findGetParameter, swapArrayValues } from './modules/lib';
 import { toggleLayer, clearRoutes } from './modules/mapManipulations';
 
 import './scss/styles.scss';
-
-// Initial stuff
-document.querySelector('.center-btn--icon').src = icons.Center;
-document.querySelector('.nav-white').src = icons.NavWhite;
-
-// Create a mapbox
-mapboxgl.accessToken = '';
-const map = new mapboxgl.Map({
-  container: 'map', // container id
-  style: urls.mapStyle, //stylesheet location
-  center: center.latlng, // starting position
-  zoom: center.zoom, // starting zoom
-  attributionControl: false
-});
 
 // Global variables
 let places = {
@@ -44,6 +31,31 @@ let places = {
 let handlers = {
   nav: null
 };
+
+// Set origin and destination from url params
+const loc1 = findGetParameter('loc1');
+const loc2 = findGetParameter('loc2');
+if (loc1 && loc2) {
+  places.origin = swapArrayValues(
+    loc1.split(',').map(coord => parseInt(coord))
+  );
+  places.destination = swapArrayValues(
+    loc2.split(',').map(coord => parseInt(coord))
+  );
+}
+
+document.querySelector('.center-btn--icon').src = icons.Center;
+document.querySelector('.nav-white').src = icons.NavWhite;
+
+// Create a mapbox
+mapboxgl.accessToken = '';
+const map = new mapboxgl.Map({
+  container: 'map', // container id
+  style: urls.mapStyle, //stylesheet location
+  center: center.latlng, // starting position
+  zoom: center.zoom, // starting zoom
+  attributionControl: false
+});
 
 /*
 * Fetch a JSON
@@ -160,8 +172,8 @@ function addMarker(LatLng) {
 */
 function calculateRoute(origin, destination, profile) {
   // Swap around values for the API
-  const originS = [origin[1], origin[0]];
-  const destinationS = [destination[1], destination[0]];
+  const originS = swapArrayValues(origin);
+  const destinationS = swapArrayValues(destination);
 
   // Construct the url
   const url = `${urls.route}/route?loc1=${originS}&loc2=${destinationS}&profile=${profile}`;
@@ -216,6 +228,11 @@ function calculateRoute(origin, destination, profile) {
 
       const lastFeature = json.route.features[json.route.features.length - 1];
       const { properties: { distance, time } } = lastFeature;
+
+      // Always hide the layers
+      toggleLayer(map, 'GFR_routes', 'none');
+      toggleLayer(map, 'GFR_symbols', 'none');
+      document.querySelector('.routelist-none').click();
 
       // Show the navigation box, change the handler
       showNavigationBox(oldHandler, handlers.nav, distance, time);
@@ -316,6 +333,13 @@ map.on('load', function() {
   // Show all the routes on the map
   fetchJSON(urls.network).then(json => addAllRoutes(json));
 
+  // If the origin & destination were passed, calculate a route
+  if (places.origin && places.destination) {
+    const { origin, destination } = places;
+    calculateRoute(origin, destination, 'shortest');
+    calculateRoute(origin, destination, 'brussels');
+  }
+
   // Create geocoders and add to map
   const geocoder = createGeocoder('origin');
   const geocoder2 = createGeocoder('destination');
@@ -356,11 +380,6 @@ map.on('load', function() {
         calculateRoute(places.origin, places.destination, 'shortest');
         calculateRoute(places.origin, places.destination, 'brussels');
       }
-
-      // Always hide the layer
-      toggleLayer(map, 'GFR_routes', 'none');
-      toggleLayer(map, 'GFR_symbols', 'none');
-      document.querySelector('.routelist-none').click();
     }
   });
   // Functions fired when the geocoder is cleared
