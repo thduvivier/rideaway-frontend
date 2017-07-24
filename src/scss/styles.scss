@@ -3,6 +3,10 @@
 @import '../../node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 @import './colors';
+@import './mapbox-overrides';
+@import './animations/double-bounce';
+@import './animations/pulse';
+@import './animations/pulse2';
 
 @font-face {
   font-family: 'Circular Std Black';
@@ -20,61 +24,24 @@ body {
   overflow: hidden;
 }
 
-.mapboxgl-ctrl-top-right {
-  width: 100%;
+.main-loading {
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  z-index: 99;
+  background: $primary_color;
   display: flex;
+  align-items: center;
   justify-content: center;
 }
 
-.mapboxgl-ctrl-geocoder {
-  border-radius: 30px;
-  border: 1px solid $primary_color;
-  box-shadow: none;
-  font-family: 'Circular Std Black';
-
-  .suggestions {
-    padding: 10px;
-    margin: 11px 10%;
-    width: 80%;
-    border-radius: 10px;
-    box-shadow: none;
-    border: 1px solid $primary_color;
-    overflow: visible;
-
-    &:after,
-    &:before {
-      bottom: 100%;
-      border: solid transparent;
-      content: "";
-      height: 0;
-      width: 0;
-      position: absolute;
-    }
-
-    &:after {
-      border-color: rgba(0, 0, 0, 0);
-      border-bottom-color: $white;
-      border-width: 10px;
-      left: 50%;
-      margin-left: -10px;
-    }
-
-    &:before {
-      border-color: rgba(161, 103, 45, 0);
-      border-bottom-color: $primary-color;
-      border-width: 11px;
-      left: 50%;
-      margin-left: -11px;
-    }
-
-    li.active a {
-      color: $secondary_color;
-    }
-  }
-
-  input {
-    font-family: 'Circular Std Black';
-  }
+.dimmed {
+  z-index: 2;
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 #map {
@@ -85,12 +52,11 @@ body {
 .menu-btn-open {
   z-index: 1;
   cursor: pointer;
-  position: absolute;
   display: none;
-  top: 0;
-  left: 20px;
+  vertical-align: middle;
   width: 40px;
-  height: 104px;
+  height: 100%;
+  margin-left: 2em;
   background: url('../icons/hamburger.svg');
   background-position: center;
   background-size: contain;
@@ -104,6 +70,8 @@ body {
   background: $primary_color;
   padding: 0 2em;
   overflow: auto;
+  box-sizing: border-box;
+  box-shadow: $material_shadow;
 
   .menu-btn-close {
     display: none;
@@ -132,13 +100,12 @@ body {
 }
 
 .routelist {
-  display: flex;
-  align-content: center;
-  flex-flow: row wrap;
-  justify-content: space-around;
   padding: 0;
   list-style: none;
   color: $white;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
 }
 
 .routelist-top {
@@ -170,11 +137,6 @@ body {
   font-size: 17px;
 }
 
-.flex-filler {
-  height: 0;
-  flex: 1 0 0;
-}
-
 .routelist-item--active {
   border: solid 3px $white !important;
   border-radius: 10px;
@@ -184,6 +146,10 @@ body {
   width: 3em;
   height: 3em;
   border-radius: 5px;
+
+  span {
+    line-height: 51px;
+  }
 }
 
 .routelist-item-transverse {
@@ -199,66 +165,6 @@ body {
   border-radius: 50%;
 }
 
-.mapboxgl-ctrl-geocoder {
-  z-index: auto;
-}
-
-.pulse {
-  width: 10px;
-  height: 10px;
-  border: 5px solid rgba(251, 186, 0, .45);
-  border-radius: 30px;
-  -moz-border-radius: 30px;
-  border-radius: 30px;
-  background-color: #fff;
-  z-index: 10;
-  position: absolute;
-}
-
-.dot {
-  border: 10px solid $primary_color;
-  background: transparent;
-  border-radius: 60px;
-  -moz-border-radius: 60px;
-  border-radius: 60px;
-  height: 50px;
-  width: 50px;
-  animation: pulse 3s ease-out;
-  -moz-animation: pulse 3s ease-out;
-  animation: pulse 3s ease-out;
-  animation-iteration-count: infinite;
-  -moz-animation-iteration-count: infinite;
-  animation-iteration-count: infinite;
-  position: absolute;
-  top: -25px;
-  left: -25px;
-  z-index: 1;
-  opacity: 0;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(0);
-    opacity: 0.0;
-  }
-  25% {
-    transform: scale(0);
-    opacity: 0.1;
-  }
-  50% {
-    transform: scale(0.1);
-    opacity: 0.3;
-  }
-  75% {
-    transform: scale(0.5);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.0;
-  }
-}
-
 .center-btn {
   position: absolute;
   bottom: 2em;
@@ -269,12 +175,14 @@ body {
   width: 50px;
   height: 50px;
   padding: 1em;
+  box-shadow: $material_shadow;
 
   &:focus {
     outline: none;
   }
 
-  img {
+  .center-btn--icon {
+    display: none;
     width: 100%;
     height: 100%;
   }
@@ -301,11 +209,34 @@ body {
   }
 }
 
+.nav-btn {
+  position: absolute;
+  bottom: 125px;
+  right: 2em;
+  background: $secondary_color;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  padding: 1em;
+  box-shadow: $material_shadow;
+
+  &:focus {
+    outline: none;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
 .nav-list {
   list-style: none;
   padding-left: 0;
   margin-left: 2em;
   margin-right: 2em;
+  color: $secondary_color;
 
   li {
     padding: 10px 0;
@@ -334,31 +265,16 @@ body {
   right: 0;
   height: 150px;
   width: 70vw;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  box-shadow: $material_shadow;
   background-color: $primary_color;
-}
-
-.mapboxgl-ctrl-attrib {
-  position: absolute;
-  bottom: 0;
-  white-space: nowrap;
-}
-
-.mapboxgl-ctrl-attrib.mapboxgl-compact {
-  margin: 0;
-
-  a {
-    display: none;
-  }
 }
 
 @media (max-width: 800px) {
   .menu {
-    width: calc(66vw - 4em);
+    width: 80vw;
     position: absolute;
-    transform: translateX(calc(-66vw - 4em));
+    transform: translateX(-85vw);
     transition: transform ease-in-out 0.5s;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 
     .menu-top {
       margin: 1em 0;
@@ -370,21 +286,21 @@ body {
   }
 
   .menu-btn-open {
-    display: block;
+    display: inline-block;
   }
 
   #map {
     width: 100vw;
   }
 
-  .mapboxgl-ctrl-top-right {
-    width: calc(100% - 4em - 40px);
-    flex-direction: column;
-    align-items: center;
+  .nav-box {
+    width: 100vw;
+  }
+}
 
-    .mapboxgl-ctrl-geocoder {
-      width: 100%;
-    }
+@media (max-width: 400px) {
+  .menu-title {
+    font-size: 16px;
   }
 
   .nav-box {

@@ -4,3 +4,6 @@ routes-none = Aucune
 origin-input.placeholder = Départ
 destination-input.placeholder = Destination
 suggestion-location = Ma position
+nav-time = Temps estimé
+nav-distance = Distance
+nav-arrival = Arrivée

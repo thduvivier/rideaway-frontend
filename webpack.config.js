@@ -62,6 +62,7 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([
+      { from: 'public/manifest.json' },
       { from: 'public/locales', to: 'locales' },
       { from: 'public/nav' }
     ]),
