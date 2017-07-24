@@ -1,17 +1,8 @@
-export function uniq(a) {
-  var prims = { boolean: {}, number: {}, string: {} },
-    objs = [];
-
-  return a.filter(function(item) {
-    var type = typeof item;
-    if (type in prims)
-      return prims[type].hasOwnProperty(item)
-        ? false
-        : (prims[type][item] = true);
-    else return objs.indexOf(item) >= 0 ? false : objs.push(item);
-  });
-}
-
+/*
+* Displays the distance a string format
+* @param int m - The distance in meters
+* @returns string distance - Formatted distance
+*/
 export function displayDistance(m) {
   if (m < 1000) {
     return `${Math.round(m)} m`;
@@ -19,6 +10,11 @@ export function displayDistance(m) {
   return `${Math.round(m / 100) / 10} km`;
 }
 
+/*
+* Display the time in a string format
+* @param int s - The time in seconds
+* @returns string time - Formatted time
+*/
 export function displayTime(s) {
   if (s < 60) {
     return `1 min`;
@@ -31,6 +27,11 @@ export function displayTime(s) {
   return `${h} h ${m} min`;
 }
 
+/*
+* Display the arrival time formatted in a string
+* @param int s - The time in seconds
+* @returns string arrival - Formatted arrival time
+*/
 export function displayArrival(s) {
   const arrival = new Date(Date.now() + s * 1000);
 

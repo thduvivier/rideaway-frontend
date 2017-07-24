@@ -8,8 +8,12 @@ import {
 import { displayDistance, displayTime, displayArrival } from './lib';
 import icons from '../icons';
 
+// Global variable
 let map;
 
+/*
+* Collapses the mobile menu
+*/
 function collapseMenu() {
   if (window.innerWidth <= 800) {
     const menu = document.querySelector('.menu');
@@ -19,10 +23,10 @@ function collapseMenu() {
 }
 
 /*
-* Configures the all button
+* Configures the all and none button
 */
-function configureAll() {
-  let all = document.querySelector('.routelist-all');
+function configureAllNone() {
+  const all = document.querySelector('.routelist-all');
   all.addEventListener('click', () => {
     const active = document.querySelector('.routelist-item--active');
     active && active.classList.remove('routelist-item--active');
@@ -30,7 +34,7 @@ function configureAll() {
     removeFilter(map);
     collapseMenu();
   });
-  let none = document.querySelector('.routelist-none');
+  const none = document.querySelector('.routelist-none');
   none.addEventListener('click', () => {
     const active = document.querySelector('.routelist-item--active');
     active && active.classList.remove('routelist-item--active');
@@ -42,9 +46,9 @@ function configureAll() {
 }
 
 /*
-* Configures a ListItem for the routemenu
-* @param route Object{name: string, colour: string}
-* @return el Element the configured html element
+* Configures a single ListItem for the routemenu
+* @param Object{name: string, colour: string} route - The route for that list item
+* @return Element el - The configured html element
 */
 function configureListItem(route) {
   let el = document.createElement('li');
@@ -55,7 +59,7 @@ function configureListItem(route) {
   el.className += ' routelist-item-' + routeConfig[el.firstChild.innerHTML];
   el.style.backgroundColor = route.color;
 
-  // event listener
+  // Event listener
   el.addEventListener('click', () => {
     const active = document.querySelector('.routelist-item--active');
     active && active.classList.remove('routelist-item--active');
@@ -63,7 +67,7 @@ function configureListItem(route) {
     filterRoute(map, route.name);
     collapseMenu();
 
-    // only recenter the map if the route isn't calculated
+    // Only recenter the map if the route isn't calculated
     if (map.getSource('brussels')) {
       const visible = map.getLayoutProperty('brussels', 'visibility');
       if (!visible || visible === 'visible') {
@@ -72,9 +76,14 @@ function configureListItem(route) {
     }
     map.flyTo({ center: center.latlng, zoom: [center.zoom] });
   });
+
   return el;
 }
 
+/*
+* Show the geocoder close button (for our inserted my location option)
+* @param MapboxglGeocoder geocoder - The geocoder
+*/
 function showCloseButton(geocoder) {
   if (geocoder === 'origin') {
     document.querySelector(
@@ -85,29 +94,118 @@ function showCloseButton(geocoder) {
   }
 }
 
+/*
+* Hides my location from the suggestions
+* @param Element input - The input element
+*/
+function hideMyLocationSuggestion(input) {
+  const suggestions = input.parentElement.querySelector('.suggestions');
+  suggestions.style.display = 'none';
+}
+
+/*
+* Configures the mobile menu
+*/
+function configureMobileMenu() {
+  const menuOpen = document.createElement('div');
+  menuOpen.className = 'menu-btn-open';
+  // mobile menu
+  menuOpen.addEventListener('click', () => {
+    document.querySelector('.menu').style.transform = 'translateX(0)';
+    document.querySelector('.dimmed').style.display = 'block';
+  });
+  // insert menu button before
+  const control = document.querySelector('.mapboxgl-ctrl-top-right');
+  control.insertBefore(menuOpen, control.childNodes[0]);
+
+  document.querySelector('.menu-btn-close').addEventListener('click', () => {
+    collapseMenu();
+  });
+}
+
+/*
+* Prepares the inputs for my location
+* @param Function setPlace - Function for setting global variables
+*/
+function configureInputs(setPlace) {
+  const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
+  inputs.forEach(input => {
+    // Translation stuff
+    const place = input.getAttribute('data-l10n-id').replace('-input', '');
+
+    // Show location on focus
+    input.addEventListener('focus', () => {
+      showMyLocationSuggestion(input, setPlace);
+    });
+
+    input.addEventListener('keyup', e => {
+      // Show location on keyup and empty field
+      if (input.value.length === 0) {
+        showMyLocationSuggestion(input, setPlace);
+      }
+      // Set location on enter
+      if (
+        e.key === 'Enter' &&
+        (input.value === '' || input.value === 'My location')
+      ) {
+        input.value = 'My location';
+        if (place === 'origin') {
+          showCloseButton('origin');
+          hideMyLocationSuggestion(inputs[1]);
+        } else {
+          showCloseButton('destination');
+          hideMyLocationSuggestion(inputs[0]);
+        }
+        setPlace(place);
+
+        // Unfocus the input
+        input.blur();
+      }
+    });
+
+    // Hide my location
+    input.addEventListener('focusout', e => {
+      hideMyLocationSuggestion(input);
+    });
+  });
+}
+
+/*
+* Show my location suggestion in the geocoder
+* @param Element input - The geocoder input
+* @param Function setPlace - Sets global variable
+*/
 function showMyLocationSuggestion(input, setPlace) {
+  // Skip this function if the user isn't located
   if (!window.userLocated) {
     return;
   }
 
+  // Queryselectors
   const suggestions = input.parentElement.querySelector('.suggestions');
   const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
 
-  // if the option doesn't exist, add it
+  // If the option doesn't exist, add it
   const myLoc = input.parentElement.querySelector('.mylocation');
 
   if (!myLoc) {
     const el = document.createElement('li');
-    // need to access the link for the translation
+    // Need to access the link for the translation
     const a = document.createElement('a');
     el.className = 'mylocation active';
     a.setAttribute('data-l10n-id', 'suggestion-location');
+
+    // Event listener
     a.addEventListener('mousedown', e => {
       input.value = a.innerHTML;
+
+      // Translation config
       const place = input.getAttribute('data-l10n-id').replace('-input', '');
+
       showCloseButton(place);
       setPlace(place);
     });
+
     el.appendChild(a);
     suggestions.appendChild(el);
   }
@@ -133,70 +231,17 @@ function showMyLocationSuggestion(input, setPlace) {
       return;
     }
   }*/
+
+  // Show the suggestions
   suggestions.style.display = 'block';
-}
-
-function hideMyLocationSuggestion(input) {
-  const suggestions = input.parentElement.querySelector('.suggestions');
-  suggestions.style.display = 'none';
-}
-
-function configureMobileMenu() {
-  const menuOpen = document.createElement('div');
-  menuOpen.className = 'menu-btn-open';
-  // mobile menu
-  menuOpen.addEventListener('click', () => {
-    document.querySelector('.menu').style.transform = 'translateX(0)';
-    document.querySelector('.dimmed').style.display = 'block';
-  });
-  // insert menu button before
-  const control = document.querySelector('.mapboxgl-ctrl-top-right');
-  control.insertBefore(menuOpen, control.childNodes[0]);
-
-  document.querySelector('.menu-btn-close').addEventListener('click', () => {
-    collapseMenu();
-  });
-}
-
-function configureInputs(setPlace) {
-  const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
-  inputs.forEach(input => {
-    const place = input.getAttribute('data-l10n-id').replace('-input', '');
-    input.addEventListener('focus', () => {
-      showMyLocationSuggestion(input, setPlace);
-    });
-    input.addEventListener('keyup', e => {
-      if (input.value.length === 0) {
-        showMyLocationSuggestion(input, setPlace);
-      }
-      if (
-        e.key === 'Enter' &&
-        (input.value === '' || input.value === 'My location')
-      ) {
-        input.value = 'My location';
-        if (place === 'origin') {
-          showCloseButton('origin');
-          hideMyLocationSuggestion(inputs[1]);
-        } else {
-          showCloseButton('destination');
-          hideMyLocationSuggestion(inputs[0]);
-        }
-        setPlace(place);
-        input.blur();
-      }
-    });
-    input.addEventListener('focusout', e => {
-      hideMyLocationSuggestion(input);
-    });
-  });
 }
 
 /*
 * Adds a filter option for every route to the menu
-* @param features Array[{}] all the routes
+* @param Array[{}] features - All of the routes
 */
 export function addFilters(features) {
-  // get the properties we need
+  // Get the properties we need
   let routes = [];
   features.forEach(feat => {
     routes.push({
@@ -204,52 +249,87 @@ export function addFilters(features) {
       color: feat.properties.colour
     });
   });
-  configureAll();
-  // uniqBy to remove duplicates, sortBy to sort them in a good order
+
+  // Configure the All & None buttons
+  configureAllNone();
+
+  // uniqBy to remove duplicates, and  sort them in a good order
   const routesSorted = _.uniqBy(routes, 'name').sort((a, b) => {
     return a.name.localeCompare(b.name, undefined, { numeric: true });
   });
+
+  // Loop over the sorted routes
   routesSorted.forEach(route => {
-    // ignore this unfinished route
+    // Ignore this unfinished route
     if (route.name === 'G/C') {
       return;
     }
-    // don't add filter buttons for a or b routes
+
+    // Don't add filter buttons for a or b routes
     if (route.name.includes('a') || route.name.includes('b')) {
       return;
     }
+
+    // Select appropiate route for menu
     const menu = document.querySelector(
       '.routelist-' + routeConfig[route.name]
     );
+
+    // Configure the list item
     const el = configureListItem(route);
     menu.appendChild(el);
   });
 }
 
+/*
+* Configure all the elements, main function
+* @param mapboxgl mapboxmap - The map
+* @param Function setPlace - Function to set global variable
+*/
 export function configureAllElements(mapboxmap, setPlace) {
+  // Set the map
   map = mapboxmap;
   configureMobileMenu();
   configureInputs(setPlace);
 }
 
+/*
+* Shows the navigation box when a route is found
+* @param Function oldHandler - The previous handler to go to navigation
+* @param Function navHandler - The new handler with updated coords
+* @param int distance - The distance between the coords
+* @param int time - The time in seconds
+*/
 export function showNavigationBox(oldHandler, navHandler, distance, time) {
   const navBox = document.querySelector('.nav-box');
   const button = document.querySelector('.center-btn');
+
+  // Hide the center button
   button.style.display = 'none';
+
+  // Change the map height to make room for nav
   document.querySelector('#map').style.height = 'calc(100vh - 150px)';
 
+  // Set information in the navigation box
   document.querySelector('.nav-distance').innerHTML = displayDistance(distance);
   document.querySelector('.nav-time').innerHTML = displayTime(time);
   document.querySelector('.nav-arrival').innerHTML = displayArrival(time);
 
   const buttonNav = document.querySelector('.nav-btn');
 
+  // Remove the old handler when starting navigation
   oldHandler && buttonNav.removeEventListener('click', oldHandler);
+
+  // Add the new handler
   buttonNav.addEventListener('click', navHandler);
 
+  // Show the navbox
   navBox.style.transform = 'translateY(0)';
 }
 
+/*
+* Hides the navigationbox
+*/
 export function hideNavigationBox() {
   const navBox = document.querySelector('.nav-box');
   document.querySelector('#map').style.height = '100vh';

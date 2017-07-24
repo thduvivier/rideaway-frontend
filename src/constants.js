@@ -1,3 +1,4 @@
+// Defined route properties
 export const routeConfig = {
   All: 'all',
   '1': 'radial',
@@ -33,4 +34,5 @@ export const urls = {
   route: 'https://cyclerouting-api.osm.be'
 };
 
+// Brussels
 export const center = { latlng: [4.355975, 50.860633], zoom: 11 };
