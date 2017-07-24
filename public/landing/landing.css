@@ -57,6 +57,25 @@ body {
   width: 100%;
 }
 
+.button {
+  border: none;
+  font-size: 20px;
+  background: #385188;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+}
+
+.button img {
+  margin-left: 10px;
+  width: 40px;
+  height: 40px;
+}
+
 @media (max-width: 950px) {
   .container {
     margin: 0 20px;
