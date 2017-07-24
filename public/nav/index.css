@@ -121,8 +121,7 @@ body,
 }
 
 #close-navigation {
-  /*top: 52 vh;*/
-  top: 45vh;
+  top: 52vh;
   background-image: url("/assets/x-14.svg");
 }
 
