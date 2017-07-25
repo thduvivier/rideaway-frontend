@@ -284,8 +284,7 @@ function update(location){
         if (heading){
             dir = dir - heading;
         }
-        document.getElementById("direction-arrow").style["transform"] = `rotate(${dir + 90}deg)`
-        console.log(heading);
+        document.getElementById("direction-arrow").style["transform"] = `rotate(${dir + 90}deg)`;
     }
 
 
@@ -314,4 +313,4 @@ function update(location){
     }
 }
 
-initialize();
+window.onload = initialize;
