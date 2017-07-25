@@ -209,28 +209,6 @@ body {
   }
 }
 
-.nav-btn {
-  position: absolute;
-  bottom: 125px;
-  right: 2em;
-  background: $secondary_color;
-  border: none;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  padding: 1em;
-  box-shadow: $material_shadow;
-
-  &:focus {
-    outline: none;
-  }
-
-  img {
-    width: 100%;
-    height: 100%;
-  }
-}
-
 .nav-list {
   list-style: none;
   padding-left: 0;
@@ -259,7 +237,7 @@ body {
 }
 
 .nav-box {
-  transform: translateY(200px);
+  transform: translateY(175px);
   position: absolute;
   bottom: 0;
   right: 0;
@@ -267,6 +245,8 @@ body {
   width: 70vw;
   box-shadow: $material_shadow;
   background-color: $primary_color;
+  z-index: 2;
+  transition: transform 0.3s ease-in;
 }
 
 @media (max-width: 800px) {

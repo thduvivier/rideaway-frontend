@@ -307,9 +307,6 @@ export function showNavigationBox(oldHandler, navHandler, distance, time) {
   // Hide the center button
   button.style.display = 'none';
 
-  // Change the map height to make room for nav
-  document.querySelector('#map').style.height = 'calc(100vh - 150px)';
-
   // Set information in the navigation box
   document.querySelector('.nav-distance').innerHTML = displayDistance(distance);
   document.querySelector('.nav-time').innerHTML = displayTime(time);
@@ -332,7 +329,6 @@ export function showNavigationBox(oldHandler, navHandler, distance, time) {
 */
 export function hideNavigationBox() {
   const navBox = document.querySelector('.nav-box');
-  document.querySelector('#map').style.height = '100vh';
-  navBox.style.transform = 'translateY(200px)';
+  navBox.style.transform = 'translateY(175px)';
   document.querySelector('.center-btn').style.display = 'block';
 }
