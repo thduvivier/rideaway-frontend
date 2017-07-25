@@ -17,7 +17,7 @@ import {
 } from './modules/domManipulations';
 import { findGetParameter, swapArrayValues } from './modules/lib';
 import { toggleLayer, clearRoutes } from './modules/mapManipulations';
-import { registerServiceWorker } from './modules/registerServiceWorker';
+import registerServiceWorker from './modules/registerServiceWorker';
 
 import './scss/styles.scss';
 
