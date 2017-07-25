@@ -184,6 +184,16 @@ var i = 0;
 var loc1;
 var loc2;
 
+const arrowDeg = {
+    sharpleft : -45,
+    left : 0,
+    slightlyleft: 45,
+    straighton : 90,
+    slightlyright : 135,    
+    right: 180,
+    sharpright: 225     
+}
+
 /**
  * Initialises the navigation with the result from the api.
  * 
@@ -251,7 +261,71 @@ function update(location){
     }
 
     document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';
-    
+
+    updateCurrentRoad(instruction);
+    updateNextInstruction(instruction);   
+    updateDirection(location, instruction);    
+}
+
+/**
+ * Updates the direction arrow when the location is not yet on the route.
+ * 
+ * @param {Object} location - current location
+ * @param {Object} instruction - current instruction
+ */
+function updateDirection(location, instruction){
+    if (instruction.properties.type === "enter" || instruction.properties.type === "stop"){
+        document.getElementById("direction-arrow").style["display"] = "block";
+
+        var dir = calculateBearing(location, instruction);
+        if (heading){
+            dir = dir - heading;
+        }
+        document.getElementById("direction-arrow").style["transform"] = `rotate(${dir + 90}deg)`;
+    }
+    else {
+        document.getElementById("direction-arrow").style["display"] = "none";
+    }
+}
+
+/**
+ * Updates the view of the current road.
+ * 
+ * @param {Object} instruction - current instruction 
+ */
+function updateCurrentRoad(instruction){
+    if (instruction.properties.colour)  {
+        document.getElementById("current-road").style["background-color"] = instruction.properties.colour;
+    } else {
+        document.getElementById("current-road").style["background-color"] = "lightgrey";
+    }
+
+    if (instruction.properties.type === "enter"){
+        document.getElementById("current-road-ref").style["display"] = "none";
+        document.getElementById("current-road-message").style["display"] = "block";
+    }
+    else {
+        document.getElementById("current-road-ref").style["display"] = "";
+        document.getElementById("current-road-message").style["display"] = "none";
+    }
+}
+
+/**
+ * Updates the view for the next instruction.
+ * 
+ * @param {Object} instruction - the current instruction 
+ */
+function updateNextInstruction(instruction){
+    if (instruction.properties.nextColour)  {
+        document.getElementById("next-instruction").style["background-color"] = instruction.properties.nextColour
+    } else {
+        document.getElementById("next-instruction").style["background-color"] = "lightgrey";
+    }
+    if (instruction.properties.angle){
+        document.getElementById("next-instruction-arrow-img").style["transform"] = 
+            `rotate(${arrowDeg[instruction.properties.angle.toLowerCase()]}deg)`;
+    }
+
     if (instruction.properties.type === "leave"){
         document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-leave");
         document.getElementById("next-instruction-message").style["display"] = "block";
@@ -260,56 +334,14 @@ function update(location){
     else if (instruction.properties.type === "stop"){
         document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-destination");        
         document.getElementById("next-instruction-arrow").style["display"] = "none";
-        document.getElementById("direction-arrow").style["display"] = "block";
-
     }
     else if (instruction.properties.type === "enter"){
-        document.getElementById("current-road-ref").style["display"] = "none";
-        document.getElementById("current-road-message").style["display"] = "block";
-        document.getElementById("direction-arrow").style["display"] = "block";
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
     }
     else {
         document.getElementById("next-instruction-message").style["display"] = "none";
         document.getElementById("next-instruction-road-ref").style["display"] = "";
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
-        document.getElementById("current-road-ref").style["display"] = "";
-        document.getElementById("current-road-message").style["display"] = "none";
-        document.getElementById("direction-arrow").style["display"] = "none";
-    }
-    
-    
-    if (instruction.properties.type === "enter" || instruction.properties.type === "stop"){
-        var dir = calculateBearing(location, instruction);
-        if (heading){
-            dir = dir - heading;
-        }
-        document.getElementById("direction-arrow").style["transform"] = `rotate(${dir + 90}deg)`;
-    }
-
-
-    if (instruction.properties.colour)  {
-        document.getElementById("current-road").style["background-color"] = instruction.properties.colour;
-    } else {
-        document.getElementById("current-road").style["background-color"] = "lightgrey";
-    }
-    if (instruction.properties.nextColour)  {
-        document.getElementById("next-instruction").style["background-color"] = instruction.properties.nextColour
-    } else {
-        document.getElementById("next-instruction").style["background-color"] = "lightgrey";
-    }
-
-    if (instruction.properties.angle){
-        if (instruction.properties.angle.toLowerCase().indexOf("left") !== -1){
-            document.getElementById("next-instruction-arrow-img").style["transform"] = "rotate(0deg)"
-        }
-        else if (instruction.properties.angle.toLowerCase().indexOf("right") !== -1){
-            document.getElementById("next-instruction-arrow-img").style["transform"] = "rotate(180deg)"
-        }
-        else{
-            document.getElementById("next-instruction-arrow-img").style["transform"] = "rotate(90deg)"
-
-        }
     }
 }
 

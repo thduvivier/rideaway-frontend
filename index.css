@@ -33,7 +33,7 @@ body,
   text-align: center;
   width: 100%;
 }
-#next-instruction-arrow > .fa {
+#next-instruction-arrow {
   margin: 0 auto;
 }
 #next-instruction-road {
@@ -182,8 +182,6 @@ body,
   justify-content: center;
 }
 
-/*
-*/
 .sk-double-bounce {
   width: 10vh;
   max-width: 150px;
