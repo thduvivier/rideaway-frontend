@@ -17,7 +17,8 @@ import {
 } from './modules/domManipulations';
 import { findGetParameter, swapArrayValues } from './modules/lib';
 import { toggleLayer, clearRoutes } from './modules/mapManipulations';
-import registerServiceWorker from './modules/registerServiceWorker';
+import * as OfflinePluginRuntime from 'offline-plugin/runtime';
+OfflinePluginRuntime.install();
 
 import './scss/styles.scss';
 
@@ -32,8 +33,6 @@ let places = {
 let handlers = {
   nav: null
 };
-
-registerServiceWorker();
 
 // Set origin and destination from url params
 const loc1 = findGetParameter('loc1');
