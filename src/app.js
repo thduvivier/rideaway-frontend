@@ -162,7 +162,7 @@ function addMarker(LatLng) {
 
   // Return marker so we can reuse it
   return new mapboxgl.Marker(el, {
-    offset: [-marker.properties.iconSize[0] / 2, -marker.properties.iconSize[1]]
+    offset: [0, -marker.properties.iconSize[1] / 2]
   }).setLngLat(marker.geometry.coordinates);
 }
 
