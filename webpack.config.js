@@ -63,6 +63,7 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([
       { from: 'public/manifest.json' },
+      { from: 'public/service-worker.js' },
       { from: 'public/locales', to: 'locales' },
       { from: 'public/nav' },
       { from: 'public/favicons' },
