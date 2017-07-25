@@ -116,8 +116,13 @@ function instructionAt(instructions, currentDistance){
     }
 }
 
-function directionTo(location, instruction){
-    
+/**
+ * Calculates the bearing between the location and the location of the instruction.
+ * @param {Object} location - current location
+ * @param {Object} instruction - instruction to point to
+ */
+function calculateBearing(location, instruction){
+    return turf.bearing(location, turf.point(instruction.geometry.coordinates));
 }
 
 /**
@@ -158,6 +163,7 @@ function startTracking() {
     navigator.geolocation.watchPosition(position => {
         var coord = position.coords;
         var location = turf.point([coord.longitude, coord.latitude]);
+        heading = position.coords.heading;
         update(location);
     }      
     );
@@ -167,6 +173,7 @@ function startTracking() {
 }
 
 var result;
+var heading;
 
 var length;
 var dataAtLast;
@@ -221,7 +228,7 @@ function step (){
     var location = pointAlongRoute(result.route, i).geometry.coordinates;
     update(location)
     
-    i += 0.001;
+    i += 0.01;
 
     if (i < length) {
         setTimeout(step, 50);
@@ -255,7 +262,7 @@ function update(location){
         document.getElementById("direction-arrow").style["display"] = "block";
 
     }
-    else if (instruction.properties.type == "enter"){
+    else if (instruction.properties.type === "enter"){
         document.getElementById("current-road-ref").style["display"] = "none";
         document.getElementById("current-road-message").style["display"] = "block";
         document.getElementById("direction-arrow").style["display"] = "block";
@@ -269,9 +276,15 @@ function update(location){
         document.getElementById("current-road-message").style["display"] = "none";
         document.getElementById("direction-arrow").style["display"] = "none";
     }
-
+    
+    
     if (instruction.properties.type === "enter" || instruction.properties.type === "stop"){
-
+        var dir = calculateBearing(location, instruction);
+        if (heading){
+            dir = dir - heading;
+        }
+        document.getElementById("direction-arrow").style["transform"] = `rotate(${dir + 90}deg)`
+        console.log(heading);
     }
 
 
