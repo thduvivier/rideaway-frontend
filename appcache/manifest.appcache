@@ -1,0 +1,13 @@
+CACHE MANIFEST
+#ver:7/25/2017, 10:52:21 AM
+#plugin:4.8.3
+
+CACHE:
+https://osoc17.github.io/rideaway-frontend/main.8e05d603dd8a2b1da762bd762d8c5b32.css
+https://osoc17.github.io/rideaway-frontend/app.bundle.js
+
+NETWORK:
+*
+
+FALLBACK:
+/ /offline-page.html
