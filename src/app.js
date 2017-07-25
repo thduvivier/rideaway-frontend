@@ -18,7 +18,9 @@ import {
 import { findGetParameter, swapArrayValues } from './modules/lib';
 import { toggleLayer, clearRoutes } from './modules/mapManipulations';
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
-OfflinePluginRuntime.install();
+if (process.env.NODE_ENV === 'PROD') {
+  OfflinePluginRuntime.install();
+}
 
 import './scss/styles.scss';
 
@@ -114,7 +116,7 @@ function addAllRoutes(geojson) {
       visibility: 'visible',
       'symbol-placement': 'line',
       'text-font': ['Open Sans Regular'],
-      'text-field': '{icr}',
+      'text-field': '{ref}',
       'text-size': 16
     },
     paint: {
@@ -253,7 +255,7 @@ function calculateRoute(origin, destination, profile) {
 
       // Fit the map to the route
       map.fitBounds(bbox, {
-        padding: 150
+        padding: 200
       });
     }
   });

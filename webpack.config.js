@@ -25,8 +25,7 @@ const offline = new OfflinePlugin({
     FALLBACK: {
       '/': '/offline-page.html'
     }
-  },
-  disable: process.env.NODE_ENV === 'PROD'
+  }
 });
 
 module.exports = {
@@ -96,7 +95,7 @@ module.exports = {
       template: 'public/index.html'
     }),
     extractSass,
-    new CleanWebpackPlugin(['build']),
-    offline
+    offline,
+    new CleanWebpackPlugin(['build'])
   ]
 };
