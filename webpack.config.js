@@ -10,6 +10,25 @@ const extractSass = new ExtractTextPlugin({
   disable: process.env.NODE_ENV === 'DEV'
 });
 
+const offline = new OfflinePlugin({
+  publicPath: 'https://osoc17.github.io/rideaway-frontend',
+  caches: {
+    main: ['main.*.css', 'app.*.js'],
+    additional: [':externals:'],
+    optional: [':rest:']
+  },
+  externals: ['./'],
+  ServiceWorker: {
+    navigateFallbackURL: './'
+  },
+  AppCache: {
+    FALLBACK: {
+      '/': '/offline-page.html'
+    }
+  },
+  disable: process.env.NODE_ENV === 'PROD'
+});
+
 module.exports = {
   entry: './src/app.js',
   output: {
@@ -64,7 +83,6 @@ module.exports = {
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([
       { from: 'public/manifest.json' },
-      { from: 'public/service-worker.js' },
       { from: 'public/locales', to: 'locales' },
       { from: 'public/nav' },
       { from: 'public/favicons' },
@@ -79,23 +97,6 @@ module.exports = {
     }),
     extractSass,
     new CleanWebpackPlugin(['build']),
-    process.env.NODE_ENV === 'PROD' &&
-      new OfflinePlugin({
-        publicPath: 'https://osoc17.github.io/rideaway-frontend',
-        caches: {
-          main: ['main.*.css', 'app.*.js'],
-          additional: [':externals:'],
-          optional: [':rest:']
-        },
-        externals: ['./'],
-        ServiceWorker: {
-          navigateFallbackURL: './'
-        },
-        AppCache: {
-          FALLBACK: {
-            '/': '/offline-page.html'
-          }
-        }
-      })
+    offline
   ]
 };
