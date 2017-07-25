@@ -33,6 +33,8 @@ let handlers = {
   nav: null
 };
 
+registerServiceWorker();
+
 // Set origin and destination from url params
 const loc1 = findGetParameter('loc1');
 const loc2 = findGetParameter('loc2');
@@ -254,8 +256,6 @@ function calculateRoute(origin, destination, profile) {
       map.fitBounds(bbox, {
         padding: 150
       });
-
-      registerServiceWorker();
     }
   });
 }
