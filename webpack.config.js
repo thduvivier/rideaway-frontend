@@ -79,7 +79,7 @@ module.exports = {
     }),
     extractSass,
     new CleanWebpackPlugin(['build']),
-    process.env.NODE_ENV === prod &&
+    process.env.NODE_ENV === 'PROD' &&
       new OfflinePlugin({
         publicPath: 'https://osoc17.github.io/rideaway-frontend',
         caches: {
