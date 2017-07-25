@@ -1,17 +1,9 @@
-var origin = [
-    4.448282718658447,
-    50.854217806792526
-];
-var destination = [
-    4.3930453062057495,
-    50.8437861154778
-];
-
-var routeLine;
-
-// use http://turfjs.org/docs/#pointonline to get the current location on the route
-// use http://turfjs.org/docs/#pointonline to simulate the user moving along the route.
-
+/**
+ * Calculates the length of the route.
+ * 
+ * @param {Object} route - the route object.
+ * @return {number} length of the route.
+ */
 function lengthOfRoute (route) {
     var length = 0.0;
     for(var i = 0; i < route.features.length; i++) {
@@ -23,6 +15,12 @@ function lengthOfRoute (route) {
     return length;
 }
 
+/**
+ * Returns the feature at the given distance on the route
+ * 
+ * @param {Object} route - the route object
+ * @param {number} distance - distance on route 
+ */
 function pointAlongRoute (route, distance) {
     var length = 0.0;
     for(var i = 0; i < route.features.length; i++) {
@@ -41,6 +39,13 @@ function pointAlongRoute (route, distance) {
     return length;
 }
 
+/**
+ * Returns the properties of the geojson feature that is closest to the
+ * given point.
+ * 
+ * @param {Object} route - the route object 
+ * @param {Object} point - a coordinate along the route
+ */
 function pointOnRoute (route, point) {
     var best = 1000000;
     var bestData = {};
@@ -58,8 +63,14 @@ function pointOnRoute (route, point) {
     return bestData;
 }
 
+/**
+ * Calculates the distance of the route between the startpoint and the
+ * given location.
+ * 
+ * @param {Object} route - the route object
+ * @param {Object} location - point along the route
+ */
 function distanceAtLocation(route, location){
-    //point on line for every linestring
     var bestDist =  null;
     var bestIndex = null;
     for(var i = 0; i < route.features.length; i++){
@@ -67,7 +78,7 @@ function distanceAtLocation(route, location){
         if (feature.geometry.type == "LineString") {
             var snapped = turf.pointOnLine(feature, location);
             var dist = turf.distance(snapped, location)
-            //closest point is the location
+            
             if(bestDist !== null){
                 if (dist < bestDist){
                     bestDist = dist;
@@ -80,17 +91,22 @@ function distanceAtLocation(route, location){
             }
         }
     }
-    //calculate linedistance of every segment before + slice of current segment
+
     var length = 0.0;
     for (var j = 0; j < bestIndex; j++){
         length += turf.lineDistance(route.features[j]); 
     }
     length += turf.lineDistance(turf.lineSlice(turf.point(route.features[bestIndex].geometry.coordinates[0]), location, route.features[bestIndex]));
     
-    //return
     return length;
 }
 
+/**
+ * Returns the instruction that is next when you are at the given distance on the route
+ * 
+ * @param {Object} instructions - list of the instructions
+ * @param {number} currentDistance - the distance to get the instruction for
+ */
 function instructionAt(instructions, currentDistance){
     for (var i = 0; i< instructions.features.length; i++){
         var instruction = instructions.features[i];
@@ -100,6 +116,12 @@ function instructionAt(instructions, currentDistance){
     }
 }
 
+/**
+ * Get a url parameter by its name. If no url is given the current url is used.
+ * 
+ * @param {string} name - the name of the parameter 
+ * @param {string} url - the url to get the parameter from
+ */
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
@@ -110,6 +132,11 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+/**
+ * Execute a GET request to get a json from a url.
+ * 
+ * @param {string} url - url to get json from 
+ */
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
     fetch(url)
@@ -119,6 +146,9 @@ function fetchJSON(url) {
   });
 }
 
+/**
+ * Starts tracking your location and updating the screen.
+ */
 function startTracking() {
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(position => {
@@ -139,12 +169,15 @@ var dataAtLast;
 var totalDistance;
 var totalTime;
 
-//console.log(dataAtLast);
-
 var i = 0;
 var loc1;
 var loc2;
 
+/**
+ * Initialises the navigation with the result from the api.
+ * 
+ * @param {Object} result - result from the api 
+ */
 function initializeNavigation(result){    
     this.result = result;
     length = lengthOfRoute(result.route);
@@ -153,6 +186,9 @@ function initializeNavigation(result){
     totalTime = dataAtLast.time;
 }
 
+/**
+ * Initialises the navigation application.
+ */
 function initialize(){
     loc1 = getParameterByName("loc1");
     loc2 = getParameterByName("loc2");
@@ -174,6 +210,9 @@ function initialize(){
     });
 }
 
+/**
+ * Step function used in debug mode to iterate over the route.
+ */
 function step (){ 
     var location = pointAlongRoute(result.route, i).geometry.coordinates;
     update(location)
@@ -185,6 +224,11 @@ function step (){
     }
 }
 
+/**
+ * Updates the screen based on the given location.
+ * 
+ * @param {Object} location - the current location 
+ */
 function update(location){
     var dataAtLocation = pointOnRoute(result.route, location);
     var distance = distanceAtLocation(result.route, location);

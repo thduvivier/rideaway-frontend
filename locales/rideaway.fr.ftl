@@ -7,3 +7,6 @@ suggestion-location = Ma position
 nav-time = Temps estimé
 nav-distance = Distance
 nav-arrival = Arrivée
+instr-enter = Entre les itinéraires cyclables
+instr-leave = Depart les itinéraires cyclables
+instr-destination = Destination
