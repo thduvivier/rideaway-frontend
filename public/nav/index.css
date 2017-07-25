@@ -154,6 +154,24 @@ body,
   float: right;
   width: 25%;
 }
+
+#direction-arrow {
+  background-color: #fbba00;
+  border-radius: 50%;
+  position: relative;
+  display: block;
+  z-index: 99;
+  top: 76vh;
+  margin: 0 auto;
+  width: 23vh;
+  height: 23vh; 
+  background-image: url("/assets/arrow.svg");
+  background-size: 75%;
+  background-repeat: no-repeat;
+  background-position: bottom 50% center;
+}
+
+
 /*
 #main
 {

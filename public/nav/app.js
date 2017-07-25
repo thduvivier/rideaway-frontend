@@ -117,6 +117,15 @@ function instructionAt(instructions, currentDistance){
 }
 
 /**
+ * Calculates the bearing between the location and the location of the instruction.
+ * @param {Object} location - current location
+ * @param {Object} instruction - instruction to point to
+ */
+function calculateBearing(location, instruction){
+    return turf.bearing(location, turf.point(instruction.geometry.coordinates));
+}
+
+/**
  * Get a url parameter by its name. If no url is given the current url is used.
  * 
  * @param {string} name - the name of the parameter 
@@ -154,6 +163,7 @@ function startTracking() {
     navigator.geolocation.watchPosition(position => {
         var coord = position.coords;
         var location = turf.point([coord.longitude, coord.latitude]);
+        heading = position.coords.heading;
         update(location);
     }      
     );
@@ -163,6 +173,7 @@ function startTracking() {
 }
 
 var result;
+var heading;
 
 var length;
 var dataAtLast;
@@ -239,6 +250,7 @@ function update(location){
     }
 
     document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';
+    
     if (instruction.properties.type === "leave"){
         document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-leave");
         document.getElementById("next-instruction-message").style["display"] = "block";
@@ -246,31 +258,45 @@ function update(location){
     }
     else if (instruction.properties.type === "stop"){
         document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-destination");        
+        document.getElementById("next-instruction-arrow").style["display"] = "none";
+        document.getElementById("direction-arrow").style["display"] = "block";
+
+    }
+    else if (instruction.properties.type === "enter"){
+        document.getElementById("current-road-ref").style["display"] = "none";
+        document.getElementById("current-road-message").style["display"] = "block";
+        document.getElementById("direction-arrow").style["display"] = "block";
+        document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
     }
     else {
         document.getElementById("next-instruction-message").style["display"] = "none";
         document.getElementById("next-instruction-road-ref").style["display"] = "";
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
-    }
-
-    if (instruction.properties.type === "enter"){
-        document.getElementById("current-road-ref").style["display"] = "none";
-        document.getElementById("current-road-message").style["display"] = "block";
-    }
-    else {
         document.getElementById("current-road-ref").style["display"] = "";
         document.getElementById("current-road-message").style["display"] = "none";
+        document.getElementById("direction-arrow").style["display"] = "none";
     }
+    
+    
+    if (instruction.properties.type === "enter" || instruction.properties.type === "stop"){
+        var dir = calculateBearing(location, instruction);
+        if (heading){
+            dir = dir - heading;
+        }
+        document.getElementById("direction-arrow").style["transform"] = `rotate(${dir + 90}deg)`
+        console.log(heading);
+    }
+
 
     if (instruction.properties.colour)  {
         document.getElementById("current-road").style["background-color"] = instruction.properties.colour;
     } else {
-        document.getElementById("current-road").style["background-color"] = "white";
+        document.getElementById("current-road").style["background-color"] = "lightgrey";
     }
     if (instruction.properties.nextColour)  {
         document.getElementById("next-instruction").style["background-color"] = instruction.properties.nextColour
     } else {
-        document.getElementById("next-instruction").style["background-color"] = "white";
+        document.getElementById("next-instruction").style["background-color"] = "lightgrey";
     }
 
     if (instruction.properties.angle){
