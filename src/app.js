@@ -18,7 +18,9 @@ import {
 import { findGetParameter, swapArrayValues } from './modules/lib';
 import { toggleLayer, clearRoutes } from './modules/mapManipulations';
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
-OfflinePluginRuntime.install();
+if (process.env.NODE_ENV === 'PROD') {
+  OfflinePluginRuntime.install();
+}
 
 import './scss/styles.scss';
 
