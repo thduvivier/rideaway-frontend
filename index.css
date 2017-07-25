@@ -125,6 +125,20 @@ body,
   background-image: url("/assets/x-14.svg");
 }
 
+.message-box {
+  background-color: #fff;
+  text-align: center;
+}
+
+#current-road-message {
+  top: 10vh;
+  display: none;
+}
+
+#next-instruction-message {
+  display: none;
+}
+
 #swoosh {
   bottom: -25vh;
 }

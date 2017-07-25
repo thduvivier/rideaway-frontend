@@ -7,3 +7,6 @@ suggestion-location = My location
 nav-time = Travel time
 nav-distance = Distance
 nav-arrival = Arrival
+instr-enter = Enter the cyclenetwork
+instr-leave = Leave hte cyclenetwork
+instr-destination = Destination

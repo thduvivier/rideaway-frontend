@@ -165,6 +165,13 @@ function initialize(){
         setTimeout(step, 50);
         //startTracking();
     });
+    document.getElementById("close-navigation").addEventListener("click", function(){
+        location.href = "index.html"
+    });
+    
+    document.getElementById("goto-map").addEventListener("click", function() {
+        location.href = `index.html?loc1=${loc1}&loc2=${loc2}`
+    });
 }
 
 function step (){ 
@@ -179,29 +186,37 @@ function step (){
 }
 
 function update(location){
-    
-
     var dataAtLocation = pointOnRoute(result.route, location);
     var distance = distanceAtLocation(result.route, location);
     var instruction = instructionAt(result.instructions, distance*1000);
-
+    
+    if (totalDistance - distance < 0.01){
+        window.location.href = "index.html"
+    }
 
     document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';
-    if (instruction.properties.type === "stop"){
-        document.getElementById("next-instruction-road-ref").innerHTML = '' + "Bestemming";
-        document.getElementById("next-instruction-road-ref").style["width"] = "250px";
+    if (instruction.properties.type === "leave"){
+        document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-leave");
+        document.getElementById("next-instruction-message").style["display"] = "block";
+        document.getElementById("next-instruction-road-ref").style["display"] = "none";
+    }
+    else if (instruction.properties.type === "stop"){
+        document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-destination");        
     }
     else {
+        document.getElementById("next-instruction-message").style["display"] = "none";
+        document.getElementById("next-instruction-road-ref").style["display"] = "";
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
     }
-    if (instruction.properties.type === "start"){
-        document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.instruction;
+
+    if (instruction.properties.type === "enter"){
+        document.getElementById("current-road-ref").style["display"] = "none";
+        document.getElementById("current-road-message").style["display"] = "block";
     }
     else {
-        document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.ref;
+        document.getElementById("current-road-ref").style["display"] = "";
+        document.getElementById("current-road-message").style["display"] = "none";
     }
-
-    document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.ref;
 
     if (instruction.properties.colour)  {
         document.getElementById("current-road").style["background-color"] = instruction.properties.colour;
@@ -226,35 +241,6 @@ function update(location){
 
         }
     }
-    
-
-
-    //debug
-    /*
-    document.getElementById("distance").innerHTML = '' + (totalDistance - distance);
-    document.getElementById("time").innerHTML = '' + (totalTime - dataAtLocation.time);
-    document.getElementById("instruction").innerHTML = '' + instruction.properties.instruction;
-    document.getElementById("distanceNext").innerHTML = '' + (Math.round(instruction.properties.distance - (distance*1000))) + " m";
-
-    document.getElementById("nextColour").style["background-color"] = instruction.properties.colour;
-    document.getElementById("debug").innerHTML = '' + JSON.stringify(dataAtLocation);
-
-    var direction;
-    if (instruction.properties.angle){
-        if (instruction.properties.angle.toLowerCase().indexOf("left") !== -1){
-            direction =  "<-- " + instruction.properties.nextRef; 
-        }
-        else {
-            direction = instruction.properties.nextRef + " -->"
-        }
-    }
-    document.getElementById("direction").innerHTML = '' + direction;
-
-    if (dataAtLocation.colour)  {
-        document.getElementById("routeColour").style["background-color"] = dataAtLocation.colour;
-    } else {
-        document.getElementById("routeColour").style["background-color"] = "white";
-    }*/
 }
 
 initialize();
