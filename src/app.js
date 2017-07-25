@@ -116,7 +116,7 @@ function addAllRoutes(geojson) {
       visibility: 'visible',
       'symbol-placement': 'line',
       'text-font': ['Open Sans Regular'],
-      'text-field': '{icr}',
+      'text-field': '{ref}',
       'text-size': 16
     },
     paint: {
