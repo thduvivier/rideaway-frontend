@@ -211,6 +211,7 @@ function initialize(){
         initializeNavigation(json);
         setTimeout(step, 50);
         //startTracking();
+        document.getElementById("loading-screen").style["display"] = "none";
     });
     document.getElementById("close-navigation").addEventListener("click", function(){
         location.href = "index.html"
@@ -283,8 +284,7 @@ function update(location){
         if (heading){
             dir = dir - heading;
         }
-        document.getElementById("direction-arrow").style["transform"] = `rotate(${dir + 90}deg)`
-        console.log(heading);
+        document.getElementById("direction-arrow").style["transform"] = `rotate(${dir + 90}deg)`;
     }
 
 
@@ -313,4 +313,4 @@ function update(location){
     }
 }
 
-initialize();
+window.onload = initialize;
