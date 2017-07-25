@@ -211,6 +211,7 @@ function initialize(){
         initializeNavigation(json);
         setTimeout(step, 50);
         //startTracking();
+        document.getElementById("loading-screen").style["display"] = "none";
     });
     document.getElementById("close-navigation").addEventListener("click", function(){
         location.href = "index.html"
