@@ -16,6 +16,30 @@ function lengthOfRoute (route) {
 }
 
 /**
+ * Returns the feature at the given distance on the route
+ * 
+ * @param {Object} route - the route object
+ * @param {number} distance - distance on route 
+ */
+function pointAlongRoute (route, distance) {
+    var length = 0.0;
+    for(var i = 0; i < route.features.length; i++) {
+        var feature = route.features[i];
+        if (feature.geometry.type == "LineString") {
+            var localLength = turf.lineDistance(feature);
+
+            if (length <= distance &&
+                distance <= localLength + length) {
+                return turf.along(feature, distance - length);
+            }
+
+            length += localLength;
+        }
+    }
+    return length;
+}
+
+/**
  * Returns the properties of the geojson feature that is closest to the
  * given point.
  * 
