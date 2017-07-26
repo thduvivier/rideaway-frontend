@@ -169,6 +169,18 @@ function addMarker(LatLng) {
 }
 
 /*
+* Calculates route for every profile passed
+* @param Object{origin: Array[int, int], destination: Array[int, int]} places - Origin / Dest
+* @param Array[string] profiles - Array of the profiles
+*/
+function calculateProfiles(places, profiles) {
+  const { origin, destination } = places;
+  profiles.forEach(profile => {
+    calculateRoute(origin, destination, profile);
+  });
+}
+
+/*
 * Calculates a route and shows it on the map
 * @param Array[int, int] origin - The LatLng Coords
 * @param Array[int, int] destination - The LagLng Coords
@@ -320,6 +332,10 @@ function updatePosition(position) {
 */
 function setPlace(place) {
   places[place] = places.userPosition;
+  const { origin, destination } = places;
+  if (origin && destination) {
+    calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
+  }
 }
 
 // Executes when the map loaded
@@ -340,8 +356,7 @@ map.on('load', function() {
   // If the origin & destination were passed, calculate a route
   if (places.origin && places.destination) {
     const { origin, destination } = places;
-    calculateRoute(origin, destination, 'shortest');
-    calculateRoute(origin, destination, 'brussels');
+    calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
   }
 
   // Create geocoders and add to map
@@ -368,8 +383,8 @@ map.on('load', function() {
 
       // Calculate route if destination is filled in
       if (places.destination) {
-        calculateRoute(places.origin, places.destination, 'shortest');
-        calculateRoute(places.origin, places.destination, 'brussels');
+        const { origin, destination } = places;
+        calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
       }
     }
   });
