@@ -14,6 +14,7 @@ GH_USERMAIL="arnaud.weyts@gmail.com"
 
 # set your build commands here
 function doCompile {
+  echo "MAPBOX_TOKEN${MAPBOX_TOKEN}" > .env
   yarn prod
   # echo "domain.com" > build/CNAME
 }

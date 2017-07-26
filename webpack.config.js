@@ -33,12 +33,7 @@ const prodPlugins = [
   })
 ];
 
-const devPlugins = [
-  new DotenvPlugin({
-    sample: './.env.default',
-    path: './.env'
-  })
-];
+const devPlugins = [];
 
 // determine wether to use dev plugins or prod plugins
 const plugins = isProd ? prodPlugins : devPlugins;
@@ -111,6 +106,10 @@ module.exports = {
       template: 'public/index.html'
     }),
     extractSass,
+    new DotenvPlugin({
+      sample: './.env.default',
+      path: './.env'
+    }),
     ...plugins,
     new CleanWebpackPlugin(['build'])
   ]
