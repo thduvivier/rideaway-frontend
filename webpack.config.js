@@ -2,31 +2,46 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const DotenvPlugin = require('webpack-dotenv-plugin');
 const OfflinePlugin = require('offline-plugin');
 const webpack = require('webpack');
 
+const isProd = process.env.NODE_ENV === 'PROD';
+
 const extractSass = new ExtractTextPlugin({
   filename: '[name].[contenthash].css',
-  disable: process.env.NODE_ENV === 'DEV'
+  disable: !isProd
 });
 
-const offline = new OfflinePlugin({
-  publicPath: 'https://osoc17.github.io/rideaway-frontend',
-  caches: {
-    main: ['main.*.css', 'app.*.js'],
-    additional: [':externals:'],
-    optional: [':rest:']
-  },
-  externals: ['./'],
-  ServiceWorker: {
-    navigateFallbackURL: './'
-  },
-  AppCache: {
-    FALLBACK: {
-      '/': '/offline-page.html'
+const prodPlugins = [
+  new OfflinePlugin({
+    publicPath: 'https://osoc17.github.io/rideaway-frontend',
+    caches: {
+      main: ['main.*.css', 'app.*.js'],
+      additional: [':externals:'],
+      optional: [':rest:']
+    },
+    externals: ['./'],
+    ServiceWorker: {
+      navigateFallbackURL: './'
+    },
+    AppCache: {
+      FALLBACK: {
+        '/': '/offline-page.html'
+      }
     }
-  }
-});
+  })
+];
+
+const devPlugins = [
+  new DotenvPlugin({
+    sample: './.env.default',
+    path: './.env'
+  })
+];
+
+// determine wether to use dev plugins or prod plugins
+const plugins = isProd ? prodPlugins : devPlugins;
 
 module.exports = {
   entry: './src/app.js',
@@ -96,7 +111,7 @@ module.exports = {
       template: 'public/index.html'
     }),
     extractSass,
-    offline,
+    ...plugins,
     new CleanWebpackPlugin(['build'])
   ]
 };

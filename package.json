@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/oSoc17/rideaway-frontend-v2.git"
+    "url": "https://github.com/oSoc17/rideaway-frontend.git"
   },
   "author": "Arnaud Weyts",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/oSoc17/rideaway-frontend-v2/issues"
+    "url": "https://github.com/oSoc17/rideaway-frontend/issues"
   },
-  "homepage": "https://github.com/oSoc17/rideaway-frontend-v2#readme",
+  "homepage": "https://github.com/oSoc17/rideaway-frontend#readme",
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
@@ -32,7 +32,8 @@
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "webpack": "^3.3.0",
-    "webpack-dev-server": "^2.5.1"
+    "webpack-dev-server": "^2.5.1",
+    "webpack-dotenv-plugin": "^2.0.2"
   },
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "^2.1.0",
