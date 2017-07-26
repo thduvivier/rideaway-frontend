@@ -130,7 +130,7 @@ function configureMobileMenu() {
 function configureInputs(setPlace) {
   const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
   inputs.forEach(input => {
-    // Translation stuff
+    // Define which input it is, would be better with a different data attribute
     const place = input.getAttribute('data-l10n-id').replace('-input', '');
 
     // Show location on focus
@@ -143,6 +143,12 @@ function configureInputs(setPlace) {
       if (input.value.length === 0) {
         showMyLocationSuggestion(input, setPlace);
       }
+
+      // Clear place
+      if (input.value === '') {
+        setPlace(place, null);
+      }
+
       // Set location on enter
       if (
         e.key === 'Enter' &&

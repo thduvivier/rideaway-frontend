@@ -31,6 +31,12 @@ let places = {
   userPosition: null
 };
 
+// Initialize the markers
+let markers = {
+  origin: null,
+  destination: null
+};
+
 // Global handlers
 let handlers = {
   nav: null
@@ -187,6 +193,9 @@ function calculateProfiles(places, profiles) {
 * @param String profile - The routing profile
 */
 function calculateRoute(origin, destination, profile) {
+  // Clear routes just to be sure
+  clearRoutes(map);
+
   // Swap around values for the API
   const originS = swapArrayValues(origin);
   const destinationS = swapArrayValues(destination);
@@ -326,11 +335,16 @@ function updatePosition(position) {
 }
 
 /*
-* Sets the origin/dest as the userPosition
+* Sets the origin/dest as the userPosition on default
+* if placeToSet is null, it clears the route
 * @param string place - Origin/Destination
 */
-function setPlace(place) {
-  places[place] = places.userPosition;
+function setPlace(place, placeToSet = places.userPosition) {
+  places[place] = placeToSet;
+  if (placeToSet === null) {
+    clearRoutes(map, markers[place]);
+    hideNavigationBox();
+  }
   const { origin, destination } = places;
   if (origin && destination) {
     calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
@@ -341,10 +355,6 @@ function setPlace(place) {
 map.on('load', function() {
   // Change the position of the copyright controls
   map.addControl(new mapboxgl.AttributionControl(), 'bottom-left');
-
-  // Initialize the markers
-  let markerO = null;
-  let markerD = null;
 
   // Start stracking the user
   startTracking(map, updatePosition);
@@ -370,15 +380,21 @@ map.on('load', function() {
   configureAllElements(map, setPlace);
 
   // Fire functions on result
+  // !!!!! Geocoder also fires this when the input box is unfocused
+  // See configureInputs in domManipulations
+  // Because we're clearing the marker and destination
+  // It recalculates the route...
+  // => weird behaviour when you unfocus after manually emptying the input
+  // p l s use a different geocoder
   geocoder.on('result', ({ result }) => {
     // result event fires twice for some reason, this prevents it
     // from executing our code twice, resulting in errors
     // https://github.com/mapbox/mapbox-gl-geocoder/issues/99
     if (!places.origin || places.origin !== setPoint(result)) {
-      markerO && markerO.remove();
+      markers.origin && markers.origin.remove();
       places.origin = setPoint(result);
-      markerO = addMarker(places.origin);
-      markerO.addTo(map);
+      markers.origin = addMarker(places.origin);
+      markers.origin.addTo(map);
 
       // Calculate route if destination is filled in
       if (places.destination) {
@@ -389,10 +405,10 @@ map.on('load', function() {
   });
   geocoder2.on('result', ({ result }) => {
     if (!places.destination || places.destination !== setPoint(result)) {
-      markerD && markerD.remove();
+      markers.destination && markers.destination.remove();
       places.destination = setPoint(result);
-      markerD = addMarker(places.destination);
-      markerD.addTo(map);
+      markers.destination = addMarker(places.destination);
+      markers.destination.addTo(map);
 
       if (places.origin) {
         calculateRoute(places.origin, places.destination, 'shortest');
@@ -402,12 +418,12 @@ map.on('load', function() {
   });
   // Functions fired when the geocoder is cleared
   geocoder.on('clear', () => {
-    clearRoutes(map, markerO);
+    clearRoutes(map, markers.origin);
     places.origin = null;
     hideNavigationBox();
   });
   geocoder2.on('clear', () => {
-    clearRoutes(map, markerD);
+    clearRoutes(map, markers.destination);
     places.destination = null;
     hideNavigationBox();
   });
