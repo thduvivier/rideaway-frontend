@@ -3,5 +3,5 @@ $(document).ready(function() {
 });
 
 document.querySelector('.button').addEventListener('click', () => {
-  window.location = '/';
+  window.location = './';
 });
