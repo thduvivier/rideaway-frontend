@@ -255,7 +255,7 @@ function calculateRoute(origin, destination, profile) {
 
       // Fit the map to the route
       map.fitBounds(bbox, {
-        padding: 200
+        padding: { top: 200, right: 50, bottom: 200, left: 50 }
       });
     }
   });
