@@ -117,12 +117,12 @@ body,
 
 #goto-map {
   top: 38vh;
-  background-image: url("/assets/marker-white.svg");
+  background-image: url("./assets/marker-white.svg");
 }
 
 #close-navigation {
   top: 52vh;
-  background-image: url("/assets/x-14.svg");
+  background-image: url("./assets/x-14.svg");
 }
 
 .message-box {
@@ -164,8 +164,8 @@ body,
   top: 76vh;
   margin: 0 auto;
   width: 23vh;
-  height: 23vh; 
-  background-image: url("/assets/arrow.svg");
+  height: 23vh;
+  background-image: url("./assets/arrow.svg");
   background-size: 75%;
   background-repeat: no-repeat;
   background-position: bottom 50% center;
@@ -228,8 +228,6 @@ body,
     transform: scale(1);
   }
 }
-
-
 
 /*
 #main
