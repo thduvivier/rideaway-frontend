@@ -306,6 +306,7 @@ function updateCurrentRoad(instruction){
     }
     else {
         document.getElementById("current-road-ref").style["display"] = "";
+        document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.ref;
         document.getElementById("current-road-message").style["display"] = "none";
     }
 }
