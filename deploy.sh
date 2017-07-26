@@ -15,7 +15,7 @@ GH_USERMAIL="arnaud.weyts@gmail.com"
 # set your build commands here
 function doCompile {
   yarn prod
-  # echo "vouddit.com" > build/CNAME
+  # echo "domain.com" > build/CNAME
 }
 
 # Pull requests and commits to other branches shouldn't try to deploy, just build to verify

@@ -280,8 +280,7 @@ function calculateRoute(origin, destination, profile) {
 */
 function createGeocoder(placeholder) {
   return new MapboxGeocoder({
-    accessToken:
-      'pk.eyJ1IjoiYXJuYXVkd2V5dHMiLCJhIjoiY2o0cGt3d3oxMXl0cDMzcXNlbThnM3RtaCJ9.BMUyxqHH-FC69pW4U4YO9A',
+    accessToken: process.env.MAPBOX_TOKEN,
     flyTo: false,
     placeholder,
     country: 'BE',
