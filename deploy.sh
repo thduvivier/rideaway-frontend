@@ -16,7 +16,7 @@ GH_USERMAIL="arnaud.weyts@gmail.com"
 function doCompile {
   echo "MAPBOX_TOKEN${MAPBOX_TOKEN}" > .env
   yarn prod
-  # echo "domain.com" > build/CNAME
+  echo "routeplanner.bike.brussels" > build/CNAME
 }
 
 # Pull requests and commits to other branches shouldn't try to deploy, just build to verify
