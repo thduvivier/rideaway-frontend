@@ -1,3 +1,5 @@
+import Konami from 'konami-js';
+
 import { routeConfig, colors, center } from '../constants';
 import {
   clearRoutes,
@@ -297,6 +299,10 @@ export function configureAllElements(mapboxmap, setPlace) {
   map = mapboxmap;
   configureMobileMenu();
   configureInputs(setPlace);
+  new Konami(function() {
+    alert('Secret feature activated!');
+    document.querySelector('.nav-btn').style.display = 'block';
+  });
 }
 
 /*
