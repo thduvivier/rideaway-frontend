@@ -110,6 +110,7 @@ module.exports = {
       sample: './.env.default',
       path: './.env'
     }),
+    new webpack.EnvironmentPlugin(['NODE_ENV']),
     ...plugins,
     new CleanWebpackPlugin(['build'])
   ]
