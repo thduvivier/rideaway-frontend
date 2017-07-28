@@ -42,9 +42,6 @@ mv .git ../.git2
 
 cd ..
 
-# Clean out existing contents
-rm -rf $DIRECTORY|| exit 0
-
 # Run our compile script (This sometimes completely cleanes out the build directory,
 # hence why we moved our .git folder too safety
 doCompile
