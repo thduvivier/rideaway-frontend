@@ -36,7 +36,7 @@
     "webpack-dotenv-plugin": "2.0.2"
   },
   "dependencies": {
-    "@mapbox/mapbox-gl-geocoder": "2.1.0",
+    "@mapbox/mapbox-gl-geocoder": "2.1.1",
     "debug": "2.6.8",
     "konami-js": "0.0.2",
     "l20n": "5.0.0",
