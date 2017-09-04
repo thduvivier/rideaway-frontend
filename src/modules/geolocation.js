@@ -64,7 +64,7 @@ function onPosition(position, marker, map, updatePosition) {
 */
 export function stopTracking() {
   navigator.geolocation.clearWatch(this.state.watchPositionId);
-  window.removeEventListener('deviceorientation', () => _setHeading(map));
+  //window.removeEventListener('deviceorientation', () => _setHeading(map));
 }
 
 //function _setHeading(e, map) {}

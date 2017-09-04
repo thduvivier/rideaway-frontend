@@ -202,84 +202,89 @@ function calculateRoute(origin, destination, profile) {
 
   // Construct the url
   const url = `${urls.route}/route?loc1=${originS}&loc2=${destinationS}&profile=${profile}`;
-  fetchJSON(url).then(json => {
-    // Check if profile already exists
-    const calculatedRoute = map.getSource(profile);
-    if (calculatedRoute) {
-      // Just set the data
-      calculatedRoute.setData(url);
-    } else {
-      // Add a new layer
-      map.addLayer({
-        id: profile,
-        type: 'line',
-        source: {
-          type: 'geojson',
-          data: json.route
-        },
-        paint: {
-          'line-color':
-            profile === 'shortest'
-              ? 'lightgrey'
-              : {
-                  type: 'identity',
-                  property: 'colour'
-                },
-          'line-width': 4
-        },
-        layout: {
-          'line-cap': 'round'
-        }
-      });
-    }
 
-    // Move the network layer always on top
-    if (profile === 'shortest' && map.getSource('brussels')) {
-      map.moveLayer('shortest', 'brussels');
-    }
-
-    // If the profile is brussels, initiate the nav stuff
-    if (profile === 'brussels') {
-      const oldHandler = handlers.nav;
-
-      // Set the new handler
-      handlers.nav = () => {
-        const { origin, destination } = places;
-        const originS = [origin[1], origin[0]];
-        const destinationS = [destination[1], destination[0]];
-
-        location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
-      };
-
-      const lastFeature = json.route.features[json.route.features.length - 1];
-      const { properties: { distance, time } } = lastFeature;
-
-      // Always hide the layers
-      toggleLayer(map, 'GFR_routes', 'none');
-      toggleLayer(map, 'GFR_symbols', 'none');
-      document.querySelector('.routelist-none').click();
-
-      // Show the navigation box, change the handler
-      showNavigationBox(oldHandler, handlers.nav, distance, time);
-
-      // sets the bounding box correctly
-      let bbox = [];
-      if (origin[0] > destination[0] && origin[1] > destination[1]) {
-        bbox = [destination, origin];
-      } else if (origin[0] < destination[0] && origin[1] > destination[1]) {
-        bbox = [[origin[0], destination[1]], [destination[0], origin[1]]];
-      } else if (origin[0] > destination[0] && origin[1] < destination[1]) {
-        bbox = [[destination[0], origin[1]], [origin[0], destination[1]]];
+  fetchJSON(url)
+    .then(json => {
+      // Check if profile already exists
+      const calculatedRoute = map.getSource(profile);
+      if (calculatedRoute) {
+        // Just set the data
+        calculatedRoute.setData(url);
       } else {
-        bbox = [origin, destination];
+        // Add a new layer
+        map.addLayer({
+          id: profile,
+          type: 'line',
+          source: {
+            type: 'geojson',
+            data: json.route
+          },
+          paint: {
+            'line-color':
+              profile === 'shortest'
+                ? 'lightgrey'
+                : {
+                    type: 'identity',
+                    property: 'colour'
+                  },
+            'line-width': 4
+          },
+          layout: {
+            'line-cap': 'round'
+          }
+        });
       }
 
-      // Fit the map to the route
-      map.fitBounds(bbox, {
-        padding: { top: 200, right: 50, bottom: 200, left: 50 }
-      });
-    }
-  });
+      // Move the network layer always on top
+      if (profile === 'shortest' && map.getSource('brussels')) {
+        map.moveLayer('shortest', 'brussels');
+      }
+
+      // If the profile is brussels, initiate the nav stuff
+      if (profile === 'brussels') {
+        const oldHandler = handlers.nav;
+
+        // Set the new handler
+        handlers.nav = () => {
+          const { origin, destination } = places;
+          const originS = [origin[1], origin[0]];
+          const destinationS = [destination[1], destination[0]];
+
+          location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
+        };
+
+        const lastFeature = json.route.features[json.route.features.length - 1];
+        const { properties: { distance, time } } = lastFeature;
+
+        // Always hide the layers
+        toggleLayer(map, 'GFR_routes', 'none');
+        toggleLayer(map, 'GFR_symbols', 'none');
+        document.querySelector('.routelist-none').click();
+
+        // Show the navigation box, change the handler
+        showNavigationBox(oldHandler, handlers.nav, distance, time);
+
+        // sets the bounding box correctly
+        let bbox = [];
+        if (origin[0] > destination[0] && origin[1] > destination[1]) {
+          bbox = [destination, origin];
+        } else if (origin[0] < destination[0] && origin[1] > destination[1]) {
+          bbox = [[origin[0], destination[1]], [destination[0], origin[1]]];
+        } else if (origin[0] > destination[0] && origin[1] < destination[1]) {
+          bbox = [[destination[0], origin[1]], [origin[0], destination[1]]];
+        } else {
+          bbox = [origin, destination];
+        }
+
+        // Fit the map to the route
+        map.fitBounds(bbox, {
+          padding: { top: 200, right: 50, bottom: 200, left: 50 }
+        });
+      }
+    })
+    .catch(ex => {
+      console.log('Problem finding a route: ' + ex);
+    });
 }
 
 /*
