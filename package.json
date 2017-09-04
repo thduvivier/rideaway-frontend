@@ -46,6 +46,9 @@
   },
   "renovate": {
     "baseBranch": "develop",
-    "labels": ["dependency update", "bot"]
+    "labels": [
+      "dependency update",
+      "bot"
+    ]
   }
 }
