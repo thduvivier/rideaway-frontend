@@ -9,4 +9,4 @@ nav-distance = Afstand
 nav-arrival = Aankomst
 instr-enter = Navigeer naar het fietsnetwerk
 instr-leave = Verlaat het fietsnetwerk
-instr-destination = Bestemming
+instr-destination = Bestemming bereikt

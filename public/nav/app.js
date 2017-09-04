@@ -276,7 +276,7 @@ function update(location){
     document.getElementById("current-road").style["height"] = (100 - offset) + "vh";
     document.getElementById("current-road").style["top"] = offset + "vh";
     document.getElementById("next-instruction-arrow").style["top"] = offset - 19 + "vh";
-    document.getElementById("next-instruction-road-ref").style["top"] = offset - 35 + "vh";
+    document.getElementById("next-instruction-road-ref").style["top"] = offset - 31 + "vh";
 
     updateCurrentRoad(instruction);
     updateNextInstruction(instruction);   
@@ -318,12 +318,10 @@ function updateCurrentRoad(instruction){
 
     if (instruction.properties.type === "enter"){
         document.getElementById("current-road-ref").style["display"] = "none";
-        document.getElementById("current-road-message").style["display"] = "block";
     }
     else {
         document.getElementById("current-road-ref").style["display"] = "";
         document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.ref;
-        document.getElementById("current-road-message").style["display"] = "none";
     }
 }
 
@@ -354,6 +352,8 @@ function updateNextInstruction(instruction){
     }
     else if (instruction.properties.type === "enter"){
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
+        document.getElementById("next-instruction-message").style["display"] = "block";
+        document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-enter");                
     }
     else {
         document.getElementById("next-instruction-message").style["display"] = "none";

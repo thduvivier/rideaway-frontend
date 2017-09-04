@@ -9,4 +9,4 @@ nav-distance = Distance
 nav-arrival = Arrival
 instr-enter = Enter the cyclenetwork
 instr-leave = Leave the cyclenetwork
-instr-destination = Destination
+instr-destination = You arrived at your destination
