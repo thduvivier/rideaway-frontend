@@ -342,21 +342,21 @@ function updateNextInstruction(instruction){
     }
 
     if (instruction.properties.type === "leave"){
-        document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-leave");
-        document.getElementById("next-instruction-message").style["display"] = "block";
+        document.getElementById("message").setAttribute("data-l10n-id", "instr-leave");
+        document.getElementById("message").style["display"] = "block";
         document.getElementById("next-instruction-road-ref").style["display"] = "none";
     }
     else if (instruction.properties.type === "stop"){
-        document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-destination");        
+        document.getElementById("message").setAttribute("data-l10n-id", "instr-destination");        
         document.getElementById("next-instruction-arrow").style["display"] = "none";
     }
     else if (instruction.properties.type === "enter"){
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
-        document.getElementById("next-instruction-message").style["display"] = "block";
-        document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-enter");                
+        document.getElementById("message").style["display"] = "block";
+        document.getElementById("message").setAttribute("data-l10n-id", "instr-enter");                
     }
     else {
-        document.getElementById("next-instruction-message").style["display"] = "none";
+        document.getElementById("message").style["display"] = "none";
         document.getElementById("next-instruction-road-ref").style["display"] = "";
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
     }

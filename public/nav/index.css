@@ -141,8 +141,10 @@ body,
   display: none;
 }
 
-#next-instruction-message {
-  display: none;
+#message {
+  position: absolute;
+  top: 2vh;
+  z-index: 50;
 }
 
 #swoosh {
