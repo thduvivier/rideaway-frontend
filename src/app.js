@@ -4,6 +4,9 @@ import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import 'whatwg-fetch';
 import 'l20n';
 
+// eslint-disable-next-line
+require('add-to-homescreen');
+
 import icons from './icons';
 import { urls, center } from './constants';
 
@@ -54,6 +57,13 @@ if (loc1 && loc2) {
     loc2.split(',').map(coord => parseFloat(coord))
   );
 }
+
+// show dialog to add to homescreen
+window.addToHomescreen({
+  skipFirstVisit: true,
+  startDelay: 5,
+  maxDisplayCount: 1
+});
 
 document.querySelector('.center-btn--icon').src = icons.Center;
 document.querySelector('.nav-white').src = icons.NavWhite;
