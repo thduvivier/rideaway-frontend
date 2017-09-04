@@ -329,6 +329,9 @@ export function configureAllElements(mapboxmap, setPlace) {
   map = mapboxmap;
   configureMobileMenu();
   configureInputs(setPlace);
+  document
+    .querySelector('.error-btn-close')
+    .addEventListener('click', toggleErrorDialog);
   new Konami(function() {
     alert('Secret feature activated!');
     document.querySelector('.nav-btn').style.display = 'block';
@@ -373,4 +376,14 @@ export function hideNavigationBox() {
   const navBox = document.querySelector('.nav-box');
   navBox.style.transform = 'translateY(175px)';
   document.querySelector('.center-btn').style.display = 'block';
+}
+
+/*
+* Show dialog when no route is found
+*/
+export function toggleErrorDialog() {
+  const dialog = document.querySelector('.error-dialog');
+  const toggle =
+    window.getComputedStyle(dialog, null).display === 'flex' ? 'none' : 'flex';
+  dialog.style.display = toggle;
 }

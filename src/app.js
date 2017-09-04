@@ -12,7 +12,8 @@ import {
   addFilters,
   configureAllElements,
   showNavigationBox,
-  hideNavigationBox
+  hideNavigationBox,
+  toggleErrorDialog
 } from './modules/domManipulations';
 import { findGetParameter, swapArrayValues } from './modules/lib';
 import { toggleLayer, clearRoutes } from './modules/mapManipulations';
@@ -285,6 +286,7 @@ function calculateRoute(origin, destination, profile) {
     .catch(ex => {
       // eslint-disable-next-line
       console.warn('Problem finding a route: ' + ex);
+      toggleErrorDialog();
     });
 }
 
