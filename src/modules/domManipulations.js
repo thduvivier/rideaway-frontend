@@ -67,6 +67,20 @@ function configureListItem(route) {
     const active = document.querySelector('.routelist-item--active');
     active && active.classList.remove('routelist-item--active');
 
+    // if all routes are selected, and one is clicked, select
+    // the one clicked instead of deslecting it, feels better
+    if (!document.querySelector('.routelist-item--inactive')) {
+      const items = document.querySelectorAll('.routelist-item');
+      items.forEach(item => item.classList.add('routelist-item--inactive'));
+      el.classList.remove('routelist-item--inactive');
+      let inactives = Array.from(
+        document.querySelectorAll('.routelist-item--inactive'),
+        item => item.firstChild.innerHTML
+      );
+      filterRoutes(map, inactives);
+      return;
+    }
+
     if (!el.className.includes('routelist-item--inactive')) {
       el.classList.add('routelist-item--inactive');
       let inactives = Array.from(
