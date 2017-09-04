@@ -275,6 +275,8 @@ function update(location){
     document.getElementById("next-instruction").style["height"] = offset + "vh";
     document.getElementById("current-road").style["height"] = (100 - offset) + "vh";
     document.getElementById("current-road").style["top"] = offset + "vh";
+    document.getElementById("next-instruction-arrow").style["top"] = offset - 19 + "vh";
+    document.getElementById("next-instruction-road-ref").style["top"] = offset - 35 + "vh";
 
     updateCurrentRoad(instruction);
     updateNextInstruction(instruction);   

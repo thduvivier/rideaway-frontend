@@ -27,19 +27,23 @@ body,
   width: 100vw;
 }
 #next-instruction-arrow {
+  position: absolute;
   color: #fff;
-  display: inline-block;
   height: 45%;
   text-align: center;
   width: 100%;
   margin: 0 auto;
 }
 #next-instruction-road {
-  display: inline-block;
   height: 45%;
   text-align: center;
   width: 100%;
-  margin-top: 5vh;
+}
+
+#next-instruction-road-ref {
+  left: 0;
+  right: 0;
+  position: absolute;
 }
 #next-instruction-road > div {
   margin: 0 auto;
@@ -80,7 +84,11 @@ body,
 }
 
 #current-road-ref {
-  bottom: -10vh;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  bottom: 25vh;
 }
 
 #debug {
