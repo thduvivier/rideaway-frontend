@@ -1,14 +1,9 @@
 import Konami from 'konami-js';
+import _ from 'lodash';
 
-import { routeConfig, colors, center } from '../constants';
-import {
-  clearRoutes,
-  filterRoute,
-  toggleLayer,
-  removeFilter
-} from './mapManipulations';
+import { routeConfig, center } from '../constants';
+import { filterRoute, toggleLayer, removeFilter } from './mapManipulations';
 import { displayDistance, displayTime, displayArrival } from './lib';
-import icons from '../icons';
 
 // Global variable
 let map;
@@ -92,7 +87,6 @@ function showCloseButton(geocoder) {
       'div:nth-of-type(1) .geocoder-icon.geocoder-icon-close'
     ).style.display =
       'block';
-  } else {
   }
 }
 
@@ -172,7 +166,7 @@ function configureInputs(setPlace) {
     });
 
     // Hide my location
-    input.addEventListener('focusout', e => {
+    input.addEventListener('focusout', () => {
       hideMyLocationSuggestion(input);
     });
   });
@@ -191,7 +185,6 @@ function showMyLocationSuggestion(input, setPlace) {
 
   // Queryselectors
   const suggestions = input.parentElement.querySelector('.suggestions');
-  const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
 
   // If the option doesn't exist, add it
   const myLoc = input.parentElement.querySelector('.mylocation');
@@ -204,7 +197,7 @@ function showMyLocationSuggestion(input, setPlace) {
     a.setAttribute('data-l10n-id', 'suggestion-location');
 
     // Event listener
-    a.addEventListener('mousedown', e => {
+    a.addEventListener('mousedown', () => {
       input.value = a.innerHTML;
 
       // Translation config

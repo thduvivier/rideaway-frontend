@@ -17,6 +17,7 @@ import {
 import { findGetParameter, swapArrayValues } from './modules/lib';
 import { toggleLayer, clearRoutes } from './modules/mapManipulations';
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
+// eslint-disable-next-line
 if (process.env.NODE_ENV === 'PROD') {
   OfflinePluginRuntime.install();
 }
@@ -288,6 +289,7 @@ function calculateRoute(origin, destination, profile) {
 */
 function createGeocoder(placeholder) {
   return new MapboxGeocoder({
+    // eslint-disable-next-line
     accessToken: process.env.MAPBOX_TOKEN,
     flyTo: false,
     placeholder,
