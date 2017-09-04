@@ -78,15 +78,19 @@ function configureListItem(route) {
         item => item.firstChild.innerHTML
       );
       filterRoutes(map, inactives);
-      return;
-    }
-
-    if (!el.className.includes('routelist-item--inactive')) {
+    } else if (!el.className.includes('routelist-item--inactive')) {
       el.classList.add('routelist-item--inactive');
       let inactives = Array.from(
         document.querySelectorAll('.routelist-item--inactive'),
         item => item.firstChild.innerHTML
       );
+      if (
+        inactives.length === document.querySelectorAll('.routelist-item').length
+      ) {
+        document
+          .querySelector('.routelist-none')
+          .classList.add('routelist-item--active');
+      }
       filterRoutes(map, inactives);
     } else {
       el.classList.remove('routelist-item--inactive');
