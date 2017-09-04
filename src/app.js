@@ -2,7 +2,6 @@
 import mapboxgl from 'mapbox-gl';
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import 'whatwg-fetch';
-import _ from 'lodash';
 import 'l20n';
 
 import icons from './icons';

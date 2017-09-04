@@ -6,7 +6,7 @@
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@mapbox/gl-matrix/-/gl-matrix-0.0.1.tgz#e5126aab4d64c36b81c7a97d0ae0dddde5773d2b"
 
-"@mapbox/mapbox-gl-geocoder@2.1.1":
+"@mapbox/mapbox-gl-geocoder@^2.1.0":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@mapbox/mapbox-gl-geocoder/-/mapbox-gl-geocoder-2.1.1.tgz#74032642a646d274c93ecdfa483e29eea7293b48"
   dependencies:
@@ -2486,7 +2486,7 @@ interpret@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.0.3.tgz#cbc35c62eeee73f19ab7b10a801511401afc0f90"
 
-"intl-pluralrules@github:projectfluent/IntlPluralRules#module":
+intl-pluralrules@projectfluent/IntlPluralRules#module:
   version "0.1.0"
   resolved "https://codeload.github.com/projectfluent/IntlPluralRules/tar.gz/94cb0fa1c23ad943bc5aafef43cea132fa51d68b"
 
@@ -2787,7 +2787,7 @@ klaw@^1.0.0:
   optionalDependencies:
     graceful-fs "^4.1.9"
 
-konami-js@0.0.2:
+konami-js@^0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/konami-js/-/konami-js-0.0.2.tgz#35ab27483f27e23e91e470da851954e4468fc6d9"
   dependencies:
@@ -2807,7 +2807,7 @@ konami-touch@^0.0.3:
     gestures "^0.0.2"
     math-js "^0.0.4"
 
-l20n@5.0.0:
+l20n@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/l20n/-/l20n-5.0.0.tgz#5df9154b20a0acf01d4c8b0c45af30b97a731a33"
   dependencies:
@@ -2958,7 +2958,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@4.17.4, lodash@^4.0.0, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.3.0, lodash@~4.17.4:
+lodash@^4.0.0, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.2.0, lodash@^4.3.0, lodash@~4.17.4:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -3018,7 +3018,7 @@ mapbox-gl-supported@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/mapbox-gl-supported/-/mapbox-gl-supported-1.2.0.tgz#cbd34df894206cadda9a33c8d9a4609f26bb1989"
 
-mapbox-gl@0.39.1:
+mapbox-gl@^0.39.1:
   version "0.39.1"
   resolved "https://registry.yarnpkg.com/mapbox-gl/-/mapbox-gl-0.39.1.tgz#2197e1e9dc5d37371b85c73157cf1c1f977c5812"
   dependencies:
@@ -4321,15 +4321,15 @@ right-align@^0.1.1:
   dependencies:
     align-text "^0.1.1"
 
-rimraf@2, rimraf@^2.2.8, rimraf@^2.5.1, rimraf@^2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.1.tgz#c2338ec643df7a1b7fe5c54fa86f57428a55f33d"
+rimraf@2, rimraf@^2.2.8, rimraf@~2.5.1:
+  version "2.5.4"
+  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.5.4.tgz#96800093cbf1a0c86bd95b4625467535c29dfa04"
   dependencies:
     glob "^7.0.5"
 
-rimraf@~2.5.1:
-  version "2.5.4"
-  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.5.4.tgz#96800093cbf1a0c86bd95b4625467535c29dfa04"
+rimraf@^2.5.1, rimraf@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.1.tgz#c2338ec643df7a1b7fe5c54fa86f57428a55f33d"
   dependencies:
     glob "^7.0.5"
 
@@ -4394,11 +4394,7 @@ selfsigned@^1.9.1:
   dependencies:
     node-forge "0.6.33"
 
-"semver@2 || 3 || 4 || 5", semver@^5.3.0:
-  version "5.4.1"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
-
-semver@~5.3.0:
+"semver@2 || 3 || 4 || 5", semver@^5.3.0, semver@~5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.3.0.tgz#9b2ce5d3de02d17c6012ad326aa6b4d0cf54f94f"
 
@@ -5217,7 +5213,7 @@ wgs84@0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/wgs84/-/wgs84-0.0.0.tgz#34fdc555917b6e57cf2a282ed043710c049cdc76"
 
-whatwg-fetch@2.0.3:
+whatwg-fetch@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-2.0.3.tgz#9c84ec2dcf68187ff00bc64e1274b442176e1c84"
 
