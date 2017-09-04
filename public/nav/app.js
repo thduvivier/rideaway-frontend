@@ -260,7 +260,15 @@ function update(location){
         window.location.href = "index.html"
     }
 
-    document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';
+    var distanceToNext = instruction.properties.distance - (distance*1000);
+    if (distanceToNext > 1000){
+        document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/100)/10 + 'km';        
+    }
+    else {
+        document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';        
+    }
+
+    //document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';
 
     updateCurrentRoad(instruction);
     updateNextInstruction(instruction);   
