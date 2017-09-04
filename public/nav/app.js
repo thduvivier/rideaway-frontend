@@ -267,8 +267,14 @@ function update(location){
     else {
         document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';        
     }
-
-    //document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';
+    var offset = 20;
+    if (distanceToNext < 1000){
+        offset += (distanceToNext-1000)*-1/20;
+    }
+    document.getElementById("next-instruction-distance").style["top"] = offset + "vh";
+    document.getElementById("next-instruction").style["height"] = offset + "vh";
+    document.getElementById("current-road").style["height"] = (100 - offset) + "vh";
+    document.getElementById("current-road").style["top"] = offset + "vh";
 
     updateCurrentRoad(instruction);
     updateNextInstruction(instruction);   

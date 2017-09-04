@@ -19,7 +19,7 @@ body,
 
 #next-instruction {
   background-color: red;
-  height: 50vh;
+  height: 20vh;
   margin: 0 auto;
   position: absolute;
   text-align: center;
@@ -32,8 +32,6 @@ body,
   height: 45%;
   text-align: center;
   width: 100%;
-}
-#next-instruction-arrow {
   margin: 0 auto;
 }
 #next-instruction-road {
@@ -58,7 +56,7 @@ body,
   position: absolute;
   text-align: center;
   top: 50vh;
-  width: 33vw;
+  width: 40vw;
   z-index: 99;
   left: 0;
   right: 0;
@@ -140,19 +138,22 @@ body,
 }
 
 #swoosh {
-  bottom: -25vh;
+  position: absolute;
+  bottom: 10vh;
+  width: 100vw;
 }
 
 #swoosh-left {
-  color: #fff;
   float: left;
+  color: #fff;
   width: 25%;
 }
 
 #swoosh-right {
-  color: #fff;
   float: right;
+  color: #fff;
   width: 25%;
+  right: 0px;
 }
 
 #direction-arrow {
