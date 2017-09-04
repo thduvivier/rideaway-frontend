@@ -134,6 +134,9 @@ function configureMobileMenu() {
   const control = document.querySelector('.mapboxgl-ctrl-top-right');
   control.insertBefore(menuOpen, control.childNodes[0]);
 
+  // collapse menu when the dimmed part is touched
+  document.querySelector('.dimmed').addEventListener('click', collapseMenu);
+
   document.querySelector('.menu-btn-close').addEventListener('click', () => {
     collapseMenu();
   });

@@ -283,7 +283,8 @@ function calculateRoute(origin, destination, profile) {
       }
     })
     .catch(ex => {
-      console.log('Problem finding a route: ' + ex);
+      // eslint-disable-next-line
+      console.warn('Problem finding a route: ' + ex);
     });
 }
 
