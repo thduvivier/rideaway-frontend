@@ -3,14 +3,16 @@
 * @param map mapboxglmap - The map
 * @param route String
 */
-export function filterRoute(map, route) {
+export function filterRoutes(map, inactives) {
   // Filters, also filter out a/b routes
-  const filter = [
-    'any',
-    ['==', 'ref', route],
-    ['==', 'ref', route + 'a'],
-    ['==', 'ref', route + 'b']
-  ];
+  const filter = ['all'];
+  inactives.forEach(inactive => {
+    filter.push(
+      ['!=', 'ref', inactive],
+      ['!=', 'ref', inactive + 'a'],
+      ['!=', 'ref', inactive + 'b']
+    );
+  });
   map.setFilter('GFR_routes', filter);
   map.setFilter('GFR_symbols', filter);
   map.setLayoutProperty('GFR_routes', 'visibility', 'visible');

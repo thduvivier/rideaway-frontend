@@ -144,6 +144,10 @@ body {
   border-radius: 10px;
 }
 
+.routelist-item--inactive {
+  background-color: $grey !important;
+}
+
 .routelist-item-radial {
   width: 3em;
   height: 3em;

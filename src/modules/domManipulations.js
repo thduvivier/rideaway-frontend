@@ -2,7 +2,7 @@ import Konami from 'konami-js';
 import _ from 'lodash';
 
 import { routeConfig, center } from '../constants';
-import { filterRoute, toggleLayer, removeFilter } from './mapManipulations';
+import { filterRoutes, toggleLayer, removeFilter } from './mapManipulations';
 import { displayDistance, displayTime, displayArrival } from './lib';
 
 // Global variable
@@ -25,16 +25,22 @@ function collapseMenu() {
 function configureAllNone() {
   const all = document.querySelector('.routelist-all');
   all.addEventListener('click', () => {
-    const active = document.querySelector('.routelist-item--active');
-    active && active.classList.remove('routelist-item--active');
+    const items = document.querySelectorAll('.routelist-item');
+    items.forEach(item => item.classList.remove('routelist-item--inactive'));
+    document
+      .querySelector('.routelist-none')
+      .classList.remove('routelist-item--active');
     all.className += ' routelist-item--active';
     removeFilter(map);
     collapseMenu();
   });
   const none = document.querySelector('.routelist-none');
   none.addEventListener('click', () => {
-    const active = document.querySelector('.routelist-item--active');
-    active && active.classList.remove('routelist-item--active');
+    const items = document.querySelectorAll('.routelist-item');
+    items.forEach(item => item.classList.add('routelist-item--inactive'));
+    document
+      .querySelector('.routelist-all')
+      .classList.remove('routelist-item--active');
     none.className += ' routelist-item--active';
     toggleLayer(map, 'GFR_routes', 'none');
     toggleLayer(map, 'GFR_symbols', 'none');
@@ -60,8 +66,22 @@ function configureListItem(route) {
   el.addEventListener('click', () => {
     const active = document.querySelector('.routelist-item--active');
     active && active.classList.remove('routelist-item--active');
-    el.className += ' routelist-item--active';
-    filterRoute(map, route.name);
+
+    if (!el.className.includes('routelist-item--inactive')) {
+      el.classList.add('routelist-item--inactive');
+      let inactives = Array.from(
+        document.querySelectorAll('.routelist-item--inactive'),
+        item => item.firstChild.innerHTML
+      );
+      filterRoutes(map, inactives);
+    } else {
+      el.classList.remove('routelist-item--inactive');
+      let inactives = Array.from(
+        document.querySelectorAll('.routelist-item--inactive'),
+        item => item.firstChild.innerHTML
+      );
+      filterRoutes(map, inactives);
+    }
     collapseMenu();
 
     // Only recenter the map if the route isn't calculated
