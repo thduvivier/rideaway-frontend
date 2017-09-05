@@ -150,7 +150,7 @@ export default class MapController {
     });
 
     // Remove the loading screen
-    document.querySelector('.main-loading').style.display = 'none';
+    document.querySelector('.main-loading').classList.remove('visible');
   }
 
   /*

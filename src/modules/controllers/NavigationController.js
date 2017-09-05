@@ -1,6 +1,8 @@
 import turf from 'turf';
 import { fetchJSON, getParameterByName } from '../lib';
 
+import router from '../../router';
+
 /**
  * Calculates the length of the route.
  * 
@@ -204,10 +206,12 @@ export default function initialize() {
     .getElementById('close-navigation')
     .addEventListener('click', function() {
       history.replaceState(null, null, '/');
+      router.showRouteplanning();
     });
 
   document.getElementById('goto-map').addEventListener('click', function() {
     history.replaceState(null, null, `?loc1=${loc1}&loc2=${loc2}`);
+    router.showRouteplanning();
   });
 }
 
@@ -236,7 +240,7 @@ function update(location) {
   var instruction = instructionAt(result.instructions, distance * 1000);
 
   if (totalDistance - distance < 0.01) {
-    window.location.href = 'index.html';
+    router.showRouteplanning();
   }
 
   document.getElementById('next-instruction-distance').innerHTML =

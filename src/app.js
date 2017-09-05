@@ -13,11 +13,10 @@ import { findGetParameter, swapArrayValues, fetchJSON } from './modules/lib';
 
 import MapController from './modules/controllers/MapController';
 import GeolocationController from './modules/controllers/GeolocationController';
-
 import { createGeocoder } from './modules/controllers/GeocoderController';
-import initializeNav from './modules/controllers/NavigationController';
-
 import View from './modules/views/View';
+
+import router from './router';
 
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 // eslint-disable-next-line
@@ -46,9 +45,9 @@ let handlers = {
 };
 
 if (location.hash.includes('#nav')) {
-  showNavigation();
+  router.showNavigation();
 } else {
-  showRouteplanning();
+  router.showRouteplanning();
 }
 
 // Set origin and destination from url params
@@ -72,18 +71,6 @@ window.addToHomescreen({
 
 document.querySelector('.center-btn--icon').src = icons.Center;
 document.querySelector('.nav-white').src = icons.NavWhite;
-
-function showNavigation() {
-  initializeNav();
-  document.querySelector('.routeplanner').classList.remove('visible');
-  document.querySelector('.main-loading').classList.add('visible');
-  document.querySelector('.navigation').classList.add('visible');
-}
-
-function showRouteplanning() {
-  document.querySelector('.navigation').classList.remove('visible');
-  document.querySelector('.routeplanner').classList.add('visible');
-}
 
 /*
 * Calculates route for every profile passed
@@ -166,7 +153,7 @@ function calculateRoute(origin, destination, profile) {
             'Navigation',
             `#nav?loc1=${originS}&loc2=${destinationS}`
           );
-          showNavigation();
+          router.showNavigation();
         };
 
         const lastFeature = json.route.features[json.route.features.length - 1];

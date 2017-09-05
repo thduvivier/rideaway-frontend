@@ -37,19 +37,19 @@ body {
   width: 100vw;
 }
 
-.visible {
-  display: flex;
-}
-
 .main-loading {
+  display: none;
   position: absolute;
   height: 100vh;
   width: 100vw;
   z-index: 99;
   background: $primary_color;
-  display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.visible {
+  display: flex;
 }
 
 .dimmed {
