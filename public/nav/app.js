@@ -40,7 +40,7 @@ function pointAlongRoute (route, distance) {
 }
 
 /**
- * Returns the properties of the geojson feature that is closest to the
+ * Returns the properties and distance of the geojson feature that is closest to the
  * given point.
  * 
  * @param {Object} route - the route object 
@@ -60,7 +60,7 @@ function pointOnRoute (route, point) {
             }
         }
     }
-    return bestData;
+    return {distance: best, data: bestData};
 }
 
 /**
@@ -213,8 +213,7 @@ function initializeNavigation(result){
 function initialize(){
     loc1 = getParameterByName("loc1");
     loc2 = getParameterByName("loc2");
-    console.log(loc1);
-    console.log(loc2);
+    
     const url = `https://cyclerouting-api.osm.be/route?loc1=${loc1}&loc2=${loc2}&profile=brussels&instructions=true`;
 
     fetchJSON(url).then(json => {
@@ -252,15 +251,15 @@ function step (){
  * @param {Object} location - the current location 
  */
 function update(location){
-    var dataAtLocation = pointOnRoute(result.route, location);
+    var closestPoint = pointOnRoute(result.route, location);
     var distance = distanceAtLocation(result.route, location);
     var instruction = instructionAt(result.instructions, distance*1000);
+    var distanceToNext = instruction.properties.distance - (distance*1000);
     
     if (totalDistance - distance < 0.01){
         window.location.href = "index.html"
     }
 
-    var distanceToNext = instruction.properties.distance - (distance*1000);
     if (distanceToNext > 1000){
         document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/100)/10 + 'km';        
     }

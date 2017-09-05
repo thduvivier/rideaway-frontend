@@ -143,7 +143,7 @@ body,
 
 #message {
   position: absolute;
-  top: 2vh;
+  top: 0vh;
   z-index: 50;
 }
 
