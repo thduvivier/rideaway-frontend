@@ -50,6 +50,7 @@ function pointOnRoute (route, point) {
     var best = 1000000;
     var bestPoint = {};
     var bestData = {};
+    var nextPoint = {};
     for(var i = 0; i < route.features.length; i++) {
         var feature = route.features[i];
         if (feature.geometry.type == "LineString") {
@@ -59,10 +60,11 @@ function pointOnRoute (route, point) {
                 best = snapped.properties.dist;
                 bestPoint = snapped;
                 bestData = feature.properties;
+                nextPoint = feature.geometry.coordinates[snapped.properties.index];
             }
         }
     }
-    return {distance: best, point: bestPoint.geometry, data: bestData};
+    return {distance: best, point: bestPoint.geometry, next: nextPoint, data: bestData};
 }
 
 /**
@@ -163,6 +165,10 @@ function fetchJSON(url) {
 function startTracking() {
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(position => {
+        if (loading){
+            loading = false;
+            document.getElementById("loading-screen").style["display"] = "none";            
+        }
         var coord = position.coords;
         var location = turf.point([coord.longitude, coord.latitude]);
         heading = position.coords.heading;
@@ -173,6 +179,7 @@ function startTracking() {
     alert("Sorry, your browser doesn't support geolocation!");
   }
 }
+var loading = true;
 
 var result;
 var heading;
@@ -186,14 +193,24 @@ var i = 0;
 var loc1;
 var loc2;
 
-const arrowDeg = {
-    sharpleft : -45,
+const angleDeg = {
+    sharpleft : 270,
     left : 0,
     slightlyleft: 45,
     straighton : 90,
     slightlyright : 135,    
     right: 180,
     sharpright: 225     
+}
+
+const degAngle = {
+    270: "sharpleft",
+    0: "left",
+    45: "slightlyleft",
+    90: "straighton",
+    135: "slightlyright",
+    180: "right",
+    225: "sharpright"
 }
 
 /**
@@ -222,7 +239,6 @@ function initialize(){
         initializeNavigation(json);
         //setTimeout(step, 50);
         startTracking();
-        document.getElementById("loading-screen").style["display"] = "none";
     });
     document.getElementById("close-navigation").addEventListener("click", function(){
         location.href = "index.html"
@@ -266,13 +282,21 @@ function update(location){
     // back to the route.
     if (closestPoint.distance > 0.025){
         distanceToNext = closestPoint.distance * 1000;
-        //var angle1 = turf.bearing(location, turf.point(closestPoint.point.coordinates));
-        //var angle2 = turf.bearing(turf.point(closestPoint.point.coordinates), )
+        var angle1 = turf.bearing(location, turf.point(closestPoint.point.coordinates));
+        var angle2 = turf.bearing(turf.point(closestPoint.point.coordinates), turf.point(closestPoint.next));
+        var dif = angle2 - angle1;
+        if (dif < 0){
+            dif += 360
+        }
+        dif -= 90
+        dif = Math.round(dif / 45)*45
+
         instruction = {
             properties:{
                 type: "enter",
                 nextColour: instruction.properties.colour,
-                nextRef: instruction.properties.ref
+                nextRef: instruction.properties.ref,
+                angle: degAngle[dif]
             },
             geometry: closestPoint.point
         }
@@ -355,7 +379,7 @@ function updateNextInstruction(instruction){
     }
     if (instruction.properties.angle){
         document.getElementById("next-instruction-arrow-img").style["transform"] = 
-            `rotate(${arrowDeg[instruction.properties.angle.toLowerCase()]}deg)`;
+            `rotate(${angleDeg[instruction.properties.angle.toLowerCase()]}deg)`;
     }
 
     if (instruction.properties.type === "leave"){
