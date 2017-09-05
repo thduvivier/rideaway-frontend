@@ -10,16 +10,12 @@ import icons from './icons';
 import { urls } from './constants';
 
 import { findGetParameter, swapArrayValues, fetchJSON } from './modules/lib';
-/*import {
-  configureAllElements,
-  showNavigationBox,
-  hideNavigationBox,
-  toggleErrorDialog
-} from './modules/views/View';*/
+
 import MapController from './modules/controllers/MapController';
 import GeolocationController from './modules/controllers/GeolocationController';
 import View from './modules/views/View';
 import { createGeocoder } from './modules/controllers/GeocoderController';
+
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 // eslint-disable-next-line
 if (process.env.NODE_ENV === 'PROD') {
