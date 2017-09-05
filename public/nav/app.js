@@ -48,6 +48,7 @@ function pointAlongRoute (route, distance) {
  */
 function pointOnRoute (route, point) {
     var best = 1000000;
+    var bestPoint = {};
     var bestData = {};
     for(var i = 0; i < route.features.length; i++) {
         var feature = route.features[i];
@@ -56,11 +57,12 @@ function pointOnRoute (route, point) {
 
             if (snapped.properties.dist < best) {
                 best = snapped.properties.dist;
+                bestPoint = snapped;
                 bestData = feature.properties;
             }
         }
     }
-    return {distance: best, data: bestData};
+    return {distance: best, point: bestPoint.geometry, data: bestData};
 }
 
 /**
@@ -218,8 +220,8 @@ function initialize(){
 
     fetchJSON(url).then(json => {
         initializeNavigation(json);
-        setTimeout(step, 50);
-        //startTracking();
+        //setTimeout(step, 50);
+        startTracking();
         document.getElementById("loading-screen").style["display"] = "none";
     });
     document.getElementById("close-navigation").addEventListener("click", function(){
@@ -260,11 +262,27 @@ function update(location){
         window.location.href = "index.html"
     }
 
+    // if the user is more than 25m off route, show a direction arrow to navigate
+    // back to the route.
+    if (closestPoint.distance > 0.025){
+        distanceToNext = closestPoint.distance * 1000;
+        //var angle1 = turf.bearing(location, turf.point(closestPoint.point.coordinates));
+        //var angle2 = turf.bearing(turf.point(closestPoint.point.coordinates), )
+        instruction = {
+            properties:{
+                type: "enter",
+                nextColour: instruction.properties.colour,
+                nextRef: instruction.properties.ref
+            },
+            geometry: closestPoint.point
+        }
+    }
+
     if (distanceToNext > 1000){
-        document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/100)/10 + 'km';        
+        document.getElementById("next-instruction-distance").innerHTML = '' + Math.round(distanceToNext/100)/10 + 'km';        
     }
     else {
-        document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';        
+        document.getElementById("next-instruction-distance").innerHTML = '' + Math.round(distanceToNext/10)*10 + 'm';        
     }
     var offset = 20;
     if (distanceToNext < 1000){
