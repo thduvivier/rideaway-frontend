@@ -84,3 +84,19 @@ export function swapArrayValues(array) {
   array2.push(array[0]);
   return array2;
 }
+
+/**
+ * Get a url parameter by its name. If no url is given the current url is used.
+ * 
+ * @param {string} name - the name of the parameter 
+ * @param {string} url - the url to get the parameter from
+ */
+export function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, '\\$&');
+  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}

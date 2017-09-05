@@ -9,6 +9,8 @@
 @import './animations/pulse';
 @import './animations/pulse2';
 
+@import './navigation';
+
 @font-face {
   font-family: 'Circular Std Black';
   font-style: normal;
@@ -27,6 +29,16 @@ body {
   width: 100vw;
   -webkit-font-smoothing: antialiased;
   -ms-text-size-adjust: 100%;
+}
+
+.routeplanner,
+.navigation {
+  display: none;
+  width: 100vw;
+}
+
+.visible {
+  display: flex;
 }
 
 .main-loading {

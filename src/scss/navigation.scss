@@ -1,0 +1,218 @@
+.container {
+  font-family: 'Circular Std Black';
+  font-size: 24pt;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+}
+
+#next-instruction {
+  background-color: red;
+  height: 50vh;
+  margin: 0 auto;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  width: 100vw;
+}
+#next-instruction-arrow {
+  color: #fff;
+  display: inline-block;
+  height: 45%;
+  text-align: center;
+  width: 100%;
+}
+#next-instruction-arrow {
+  margin: 0 auto;
+}
+#next-instruction-road {
+  display: inline-block;
+  height: 45%;
+  text-align: center;
+  width: 100%;
+  margin-top: 5vh;
+}
+#next-instruction-road > div {
+  margin: 0 auto;
+}
+
+#next-instruction-distance {
+  background-color: #fff;
+  border-radius: 25px;
+  display: block;
+  height: 50px;
+  line-height: 50px;
+  margin: auto;
+  margin-top: -25px;
+  position: absolute;
+  text-align: center;
+  top: 50vh;
+  width: 33vw;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  color: #303030;
+}
+
+#current-road {
+  background-image: url('../icons/bike.svg');
+  background-position: bottom 5vh center;
+  background-repeat: no-repeat;
+  background-size: 30vw;
+  background-color: blue;
+  height: 50vh;
+  position: absolute;
+  top: 50vh;
+  width: 100vw;
+}
+#current-road > div {
+  margin: auto;
+  position: relative;
+}
+
+#current-road-ref {
+  bottom: -10vh;
+}
+
+#debug {
+  display: none;
+}
+
+.road-square {
+  background-color: #fff;
+  border-radius: 10px;
+  height: 10vh;
+  line-height: 10vh;
+  text-align: center;
+  width: 10vh;
+}
+
+.round-button {
+  position: absolute;
+  margin: auto;
+  z-index: 2;
+  background-color: #fbba00;
+  border-radius: 50%;
+  display: inline-block;
+  height: 10vh;
+  text-align: center;
+  width: 10vh;
+  border: none;
+  right: 5vh;
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: bottom 50% center;
+}
+
+#goto-map {
+  top: 38vh;
+  background-image: url('../icons/marker-white.svg');
+}
+
+#close-navigation {
+  top: 52vh;
+  background-image: url('../icons/x-14.svg');
+}
+
+.message-box {
+  background-color: #fff;
+  text-align: center;
+}
+
+#current-road-message {
+  top: 10vh;
+  display: none;
+}
+
+#next-instruction-message {
+  display: none;
+}
+
+#swoosh {
+  bottom: -25vh;
+}
+
+#swoosh-left {
+  color: #fff;
+  float: left;
+  width: 25%;
+}
+
+#swoosh-right {
+  color: #fff;
+  float: right;
+  width: 25%;
+}
+
+#direction-arrow {
+  background-color: #fbba00;
+  border-radius: 50%;
+  position: relative;
+  display: block;
+  z-index: 2;
+  top: 76vh;
+  margin: 0 auto;
+  width: 23vh;
+  height: 23vh;
+  background-image: url('../icons/arrow.svg');
+  background-size: 75%;
+  background-repeat: no-repeat;
+  background-position: bottom 50% center;
+}
+
+/*
+#main
+{
+    background-color: white;
+    position:absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.colorbox
+{
+    height: 50px;
+    width: 50px;
+    border-style: solid;
+}
+
+#bike {
+    display: block;
+    margin: auto;
+    width: 40%;
+    position: relative;
+    top: 35%;
+    bottom:50%;
+}
+
+#bikecircle {
+    position: relative;
+    background-color: white;
+    text-align: center;
+    border-radius: 50%;
+    display: block;
+    margin: 0 auto;
+    width: 150px;
+    height: 150px;
+}
+
+#distanceNextContainer
+{
+    text-align: center;
+}
+
+#distanceNext
+{
+    display: inline-block;
+    background-color: yellow;
+}
+
+#direction{
+    position: relative;
+    top: 10%;
+}
+
+*/

@@ -27,49 +27,102 @@
       <div class="sk-child sk-double-bounce2"></div>
     </div>
   </div>
-  <div class="dimmed"></div>
-  <div class="dimmed error-dialog">
-    <div class="error-dialog-content">
-      <h2 data-l10n-id="error-title"></h2><span>&nbsp;😕</span>
-      <p data-l10n-id="error-content"></p>
-      <div class="error-btn-close"></div>
-    </div>
-  </div>
-  <div class="menu">
-    <div class="menu-top">
-      <h1 class="menu-title" data-l10n-id="routes-choose"></h1>
-      <div class="menu-btn-close"></div>
-    </div>
-    <div class="routelists">
-      <div class="routelist-top">
-        <div class="routelist-all routelist-item--active" data-l10n-id="routes-all"></div>
-        <div class="routelist-none" data-l10n-id="routes-none"></div>
+
+  <div class="routeplanner page">
+    <div class="dimmed"></div>
+    <div class="dimmed error-dialog">
+      <div class="error-dialog-content">
+        <h2 data-l10n-id="error-title"></h2><span>&nbsp;😕</span>
+        <p data-l10n-id="error-content"></p>
+        <div class="error-btn-close"></div>
       </div>
-      <ul class="routelist routelist-radial"></ul>
-      <ul class="routelist routelist-transverse"></ul>
-      <ul class="routelist routelist-loop"></ul>
+    </div>
+    <div class="menu">
+      <div class="menu-top">
+        <h1 class="menu-title" data-l10n-id="routes-choose"></h1>
+        <div class="menu-btn-close"></div>
+      </div>
+      <div class="routelists">
+        <div class="routelist-top">
+          <div class="routelist-all routelist-item--active" data-l10n-id="routes-all"></div>
+          <div class="routelist-none" data-l10n-id="routes-none"></div>
+        </div>
+        <ul class="routelist routelist-radial"></ul>
+        <ul class="routelist routelist-transverse"></ul>
+        <ul class="routelist routelist-loop"></ul>
+      </div>
+    </div>
+    <div id='map'>
+    </div>
+    <div class="nav-box">
+      <ul class="nav-list">
+        <li>
+          <div data-l10n-id="nav-time"></div>
+          <div class="nav-time"></div>
+        </li>
+        <li>
+          <div data-l10n-id="nav-distance"></div>
+          <div class="nav-distance"></div>
+        </li>
+        <li>
+          <div data-l10n-id="nav-arrival"></div>
+          <div class="nav-arrival"></div>
+        </li>
+      </ul>
+      <button class="nav-btn"><img alt="marker white" class="nav-white"></button>
+    </div>
+    <button class="center-btn" disabled><div class="sk-spinner sk-spinner-pulse"></div><img class="center-btn--icon" alt="marker icon"></button>
+  </div>
+
+  <div class="navigation page">
+    <div class="container">
+      <div id="next-instruction">
+        <div id="next-instruction-road">
+          <div id="next-instruction-message" class="message-box" data-l10n-id="instr-leave"></div>
+          <div id="next-instruction-road-ref" class="road-square">3</div>
+        </div>
+        <div id="next-instruction-arrow">
+          <img id="next-instruction-arrow-img" src="./assets/arrow.svg"></img>
+        </div>
+      </div>
+
+      <div id="next-instruction-distance">300m.</div>
+
+      <button id="goto-map" class="round-button"></button>
+      <button id="close-navigation" class="round-button"></button>
+
+      <div id="direction-arrow"></div>
+
+      <div id="current-road" class="centered">
+        <div id="current-road-message" class="message-box" data-l10n-id="instr-enter"></div>
+        <div id="current-road-ref" class="road-square">3</div>
+        <div id="swoosh">
+          <img id="swoosh-left" src="./assets/swoosh-left.svg"></img>
+          <img id="swoosh-right" src="./assets/swoosh-right.svg"></img>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="debug">
+      Current distance:
+      <div id="distance"></div>km <br/> Current time:
+      <div id="time"></div> seconds <br/> Next instruction:
+      <div id="instruction"></div> <br/> Next colour:
+      <div id="nextColour" class="colorbox"></div>
+      Route colour:
+      <div id="routeColour" class="colorbox"></div>
+      <p id="debug-console"></p>
+
+      <div id="distanceNextContainer">
+        <div id="distanceNext"></div>
+      </div>
+      <div id="bikecircle">
+        <div id="direction"></div>
+        <img id="bike" src="./assets/bike.svg"></img>
+      </div>
     </div>
   </div>
-  <div id='map'>
-  </div>
-  <div class="nav-box">
-    <ul class="nav-list">
-      <li>
-        <div data-l10n-id="nav-time"></div>
-        <div class="nav-time"></div>
-      </li>
-      <li>
-        <div data-l10n-id="nav-distance"></div>
-        <div class="nav-distance"></div>
-      </li>
-      <li>
-        <div data-l10n-id="nav-arrival"></div>
-        <div class="nav-arrival"></div>
-      </li>
-    </ul>
-    <button class="nav-btn"><img alt="marker white" class="nav-white"></button>
-  </div>
-  <button class="center-btn" disabled><div class="sk-spinner sk-spinner-pulse"></div><img class="center-btn--icon" alt="marker icon"></button>
 </body>
 
 </html>

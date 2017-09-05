@@ -13,8 +13,11 @@ import { findGetParameter, swapArrayValues, fetchJSON } from './modules/lib';
 
 import MapController from './modules/controllers/MapController';
 import GeolocationController from './modules/controllers/GeolocationController';
-import View from './modules/views/View';
+
 import { createGeocoder } from './modules/controllers/GeocoderController';
+import initializeNav from './modules/controllers/NavigationController';
+
+import View from './modules/views/View';
 
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 // eslint-disable-next-line
@@ -42,6 +45,12 @@ let handlers = {
   nav: null
 };
 
+if (location.hash.includes('#nav')) {
+  showNavigation();
+} else {
+  showRouteplanning();
+}
+
 // Set origin and destination from url params
 const loc1 = findGetParameter('loc1');
 const loc2 = findGetParameter('loc2');
@@ -63,6 +72,18 @@ window.addToHomescreen({
 
 document.querySelector('.center-btn--icon').src = icons.Center;
 document.querySelector('.nav-white').src = icons.NavWhite;
+
+function showNavigation() {
+  initializeNav();
+  document.querySelector('.routeplanner').classList.remove('visible');
+  document.querySelector('.main-loading').classList.add('visible');
+  document.querySelector('.navigation').classList.add('visible');
+}
+
+function showRouteplanning() {
+  document.querySelector('.navigation').classList.remove('visible');
+  document.querySelector('.routeplanner').classList.add('visible');
+}
 
 /*
 * Calculates route for every profile passed
@@ -140,7 +161,12 @@ function calculateRoute(origin, destination, profile) {
           const originS = [origin[1], origin[0]];
           const destinationS = [destination[1], destination[0]];
 
-          location.href = `navigation.html?loc1=${originS}&loc2=${destinationS}`;
+          history.pushState(
+            '',
+            'Navigation',
+            `#nav?loc1=${originS}&loc2=${destinationS}`
+          );
+          showNavigation();
         };
 
         const lastFeature = json.route.features[json.route.features.length - 1];
