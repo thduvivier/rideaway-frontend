@@ -47,24 +47,26 @@ function pointAlongRoute (route, distance) {
  * @param {Object} point - a coordinate along the route
  */
 function pointOnRoute (route, point) {
-    var best = 1000000;
-    var bestPoint = {};
-    var bestData = {};
-    var nextPoint = {};
+    var ret = {
+        distance: 1000000,
+        point: {},
+        data: {},
+        nextPoint: {}
+    };
     for(var i = 0; i < route.features.length; i++) {
         var feature = route.features[i];
         if (feature.geometry.type == "LineString") {
             var snapped = turf.pointOnLine(feature, point);
 
-            if (snapped.properties.dist < best) {
-                best = snapped.properties.dist;
-                bestPoint = snapped;
-                bestData = feature.properties;
-                nextPoint = feature.geometry.coordinates[snapped.properties.index];
+            if (snapped.properties.dist < ret.distance) {
+                ret.distance = snapped.properties.dist;
+                ret.point = snapped.geometry.coordinates;
+                ret.data = feature.properties;
+                ret.nextPoint = feature.geometry.coordinates[snapped.properties.index];
             }
         }
     }
-    return {distance: best, point: bestPoint.geometry, next: nextPoint, data: bestData};
+    return ret;
 }
 
 /**
@@ -237,8 +239,8 @@ function initialize(){
 
     fetchJSON(url).then(json => {
         initializeNavigation(json);
-        //setTimeout(step, 50);
-        startTracking();
+        setTimeout(step, 50);
+        //startTracking();
     });
     document.getElementById("close-navigation").addEventListener("click", function(){
         location.href = "index.html"
@@ -253,6 +255,10 @@ function initialize(){
  * Step function used in debug mode to iterate over the route.
  */
 function step (){ 
+    if (loading){
+        loading = false;
+        document.getElementById("loading-screen").style["display"] = "none";            
+    }
     var location = pointAlongRoute(result.route, i).geometry.coordinates;
     update(location)
     
@@ -277,13 +283,14 @@ function update(location){
     if (totalDistance - distance < 0.01){
         window.location.href = "index.html"
     }
+    console.log(closestPoint.point);
 
     // if the user is more than 25m off route, show a direction arrow to navigate
     // back to the route.
     if (closestPoint.distance > 0.025){
         distanceToNext = closestPoint.distance * 1000;
-        var angle1 = turf.bearing(location, turf.point(closestPoint.point.coordinates));
-        var angle2 = turf.bearing(turf.point(closestPoint.point.coordinates), turf.point(closestPoint.next));
+        var angle1 = turf.bearing(location, turf.point(closestPoint.point));
+        var angle2 = turf.bearing(turf.point(closestPoint.point), turf.point(closestPoint.nextPoint));
         var dif = angle2 - angle1;
         if (dif < 0){
             dif += 360
@@ -312,16 +319,20 @@ function update(location){
     if (distanceToNext < 1000){
         offset += (distanceToNext-1000)*-1/20;
     }
+
+    updateOffsets(offset);
+    updateCurrentRoad(instruction);
+    updateNextInstruction(instruction);   
+    updateDirection(location, instruction);    
+}
+
+function updateOffsets(offset){
     document.getElementById("next-instruction-distance").style["top"] = offset + "vh";
     document.getElementById("next-instruction").style["height"] = offset + "vh";
     document.getElementById("current-road").style["height"] = (100 - offset) + "vh";
     document.getElementById("current-road").style["top"] = offset + "vh";
     document.getElementById("next-instruction-arrow").style["top"] = offset - 19 + "vh";
     document.getElementById("next-instruction-road-ref").style["top"] = offset - 31 + "vh";
-
-    updateCurrentRoad(instruction);
-    updateNextInstruction(instruction);   
-    updateDirection(location, instruction);    
 }
 
 /**
@@ -388,6 +399,7 @@ function updateNextInstruction(instruction){
         document.getElementById("next-instruction-road-ref").style["display"] = "none";
     }
     else if (instruction.properties.type === "stop"){
+        document.getElementById("current-road-ref").style["display"] = "none";
         document.getElementById("message").setAttribute("data-l10n-id", "instr-destination");        
         document.getElementById("next-instruction-arrow").style["display"] = "none";
     }
