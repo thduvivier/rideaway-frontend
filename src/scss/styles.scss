@@ -1,6 +1,7 @@
 // mapbox imports
 @import '../../node_modules/mapbox-gl/dist/mapbox-gl.css';
 @import '../../node_modules/@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
+@import '../../node_modules/add-to-homescreen/dist/style/addtohomescreen.css';
 
 @import './colors';
 @import './mapbox-overrides';
@@ -24,6 +25,8 @@ body {
   overflow: hidden;
   height: 100vh;
   width: 100vw;
+  -webkit-font-smoothing: antialiased;
+  -ms-text-size-adjust: 100%;
 }
 
 .main-loading {
@@ -46,9 +49,44 @@ body {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
+.error-dialog {
+  z-index: 5;
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  .error-dialog-content {
+    position: relative;
+    width: 20em;
+    height: 10em;
+    background-color: $primary_color;
+    border-radius: 4px;
+    padding: 0 2em;
+    color: $white;
+
+    h2 {
+      margin-top: 1em;
+      display: inline-block;
+    }
+
+    .error-btn-close {
+      background: url('../icons/close.svg');
+      background-position: center;
+      background-size: contain;
+      background-repeat: no-repeat;
+      cursor: pointer;
+      width: 1.8em;
+      height: 1.8em;
+      position: absolute;
+      top: 1.2em;
+      right: 1.2em;
+    }
+  }
+}
+
 #map {
   height: 100vh;
-  width: 70vw;
+  width: 100%;
 }
 
 .menu-btn-open {
@@ -68,7 +106,8 @@ body {
 .menu {
   z-index: 4;
   height: 100vh;
-  width: 30vw;
+  max-width: 20em;
+  width: 60vw;
   background: $primary_color;
   padding: 0 2em;
   overflow: auto;
@@ -248,15 +287,22 @@ body {
   bottom: 0;
   right: 0;
   height: 150px;
-  width: 70vw;
+  width: calc(100% - 20em);
   box-shadow: $material_shadow;
   background-color: $primary_color;
   z-index: 2;
   transition: transform 0.3s ease-in;
 }
 
+@media (min-width: 800px) {
+  .menu {
+    transform: translateX(0) !important;
+  }
+}
+
 @media (max-width: 800px) {
   .menu {
+    max-width: none;
     width: 80vw;
     position: absolute;
     transform: translateX(-85vw);
@@ -287,9 +333,5 @@ body {
 @media (max-width: 400px) {
   .menu-title {
     font-size: 16px;
-  }
-
-  .nav-box {
-    width: 100vw;
   }
 }

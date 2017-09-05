@@ -1,21 +1,21 @@
 // imports
 import mapboxgl from 'mapbox-gl';
-import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import 'whatwg-fetch';
 import 'l20n';
 
-import icons from './icons';
-import { urls, center } from './constants';
+// eslint-disable-next-line
+require('add-to-homescreen');
 
-import { startTracking } from './modules/geolocation';
-import {
-  addFilters,
-  configureAllElements,
-  showNavigationBox,
-  hideNavigationBox
-} from './modules/domManipulations';
-import { findGetParameter, swapArrayValues } from './modules/lib';
-import { toggleLayer, clearRoutes } from './modules/mapManipulations';
+import icons from './icons';
+import { urls } from './constants';
+
+import { findGetParameter, swapArrayValues, fetchJSON } from './modules/lib';
+
+import MapController from './modules/controllers/MapController';
+import GeolocationController from './modules/controllers/GeolocationController';
+import View from './modules/views/View';
+import { createGeocoder } from './modules/controllers/GeocoderController';
+
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 // eslint-disable-next-line
 if (process.env.NODE_ENV === 'PROD') {
@@ -54,125 +54,15 @@ if (loc1 && loc2) {
   );
 }
 
-document.querySelector('.center-btn--icon').src = icons.Center;
-document.querySelector('.nav-white').src = icons.NavWhite;
-
-// Create a mapbox
-mapboxgl.accessToken = '';
-const map = new mapboxgl.Map({
-  container: 'map', // container id
-  style: urls.mapStyle, //stylesheet location
-  center: center.latlng, // starting position
-  zoom: center.zoom, // starting zoom
-  attributionControl: false
+// show dialog to add to homescreen
+window.addToHomescreen({
+  skipFirstVisit: true,
+  startDelay: 5,
+  maxDisplayCount: 1
 });
 
-/*
-* Fetch a JSON
-* @param String url - The url to fetch from
-* @returns Object json - The fetched JSON
-*/
-function fetchJSON(url) {
-  return new Promise((resolve, reject) => {
-    fetch(url)
-      .then(response => response.json())
-      .then(json => resolve(json))
-      .catch(ex => reject(ex));
-  });
-}
-
-/*
-* Adds the filters and adds all of the routes to the map
-* @param Object geojson - The geojson routes to add
-*/
-function addAllRoutes(geojson) {
-  // Add filters for the routes
-  addFilters(geojson.features);
-
-  // Add source
-  map.addSource('GFR', {
-    type: 'geojson',
-    data: geojson
-  });
-
-  // Add layer
-  map.addLayer({
-    id: 'GFR_routes',
-    type: 'line',
-    source: 'GFR',
-    layout: {
-      visibility: 'visible'
-    },
-    paint: {
-      'line-color': {
-        type: 'identity',
-        property: 'colour'
-      },
-      'line-width': 5,
-      'line-opacity': 0.3
-    }
-  });
-
-  // Add layer with route symbols
-  map.addLayer({
-    id: 'GFR_symbols',
-    type: 'symbol',
-    source: 'GFR',
-    layout: {
-      visibility: 'visible',
-      'symbol-placement': 'line',
-      'text-font': ['Open Sans Regular'],
-      'text-field': '{ref}',
-      'text-size': 16
-    },
-    paint: {
-      'text-color': {
-        type: 'identity',
-        property: 'colour'
-      }
-    }
-  });
-
-  // Remove the loading screen
-  document.querySelector('.main-loading').style.display = 'none';
-}
-
-/*
-* Adds a yellow marker to the map
-* @param Array[int, int] LatLng - The coords
-* @returns mapboxgl.Marker marker - The marker
-*/
-function addMarker(LatLng) {
-  // create Geojson with the coords
-  const geojson = {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: LatLng
-        },
-        properties: {
-          iconSize: [50, 50]
-        }
-      }
-    ]
-  };
-
-  // Configure HTML marker
-  const marker = geojson.features[0];
-  let el = document.createElement('img');
-  el.className = 'marker';
-  el.src = icons.LocatorYellow;
-  el.style.width = marker.properties.iconSize[0] + 'px';
-  el.style.height = marker.properties.iconSize[1] + 'px';
-
-  // Return marker so we can reuse it
-  return new mapboxgl.Marker(el, {
-    offset: [0, -marker.properties.iconSize[1] / 2]
-  }).setLngLat(marker.geometry.coordinates);
-}
+document.querySelector('.center-btn--icon').src = icons.Center;
+document.querySelector('.nav-white').src = icons.NavWhite;
 
 /*
 * Calculates route for every profile passed
@@ -194,7 +84,7 @@ function calculateProfiles(places, profiles) {
 */
 function calculateRoute(origin, destination, profile) {
   // Clear routes just to be sure
-  clearRoutes(map);
+  mapController.clearRoutes();
 
   // Swap around values for the API
   const originS = swapArrayValues(origin);
@@ -257,60 +147,23 @@ function calculateRoute(origin, destination, profile) {
         const { properties: { distance, time } } = lastFeature;
 
         // Always hide the layers
-        toggleLayer(map, 'GFR_routes', 'none');
-        toggleLayer(map, 'GFR_symbols', 'none');
+        mapController.toggleLayer('GFR_routes', 'none');
+        mapController.toggleLayer('GFR_symbols', 'none');
+
+        // Activate none
         document.querySelector('.routelist-none').click();
 
         // Show the navigation box, change the handler
-        showNavigationBox(oldHandler, handlers.nav, distance, time);
+        view.showNavigationBox(oldHandler, handlers.nav, distance, time);
 
-        // sets the bounding box correctly
-        let bbox = [];
-        if (origin[0] > destination[0] && origin[1] > destination[1]) {
-          bbox = [destination, origin];
-        } else if (origin[0] < destination[0] && origin[1] > destination[1]) {
-          bbox = [[origin[0], destination[1]], [destination[0], origin[1]]];
-        } else if (origin[0] > destination[0] && origin[1] < destination[1]) {
-          bbox = [[destination[0], origin[1]], [origin[0], destination[1]]];
-        } else {
-          bbox = [origin, destination];
-        }
-
-        // Fit the map to the route
-        map.fitBounds(bbox, {
-          padding: { top: 200, right: 50, bottom: 200, left: 50 }
-        });
+        mapController.fitToBounds(origin, destination);
       }
     })
     .catch(ex => {
-      console.log('Problem finding a route: ' + ex);
+      // eslint-disable-next-line
+      console.warn('Problem finding a route: ' + ex);
+      view.toggleErrorDialog();
     });
-}
-
-/*
-* Returns a geocoder object
-* @param String placeholder - The placeholder for the geocoder
-* @returns MapboxGeocoder geocoder - The geocoder
-*/
-function createGeocoder(placeholder) {
-  return new MapboxGeocoder({
-    // eslint-disable-next-line
-    accessToken: process.env.MAPBOX_TOKEN,
-    flyTo: false,
-    placeholder,
-    country: 'BE',
-    bbox: [4.225015, 50.74915, 4.524909, 50.938001]
-  });
-}
-
-/*
-* Set the data attribute on the geocoders for the translations
-*/
-function configureGeocoders() {
-  const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
-  inputs.forEach(input => {
-    input.setAttribute('data-l10n-id', `${input.placeholder}-input`);
-  });
 }
 
 /*
@@ -323,24 +176,6 @@ function setPoint(result) {
 }
 
 /*
-* Updates the position variable and holds some other functions
-* @param Array[int, int] position - The position of the user
-*/
-function updatePosition(position) {
-  // hide loader icon and show center button
-  if (!places.userPosition) {
-    window.userLocated = true;
-    document.querySelector(
-      '.center-btn .sk-spinner.sk-spinner-pulse'
-    ).style.display =
-      'none';
-    document.querySelector('.center-btn--icon').style.display = 'block';
-    document.querySelector('.center-btn').disabled = false;
-  }
-  places.userPosition = position;
-}
-
-/*
 * Sets the origin/dest as the userPosition on default
 * if placeToSet is null, it clears the route
 * @param string place - Origin/Destination
@@ -348,8 +183,8 @@ function updatePosition(position) {
 function setPlace(place, placeToSet = places.userPosition) {
   places[place] = placeToSet;
   if (placeToSet === null) {
-    clearRoutes(map, markers[place]);
-    hideNavigationBox();
+    mapController.clearRoutes(map, markers[place]);
+    view.hideNavigationBox();
   }
   const { origin, destination } = places;
   if (origin && destination) {
@@ -357,16 +192,25 @@ function setPlace(place, placeToSet = places.userPosition) {
   }
 }
 
+let map;
+const mapController = new MapController(map);
+const geolocController = new GeolocationController();
+const view = new View(mapController, geolocController);
+map = mapController.map;
+
 // Executes when the map loaded
 map.on('load', function() {
   // Change the position of the copyright controls
   map.addControl(new mapboxgl.AttributionControl(), 'bottom-left');
 
   // Start stracking the user
-  startTracking(map, updatePosition);
+  geolocController.startTracking(map);
 
   // Show all the routes on the map
-  fetchJSON(urls.network).then(json => addAllRoutes(json));
+  fetchJSON(urls.network).then(json => {
+    view.addFilters(json.features);
+    mapController.addAllRoutes(json);
+  });
 
   // If the origin & destination were passed, calculate a route
   if (places.origin && places.destination) {
@@ -379,11 +223,9 @@ map.on('load', function() {
   const geocoder2 = createGeocoder('destination');
   map.addControl(geocoder);
   map.addControl(geocoder2);
-  // Configure the geocoders
-  configureGeocoders();
 
-  // Configure all the other elements
-  configureAllElements(map, setPlace);
+  // Configure all elements (geocoder, inputs, etc)
+  view.configureAllElements(setPlace);
 
   // Fire functions on result
   // !!!!! Geocoder also fires this when the input box is unfocused
@@ -399,7 +241,7 @@ map.on('load', function() {
     if (!places.origin || places.origin !== setPoint(result)) {
       markers.origin && markers.origin.remove();
       places.origin = setPoint(result);
-      markers.origin = addMarker(places.origin);
+      markers.origin = mapController.addMarker(places.origin);
       markers.origin.addTo(map);
 
       // Calculate route if destination is filled in
@@ -413,7 +255,7 @@ map.on('load', function() {
     if (!places.destination || places.destination !== setPoint(result)) {
       markers.destination && markers.destination.remove();
       places.destination = setPoint(result);
-      markers.destination = addMarker(places.destination);
+      markers.destination = mapController.addMarker(places.destination);
       markers.destination.addTo(map);
 
       if (places.origin) {
@@ -424,22 +266,15 @@ map.on('load', function() {
   });
   // Functions fired when the geocoder is cleared
   geocoder.on('clear', () => {
-    clearRoutes(map, markers.origin);
+    mapController.clearRoutes(markers.origin);
     places.origin = null;
-    hideNavigationBox();
+    view.hideNavigationBox();
   });
   geocoder2.on('clear', () => {
-    clearRoutes(map, markers.destination);
+    mapController.clearRoutes(markers.destination);
     places.destination = null;
-    hideNavigationBox();
+    view.hideNavigationBox();
   });
 
-  // Configure the center button
-  document.querySelector('.center-btn').addEventListener('click', () => {
-    places.userPosition &&
-      map.flyTo({
-        center: places.userPosition,
-        zoom: [15]
-      });
-  });
+  view.configureCenterButton();
 });

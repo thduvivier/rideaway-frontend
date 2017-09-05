@@ -10,3 +10,5 @@ nav-arrival = Arrival
 instr-enter = Enter the cyclenetwork
 instr-leave = Leave the cyclenetwork
 instr-destination = You arrived at your destination
+error-title = Whoops...
+error-content= We couldn't calculate a route for you.

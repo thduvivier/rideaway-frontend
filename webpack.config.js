@@ -84,6 +84,7 @@ module.exports = {
   devServer: {
     contentBase: __dirname + '/build',
     compress: true,
+    disableHostCheck: true,
     host: '0.0.0.0',
     hot: true,
     port: 3000,

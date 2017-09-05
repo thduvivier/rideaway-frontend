@@ -10,3 +10,5 @@ nav-arrival = Aankomst
 instr-enter = Navigeer naar het fietsnetwerk
 instr-leave = Verlaat het fietsnetwerk
 instr-destination = Bestemming bereikt
+error-title = Oops...
+error-content= We konden geen route voor u berekenen.
