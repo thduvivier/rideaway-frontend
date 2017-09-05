@@ -237,8 +237,8 @@ function initialize(){
 
     fetchJSON(url).then(json => {
         initializeNavigation(json);
-        //setTimeout(step, 50);
-        startTracking();
+        setTimeout(step, 50);
+        //startTracking();
     });
     document.getElementById("close-navigation").addEventListener("click", function(){
         location.href = "index.html"
@@ -253,6 +253,10 @@ function initialize(){
  * Step function used in debug mode to iterate over the route.
  */
 function step (){ 
+    if (loading){
+        loading = false;
+        document.getElementById("loading-screen").style["display"] = "none";            
+    }
     var location = pointAlongRoute(result.route, i).geometry.coordinates;
     update(location)
     
@@ -262,7 +266,25 @@ function step (){
         setTimeout(step, 50);
     }
 }
+var animating = false;
+var keyframe;
 
+function transition() {
+    updateOffsets(70 + 27 - keyframe);
+
+    if (keyframe > 0){
+        keyframe--;
+        setTimeout(transition, 40);
+    }
+    else {
+        animating = false;
+        updateOffsets(20);
+        document.getElementById("next-instruction-arrow").style["display"] = "";
+        document.getElementById("next-instruction-distance").style["display"] = "";
+    }
+}
+
+var previousInstruction
 /**
  * Updates the screen based on the given location.
  * 
@@ -277,51 +299,68 @@ function update(location){
     if (totalDistance - distance < 0.01){
         window.location.href = "index.html"
     }
-
-    // if the user is more than 25m off route, show a direction arrow to navigate
-    // back to the route.
-    if (closestPoint.distance > 0.025){
-        distanceToNext = closestPoint.distance * 1000;
-        var angle1 = turf.bearing(location, turf.point(closestPoint.point.coordinates));
-        var angle2 = turf.bearing(turf.point(closestPoint.point.coordinates), turf.point(closestPoint.next));
-        var dif = angle2 - angle1;
-        if (dif < 0){
-            dif += 360
+    
+    if (!animating && previousInstruction !== null && previousInstruction !== instruction){
+        previousInstruction = instruction
+        animating = true;
+        keyframe = 27;
+        document.getElementById("next-instruction-arrow").style["display"] = "none";
+        document.getElementById("next-instruction-distance").style["display"] = "none";
+        transition();
+    }
+    else if (!animating) {    
+        // if the user is more than 25m off route, show a direction arrow to navigate
+        // back to the route.
+        if (closestPoint.distance > 0.025){
+            distanceToNext = closestPoint.distance * 1000;
+            var angle1 = turf.bearing(location, turf.point(closestPoint.point.coordinates));
+            var angle2 = turf.bearing(turf.point(closestPoint.point.coordinates), turf.point(closestPoint.next));
+            var dif = angle2 - angle1;
+            if (dif < 0){
+                dif += 360
+            }
+            dif -= 90
+            dif = Math.round(dif / 45)*45
+    
+            instruction = {
+                properties:{
+                    type: "enter",
+                    nextColour: instruction.properties.colour,
+                    nextRef: instruction.properties.ref,
+                    angle: degAngle[dif]
+                },
+                geometry: closestPoint.point
+            }
         }
-        dif -= 90
-        dif = Math.round(dif / 45)*45
-
-        instruction = {
-            properties:{
-                type: "enter",
-                nextColour: instruction.properties.colour,
-                nextRef: instruction.properties.ref,
-                angle: degAngle[dif]
-            },
-            geometry: closestPoint.point
+    
+        if (distanceToNext > 1000){
+            document.getElementById("next-instruction-distance").innerHTML = '' + Math.round(distanceToNext/100)/10 + 'km';        
         }
+        else {
+            document.getElementById("next-instruction-distance").innerHTML = '' + Math.round(distanceToNext/10)*10 + 'm';        
+        }
+        var offset = 20;
+        if (distanceToNext < 1000){
+            offset += (distanceToNext-1000)*-1/20;
+        }
+        updateOffsets(offset);
+        
+    
+        updateCurrentRoad(instruction);
+        updateNextInstruction(instruction);   
+        updateDirection(location, instruction);
     }
 
-    if (distanceToNext > 1000){
-        document.getElementById("next-instruction-distance").innerHTML = '' + Math.round(distanceToNext/100)/10 + 'km';        
-    }
-    else {
-        document.getElementById("next-instruction-distance").innerHTML = '' + Math.round(distanceToNext/10)*10 + 'm';        
-    }
-    var offset = 20;
-    if (distanceToNext < 1000){
-        offset += (distanceToNext-1000)*-1/20;
-    }
+       
+}
+
+function updateOffsets(offset){
     document.getElementById("next-instruction-distance").style["top"] = offset + "vh";
     document.getElementById("next-instruction").style["height"] = offset + "vh";
     document.getElementById("current-road").style["height"] = (100 - offset) + "vh";
     document.getElementById("current-road").style["top"] = offset + "vh";
     document.getElementById("next-instruction-arrow").style["top"] = offset - 19 + "vh";
     document.getElementById("next-instruction-road-ref").style["top"] = offset - 31 + "vh";
-
-    updateCurrentRoad(instruction);
-    updateNextInstruction(instruction);   
-    updateDirection(location, instruction);    
 }
 
 /**
