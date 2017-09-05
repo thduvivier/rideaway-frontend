@@ -40,7 +40,7 @@ function pointAlongRoute (route, distance) {
 }
 
 /**
- * Returns the properties of the geojson feature that is closest to the
+ * Returns the properties and distance of the geojson feature that is closest to the
  * given point.
  * 
  * @param {Object} route - the route object 
@@ -48,7 +48,9 @@ function pointAlongRoute (route, distance) {
  */
 function pointOnRoute (route, point) {
     var best = 1000000;
+    var bestPoint = {};
     var bestData = {};
+    var nextPoint = {};
     for(var i = 0; i < route.features.length; i++) {
         var feature = route.features[i];
         if (feature.geometry.type == "LineString") {
@@ -56,11 +58,13 @@ function pointOnRoute (route, point) {
 
             if (snapped.properties.dist < best) {
                 best = snapped.properties.dist;
+                bestPoint = snapped;
                 bestData = feature.properties;
+                nextPoint = feature.geometry.coordinates[snapped.properties.index];
             }
         }
     }
-    return bestData;
+    return {distance: best, point: bestPoint.geometry, next: nextPoint, data: bestData};
 }
 
 /**
@@ -161,6 +165,10 @@ function fetchJSON(url) {
 function startTracking() {
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(position => {
+        if (loading){
+            loading = false;
+            document.getElementById("loading-screen").style["display"] = "none";            
+        }
         var coord = position.coords;
         var location = turf.point([coord.longitude, coord.latitude]);
         heading = position.coords.heading;
@@ -171,6 +179,7 @@ function startTracking() {
     alert("Sorry, your browser doesn't support geolocation!");
   }
 }
+var loading = true;
 
 var result;
 var heading;
@@ -184,14 +193,24 @@ var i = 0;
 var loc1;
 var loc2;
 
-const arrowDeg = {
-    sharpleft : -45,
+const angleDeg = {
+    sharpleft : 270,
     left : 0,
     slightlyleft: 45,
     straighton : 90,
     slightlyright : 135,    
     right: 180,
     sharpright: 225     
+}
+
+const degAngle = {
+    270: "sharpleft",
+    0: "left",
+    45: "slightlyleft",
+    90: "straighton",
+    135: "slightlyright",
+    180: "right",
+    225: "sharpright"
 }
 
 /**
@@ -213,15 +232,13 @@ function initializeNavigation(result){
 function initialize(){
     loc1 = getParameterByName("loc1");
     loc2 = getParameterByName("loc2");
-    console.log(loc1);
-    console.log(loc2);
+    
     const url = `https://cyclerouting-api.osm.be/route?loc1=${loc1}&loc2=${loc2}&profile=brussels&instructions=true`;
 
     fetchJSON(url).then(json => {
         initializeNavigation(json);
-        setTimeout(step, 50);
-        //startTracking();
-        document.getElementById("loading-screen").style["display"] = "none";
+        //setTimeout(step, 50);
+        startTracking();
     });
     document.getElementById("close-navigation").addEventListener("click", function(){
         location.href = "index.html"
@@ -252,15 +269,55 @@ function step (){
  * @param {Object} location - the current location 
  */
 function update(location){
-    var dataAtLocation = pointOnRoute(result.route, location);
+    var closestPoint = pointOnRoute(result.route, location);
     var distance = distanceAtLocation(result.route, location);
     var instruction = instructionAt(result.instructions, distance*1000);
+    var distanceToNext = instruction.properties.distance - (distance*1000);
     
     if (totalDistance - distance < 0.01){
         window.location.href = "index.html"
     }
 
-    document.getElementById("next-instruction-distance").innerHTML = '' + Math.round((instruction.properties.distance - (distance*1000))/10)*10 + 'm';
+    // if the user is more than 25m off route, show a direction arrow to navigate
+    // back to the route.
+    if (closestPoint.distance > 0.025){
+        distanceToNext = closestPoint.distance * 1000;
+        var angle1 = turf.bearing(location, turf.point(closestPoint.point.coordinates));
+        var angle2 = turf.bearing(turf.point(closestPoint.point.coordinates), turf.point(closestPoint.next));
+        var dif = angle2 - angle1;
+        if (dif < 0){
+            dif += 360
+        }
+        dif -= 90
+        dif = Math.round(dif / 45)*45
+
+        instruction = {
+            properties:{
+                type: "enter",
+                nextColour: instruction.properties.colour,
+                nextRef: instruction.properties.ref,
+                angle: degAngle[dif]
+            },
+            geometry: closestPoint.point
+        }
+    }
+
+    if (distanceToNext > 1000){
+        document.getElementById("next-instruction-distance").innerHTML = '' + Math.round(distanceToNext/100)/10 + 'km';        
+    }
+    else {
+        document.getElementById("next-instruction-distance").innerHTML = '' + Math.round(distanceToNext/10)*10 + 'm';        
+    }
+    var offset = 20;
+    if (distanceToNext < 1000){
+        offset += (distanceToNext-1000)*-1/20;
+    }
+    document.getElementById("next-instruction-distance").style["top"] = offset + "vh";
+    document.getElementById("next-instruction").style["height"] = offset + "vh";
+    document.getElementById("current-road").style["height"] = (100 - offset) + "vh";
+    document.getElementById("current-road").style["top"] = offset + "vh";
+    document.getElementById("next-instruction-arrow").style["top"] = offset - 19 + "vh";
+    document.getElementById("next-instruction-road-ref").style["top"] = offset - 31 + "vh";
 
     updateCurrentRoad(instruction);
     updateNextInstruction(instruction);   
@@ -302,12 +359,10 @@ function updateCurrentRoad(instruction){
 
     if (instruction.properties.type === "enter"){
         document.getElementById("current-road-ref").style["display"] = "none";
-        document.getElementById("current-road-message").style["display"] = "block";
     }
     else {
         document.getElementById("current-road-ref").style["display"] = "";
         document.getElementById("current-road-ref").innerHTML = '' + instruction.properties.ref;
-        document.getElementById("current-road-message").style["display"] = "none";
     }
 }
 
@@ -324,23 +379,25 @@ function updateNextInstruction(instruction){
     }
     if (instruction.properties.angle){
         document.getElementById("next-instruction-arrow-img").style["transform"] = 
-            `rotate(${arrowDeg[instruction.properties.angle.toLowerCase()]}deg)`;
+            `rotate(${angleDeg[instruction.properties.angle.toLowerCase()]}deg)`;
     }
 
     if (instruction.properties.type === "leave"){
-        document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-leave");
-        document.getElementById("next-instruction-message").style["display"] = "block";
+        document.getElementById("message").setAttribute("data-l10n-id", "instr-leave");
+        document.getElementById("message").style["display"] = "block";
         document.getElementById("next-instruction-road-ref").style["display"] = "none";
     }
     else if (instruction.properties.type === "stop"){
-        document.getElementById("next-instruction-message").setAttribute("data-l10n-id", "instr-destination");        
+        document.getElementById("message").setAttribute("data-l10n-id", "instr-destination");        
         document.getElementById("next-instruction-arrow").style["display"] = "none";
     }
     else if (instruction.properties.type === "enter"){
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
+        document.getElementById("message").style["display"] = "block";
+        document.getElementById("message").setAttribute("data-l10n-id", "instr-enter");                
     }
     else {
-        document.getElementById("next-instruction-message").style["display"] = "none";
+        document.getElementById("message").style["display"] = "none";
         document.getElementById("next-instruction-road-ref").style["display"] = "";
         document.getElementById("next-instruction-road-ref").innerHTML = '' + instruction.properties.nextRef;
     }

@@ -19,7 +19,7 @@ body,
 
 #next-instruction {
   background-color: red;
-  height: 50vh;
+  height: 20vh;
   margin: 0 auto;
   position: absolute;
   text-align: center;
@@ -27,21 +27,23 @@ body,
   width: 100vw;
 }
 #next-instruction-arrow {
+  position: absolute;
   color: #fff;
-  display: inline-block;
   height: 45%;
   text-align: center;
   width: 100%;
-}
-#next-instruction-arrow {
   margin: 0 auto;
 }
 #next-instruction-road {
-  display: inline-block;
   height: 45%;
   text-align: center;
   width: 100%;
-  margin-top: 5vh;
+}
+
+#next-instruction-road-ref {
+  left: 0;
+  right: 0;
+  position: absolute;
 }
 #next-instruction-road > div {
   margin: 0 auto;
@@ -58,7 +60,7 @@ body,
   position: absolute;
   text-align: center;
   top: 50vh;
-  width: 33vw;
+  width: 40vw;
   z-index: 99;
   left: 0;
   right: 0;
@@ -82,7 +84,11 @@ body,
 }
 
 #current-road-ref {
-  bottom: -10vh;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  bottom: 25vh;
 }
 
 #debug {
@@ -135,24 +141,29 @@ body,
   display: none;
 }
 
-#next-instruction-message {
-  display: none;
+#message {
+  position: absolute;
+  top: 0vh;
+  z-index: 50;
 }
 
 #swoosh {
-  bottom: -25vh;
+  position: absolute;
+  bottom: 10vh;
+  width: 100vw;
 }
 
 #swoosh-left {
-  color: #fff;
   float: left;
+  color: #fff;
   width: 25%;
 }
 
 #swoosh-right {
-  color: #fff;
   float: right;
+  color: #fff;
   width: 25%;
+  right: 0px;
 }
 
 #direction-arrow {
