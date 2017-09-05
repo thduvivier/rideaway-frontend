@@ -1,4 +1,18 @@
 /*
+* Fetch a JSON
+* @param String url - The url to fetch from
+* @returns Object json - The fetched JSON
+*/
+export function fetchJSON(url) {
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then(response => response.json())
+      .then(json => resolve(json))
+      .catch(ex => reject(ex));
+  });
+}
+
+/*
 * Displays the distance a string format
 * @param int m - The distance in meters
 * @returns string distance - Formatted distance
@@ -23,7 +37,7 @@ export function displayTime(s) {
     return `${Math.round(s / 60)} min`;
   }
   var h = Math.floor(s / 3600);
-  var m = Math.floor(s % 3600 / 60);
+  var m = Math.floor((s % 3600) / 60);
   return `${h} h ${m} min`;
 }
 
@@ -49,10 +63,13 @@ export function displayArrival(s) {
 export function findGetParameter(parameterName) {
   var result = null,
     tmp = [];
-  location.search.substr(1).split('&').forEach(function(item) {
-    tmp = item.split('=');
-    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-  });
+  location.search
+    .substr(1)
+    .split('&')
+    .forEach(function(item) {
+      tmp = item.split('=');
+      if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+    });
   return result;
 }
 
