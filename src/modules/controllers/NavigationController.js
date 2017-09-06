@@ -58,13 +58,13 @@ const arrowDeg = {
 };
 
 const degAngle = {
-  270: "sharpleft",
-  0: "left",
-  45: "slightlyleft",
-  90: "straighton",
-  135: "slightlyright",
-  180: "right",
-  225: "sharpright"
+  270: 'sharpleft',
+  0: 'left',
+  45: 'slightlyleft',
+  90: 'straighton',
+  135: 'slightlyright',
+  180: 'right',
+  225: 'sharpright'
 };
 
 /**
@@ -101,11 +101,11 @@ export default function initialize(origin, destination) {
   document
     .getElementById('close-navigation')
     .addEventListener('click', function() {
-      router.goToRouteplanner(true);
+      router.goToRouteplanner();
     });
 
   document.getElementById('goto-map').addEventListener('click', function() {
-    router.goToRouteplanner(false);
+    router.goToRouteplanner(loc1, loc2);
   });
 }
 
@@ -135,11 +135,11 @@ function step() {
 function update(location) {
   var closestPoint = pointOnRoute(result.route, location);
   var distance = distanceAtLocation(result.route, location);
-  var instruction = instructionAt(result.instructions, distance*1000);
-  var distanceToNext = instruction.properties.distance - (distance*1000);
+  var instruction = instructionAt(result.instructions, distance * 1000);
+  var distanceToNext = instruction.properties.distance - distance * 1000;
 
   if (totalDistance - distance < 0.01) {
-    router.goToRouteplanner(true);
+    router.goToRouteplanner();
   }
 
   // if the user is more than 25m off route, show a direction arrow to navigate
@@ -262,12 +262,11 @@ function updateNextInstruction(instruction) {
     document
       .getElementById('message')
       .setAttribute('data-l10n-id', 'instr-leave');
-    document.getElementById('message').style['display'] =
-      'block';
+    document.getElementById('message').style['display'] = 'block';
     document.getElementById('next-instruction-road-ref').style['display'] =
       'none';
   } else if (instruction.properties.type === 'stop') {
-    document.getElementById("current-road-ref").style["display"] = "none";    
+    document.getElementById('current-road-ref').style['display'] = 'none';
     document
       .getElementById('message')
       .setAttribute('data-l10n-id', 'instr-destination');
@@ -275,11 +274,12 @@ function updateNextInstruction(instruction) {
   } else if (instruction.properties.type === 'enter') {
     document.getElementById('next-instruction-road-ref').innerHTML =
       '' + instruction.properties.nextRef;
-    document.getElementById("message").style["display"] = "block";
-    document.getElementById("message").setAttribute("data-l10n-id", "instr-enter");  
+    document.getElementById('message').style['display'] = 'block';
+    document
+      .getElementById('message')
+      .setAttribute('data-l10n-id', 'instr-enter');
   } else {
-    document.getElementById('message').style['display'] =
-      'none';
+    document.getElementById('message').style['display'] = 'none';
     document.getElementById('next-instruction-road-ref').style['display'] = '';
     document.getElementById('next-instruction-road-ref').innerHTML =
       '' + instruction.properties.nextRef;
