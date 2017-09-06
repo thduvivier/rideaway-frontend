@@ -57,7 +57,7 @@ export function clearAll() {
   view.hideNavigationBox();
   mapController.clearRoutes(markers.origin);
   mapController.clearRoutes(markers.destination);
-  mapController.removeFilter();
+  document.querySelector('.routelist-all').click();
   view.clearGeocoderInputs();
   places.origin = null;
   places.destination = null;
@@ -196,6 +196,8 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
 }
 
 function bindActions() {
+  const routeChosen = places.origin && places.destination;
+
   // Executes when the map loaded
   map.on('load', function() {
     // Change the position of the copyright controls
@@ -208,13 +210,26 @@ function bindActions() {
     fetchJSON(urls.network).then(json => {
       view.addFilters(json.features);
       mapController.addAllRoutes(json);
-    });
 
-    // If the origin & destination were passed, calculate a route
-    if (places.origin && places.destination) {
-      const { origin, destination } = places;
-      calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
-    }
+      routeChosen && mapController.toggleLayer('GFR_routes', 'none');
+      routeChosen && mapController.toggleLayer('GFR_symbols', 'none');
+
+      // If the origin & destination were passed, calculate a route
+      if (places.origin && places.destination) {
+        const { origin, destination } = places;
+        markers.origin = mapController.addMarker(origin);
+        markers.origin.addTo(map);
+        markers.destination = mapController.addMarker(destination);
+        markers.destination.addTo(map);
+        calculateProfiles(
+          {
+            origin,
+            destination
+          },
+          ['shortest', 'brussels']
+        );
+      }
+    });
 
     // Create geocoders and add to map
     const geocoder = createGeocoder('origin');
