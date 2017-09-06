@@ -128,11 +128,13 @@ export default class View {
   * @param MapboxglGeocoder geocoder - The geocoder
   */
   showCloseButton(geocoder) {
+    const buttons = document.querySelectorAll(
+      '.geocoder-icon.geocoder-icon-close'
+    );
     if (geocoder === 'origin') {
-      document.querySelector(
-        'div:nth-of-type(1) .geocoder-icon.geocoder-icon-close'
-      ).style.display =
-        'block';
+      buttons[0].style.display = 'block';
+    } else {
+      buttons[1].style.display = 'block';
     }
   }
 
