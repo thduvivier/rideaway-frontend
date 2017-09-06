@@ -9,7 +9,7 @@
 
 #next-instruction {
   background-color: red;
-  height: 50vh;
+  height: 20vh;
   margin: 0 auto;
   position: absolute;
   text-align: center;
@@ -17,26 +17,26 @@
   width: 100vw;
 }
 #next-instruction-arrow {
+  position: absolute;
   color: #fff;
-  display: inline-block;
   height: 45%;
   text-align: center;
   width: 100%;
-}
-#next-instruction-arrow {
   margin: 0 auto;
 }
 #next-instruction-road {
-  display: inline-block;
   height: 45%;
   text-align: center;
   width: 100%;
-  margin-top: 5vh;
+}
+#next-instruction-road-ref {
+  left: 0;
+  right: 0;
+  position: absolute;
 }
 #next-instruction-road > div {
   margin: 0 auto;
 }
-
 #next-instruction-distance {
   background-color: #fff;
   border-radius: 25px;
@@ -48,15 +48,15 @@
   position: absolute;
   text-align: center;
   top: 50vh;
-  width: 33vw;
-  z-index: 1;
+  width: 40vw;
+  z-index: 99;
   left: 0;
   right: 0;
   color: #303030;
 }
 
 #current-road {
-  background-image: url('../icons/bike.svg');
+  background-image: url("../icons/bike.svg");
   background-position: bottom 5vh center;
   background-repeat: no-repeat;
   background-size: 30vw;
@@ -72,7 +72,11 @@
 }
 
 #current-road-ref {
-  bottom: -10vh;
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  bottom: 25vh;
 }
 
 #debug {
@@ -125,23 +129,27 @@
   display: none;
 }
 
-#next-instruction-message {
-  display: none;
+#message {
+  position: absolute;
+  top: 0vh;
+  z-index: 50;
 }
 
 #swoosh {
-  bottom: -25vh;
+  position: absolute;
+  bottom: 10vh;
+  width: 100vw;
 }
 
 #swoosh-left {
-  color: #fff;
   float: left;
+  color: #fff;
   width: 25%;
 }
 
 #swoosh-right {
-  color: #fff;
   float: right;
+  color: #fff;
   width: 25%;
 }
 
@@ -155,7 +163,7 @@
   margin: 0 auto;
   width: 23vh;
   height: 23vh;
-  background-image: url('../icons/arrow.svg');
+  background-image: url("../icons/arrow.svg");
   background-size: 75%;
   background-repeat: no-repeat;
   background-position: bottom 50% center;
