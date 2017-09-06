@@ -1,5 +1,9 @@
 // All the mapbox overrides, mostly for the geocoder
 
+.mapboxgl-popup-close-button {
+  display: none;
+}
+
 .mapboxgl-ctrl-top-right {
   width: 100%;
   display: flex;

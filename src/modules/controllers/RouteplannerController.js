@@ -2,7 +2,7 @@ import mapboxgl from 'mapbox-gl';
 
 import { urls } from '../../constants';
 
-import { swapArrayValues, fetchJSON } from '../lib';
+import { swapArrayValues, fetchJSON, displayTime } from '../lib';
 
 import MapController from './MapController';
 import GeolocationController from './GeolocationController';
@@ -123,6 +123,21 @@ function calculateRoute(origin, destination, profile) {
             'line-cap': 'round'
           }
         });
+      }
+
+      if (profile === 'shortest') {
+        // test, creates popup for shortest route
+        const lastFeature = json.route.features[json.route.features.length - 1];
+        const { properties: { time } } = lastFeature;
+        var div = window.document.createElement('div');
+        div.innerHTML = displayTime(time);
+        new mapboxgl.Popup()
+          .setLngLat(
+            json.route.features[Math.round(json.route.features.length / 2)]
+              .geometry.coordinates[0]
+          )
+          .setDOMContent(div)
+          .addTo(map);
       }
 
       // Move the network layer always on top
