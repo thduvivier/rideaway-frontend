@@ -74,9 +74,8 @@ module.exports = {
       {
         test: /\.(jpg|png|svg|woff)$/,
         loader: 'file-loader',
-        // don't use [hash] because of seperation
         options: {
-          name: 'static/[name].[ext]'
+          name: 'static/[name].[hash].[ext]'
         }
       }
     ]
@@ -95,7 +94,6 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: 'public/manifest.json' },
       { from: 'public/locales', to: 'locales' },
-      { from: 'public/nav' },
       { from: 'public/favicons' },
       { from: 'public/landing' }
     ]),

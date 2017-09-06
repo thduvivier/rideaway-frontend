@@ -2,7 +2,7 @@ import mapboxgl from 'mapbox-gl';
 
 import { urls } from '../../constants';
 
-import { swapArrayValues, fetchJSON } from '../lib';
+import { swapArrayValues, fetchJSON, displayTime } from '../lib';
 
 import MapController from './MapController';
 import GeolocationController from './GeolocationController';
@@ -57,7 +57,7 @@ export function clearAll() {
   view.hideNavigationBox();
   mapController.clearRoutes(markers.origin);
   mapController.clearRoutes(markers.destination);
-  mapController.removeFilter();
+  document.querySelector('.routelist-all').click();
   view.clearGeocoderInputs();
   places.origin = null;
   places.destination = null;
@@ -123,6 +123,21 @@ function calculateRoute(origin, destination, profile) {
             'line-cap': 'round'
           }
         });
+      }
+
+      if (profile === 'shortest') {
+        // test, creates popup for shortest route
+        const lastFeature = json.route.features[json.route.features.length - 1];
+        const { properties: { time } } = lastFeature;
+        var div = window.document.createElement('div');
+        div.innerHTML = displayTime(time);
+        new mapboxgl.Popup()
+          .setLngLat(
+            json.route.features[Math.round(json.route.features.length / 2)]
+              .geometry.coordinates[0]
+          )
+          .setDOMContent(div)
+          .addTo(map);
       }
 
       // Move the network layer always on top
@@ -196,6 +211,8 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
 }
 
 function bindActions() {
+  const routeChosen = places.origin && places.destination;
+
   // Executes when the map loaded
   map.on('load', function() {
     // Change the position of the copyright controls
@@ -208,13 +225,26 @@ function bindActions() {
     fetchJSON(urls.network).then(json => {
       view.addFilters(json.features);
       mapController.addAllRoutes(json);
-    });
 
-    // If the origin & destination were passed, calculate a route
-    if (places.origin && places.destination) {
-      const { origin, destination } = places;
-      calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
-    }
+      routeChosen && mapController.toggleLayer('GFR_routes', 'none');
+      routeChosen && mapController.toggleLayer('GFR_symbols', 'none');
+
+      // If the origin & destination were passed, calculate a route
+      if (places.origin && places.destination) {
+        const { origin, destination } = places;
+        markers.origin = mapController.addMarker(origin);
+        markers.origin.addTo(map);
+        markers.destination = mapController.addMarker(destination);
+        markers.destination.addTo(map);
+        calculateProfiles(
+          {
+            origin,
+            destination
+          },
+          ['shortest', 'brussels']
+        );
+      }
+    });
 
     // Create geocoders and add to map
     const geocoder = createGeocoder('origin');
