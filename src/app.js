@@ -43,20 +43,6 @@ let handlers = {
   nav: null
 };
 
-router.resolve();
-
-// Set origin and destination from url params
-const loc1 = findGetParameter('loc1');
-const loc2 = findGetParameter('loc2');
-if (loc1 && loc2) {
-  places.origin = swapArrayValues(
-    loc1.split(',').map(coord => parseFloat(coord))
-  );
-  places.destination = swapArrayValues(
-    loc2.split(',').map(coord => parseFloat(coord))
-  );
-}
-
 // show dialog to add to homescreen
 window.addToHomescreen({
   skipFirstVisit: true,
@@ -66,6 +52,18 @@ window.addToHomescreen({
 
 document.querySelector('.center-btn--icon').src = icons.Center;
 document.querySelector('.nav-white').src = icons.NavWhite;
+
+router.goToRouteplanner();
+
+export function clearAll() {
+  view.hideNavigationBox();
+  mapController.clearRoutes(markers.origin);
+  mapController.clearRoutes(markers.destination);
+  mapController.removeFilter();
+  view.clearGeocoderInputs();
+  places.origin = null;
+  places.destination = null;
+}
 
 /*
 * Calculates route for every profile passed
@@ -143,7 +141,7 @@ function calculateRoute(origin, destination, profile) {
           const originS = [origin[1], origin[0]];
           const destinationS = [destination[1], destination[0]];
 
-          router.navigate(`nav?loc1=${originS}&loc2=${destinationS}`);
+          router.goToNavigation(originS, destinationS);
         };
 
         const lastFeature = json.route.features[json.route.features.length - 1];

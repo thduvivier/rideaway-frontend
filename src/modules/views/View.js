@@ -421,4 +421,13 @@ export default class View {
         });
     });
   }
+
+  clearGeocoderInputs() {
+    const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
+    inputs.forEach(input => (input.value = ''));
+    const closeIcons = document.querySelectorAll(
+      '.geocoder-icon.geocoder-icon-close'
+    );
+    closeIcons.forEach(icon => (icon.style.display = 'none'));
+  }
 }
