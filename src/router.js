@@ -5,7 +5,7 @@ import { findGetParameter, swapArrayValues } from './modules/lib';
 
 class Router {
   goToNavigation(origin, destination) {
-    history.pushState(null, null, `nav?loc1=${origin}&loc2=${destination}`);
+    history.pushState(null, null, `#nav?loc1=${origin}&loc2=${destination}`);
     document.querySelector('.routeplanner').classList.remove('visible');
     document.querySelector('.main-loading').classList.add('visible');
     initializeNav(origin, destination);
@@ -16,8 +16,10 @@ class Router {
     document.querySelector('.navigation').classList.remove('visible');
     document.querySelector('.routeplanner').classList.add('visible');
     if (origin && destination) {
+      history.pushState(null, null, `/?loc1=${origin}&loc2=${destination}`);
       initializeRouteplanner(origin, destination);
     } else {
+      history.pushState('', document.title, '/');
       initializeRouteplanner();
     }
   }
@@ -27,9 +29,11 @@ class Router {
 
     // check if we should navigate or plan a route
     if (location.href.includes('nav')) {
-      navigateTo = this.goToNavigation;
+      navigateTo = (origin, destination) =>
+        this.goToNavigation(origin, destination);
     } else {
-      navigateTo = this.goToRouteplanner;
+      navigateTo = (origin, destination) =>
+        this.goToRouteplanner(origin, destination);
     }
 
     let origin;
