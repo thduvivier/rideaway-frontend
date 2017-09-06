@@ -29,8 +29,7 @@ import './scss/styles.scss';
 // Global variables
 let places = {
   origin: null,
-  destination: null,
-  userPosition: null
+  destination: null
 };
 
 // Initialize the markers
@@ -44,11 +43,7 @@ let handlers = {
   nav: null
 };
 
-if (location.hash.includes('#nav')) {
-  router.showNavigation();
-} else {
-  router.showRouteplanning();
-}
+router.resolve();
 
 // Set origin and destination from url params
 const loc1 = findGetParameter('loc1');
@@ -148,12 +143,7 @@ function calculateRoute(origin, destination, profile) {
           const originS = [origin[1], origin[0]];
           const destinationS = [destination[1], destination[0]];
 
-          history.pushState(
-            '',
-            'Navigation',
-            `#nav?loc1=${originS}&loc2=${destinationS}`
-          );
-          router.showNavigation();
+          router.navigate(`nav?loc1=${originS}&loc2=${destinationS}`);
         };
 
         const lastFeature = json.route.features[json.route.features.length - 1];
@@ -193,10 +183,10 @@ function setPoint(result) {
 * if placeToSet is null, it clears the route
 * @param string place - Origin/Destination
 */
-function setPlace(place, placeToSet = places.userPosition) {
+function setPlace(place, placeToSet = geolocController.userPosition) {
   places[place] = placeToSet;
   if (placeToSet === null) {
-    mapController.clearRoutes(map, markers[place]);
+    mapController.clearRoutes(markers[place]);
     view.hideNavigationBox();
   }
   const { origin, destination } = places;
