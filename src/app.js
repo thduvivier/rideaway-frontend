@@ -28,3 +28,5 @@ document.querySelector('.center-btn--icon').src = icons.Center;
 document.querySelector('.nav-white').src = icons.NavWhite;
 
 router.initialize();
+
+window.onpopstate = () => router.initialize();
