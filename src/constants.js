@@ -36,3 +36,23 @@ export const urls = {
 
 // Brussels
 export const center = { latlng: [4.355975, 50.860633], zoom: 11 };
+
+export const angleDeg = {
+  sharpleft: -45,
+  left: 0,
+  slightlyleft: 45,
+  straighton: 90,
+  slightlyright: 135,
+  right: 180,
+  sharpright: 225
+};
+
+export const degAngle = {
+  270: 'sharpleft',
+  0: 'left',
+  45: 'slightlyleft',
+  90: 'straighton',
+  135: 'slightlyright',
+  180: 'right',
+  225: 'sharpright'
+};

@@ -11,8 +11,11 @@ import {
   instructionAt,
   calculateAngle
 } from '../lib';
+import {degAngle} from '../../constants'
 
 import router from '../../router';
+
+import NavView from '../views/NavView'
 
 /**
  * Starts tracking your location and updating the screen.
@@ -33,6 +36,7 @@ function startTracking() {
     alert("Sorry, your browser doesn't support geolocation!");
   }
 }
+var navView;
 var loading = true;
 
 var result;
@@ -46,26 +50,6 @@ var totalTime;
 var i = 0;
 var loc1;
 var loc2;
-
-const arrowDeg = {
-  sharpleft: -45,
-  left: 0,
-  slightlyleft: 45,
-  straighton: 90,
-  slightlyright: 135,
-  right: 180,
-  sharpright: 225
-};
-
-const degAngle = {
-  270: 'sharpleft',
-  0: 'left',
-  45: 'slightlyleft',
-  90: 'straighton',
-  135: 'slightlyright',
-  180: 'right',
-  225: 'sharpright'
-};
 
 /**
  * Initialises the navigation with the result from the api.
@@ -85,6 +69,7 @@ function initializeNavigation(jsonresult) {
  * Initialises the navigation application.
  */
 export default function initialize(origin, destination) {
+  navView = new NavView()
   loc1 = origin;
   loc2 = destination;
   console.log(loc1);
@@ -137,6 +122,12 @@ function update(location) {
   var distance = distanceAtLocation(result.route, location);
   var instruction = instructionAt(result.instructions, distance * 1000);
   var distanceToNext = instruction.properties.distance - distance * 1000;
+  var remainingDistance = (totalDistance -distance)*1000;
+  var remainingTime = remainingDistance / 3.6;
+  var offset = 0;
+  if (distanceToNext < 1000){
+    offset = (distanceToNext-1000)*-1/20;   
+  }
 
   if (totalDistance - distance < 0.01) {
     router.goToRouteplanner();
@@ -146,6 +137,7 @@ function update(location) {
   // back to the route.
   if (closestPoint.distance > 0.025){
     distanceToNext = closestPoint.distance * 1000;
+    distance+= closestPoint.distance;
     instruction = {
       type: "Feature",
       properties:{
@@ -159,129 +151,15 @@ function update(location) {
         coordinates: closestPoint.point
       }
     }
-  }
+  } 
 
-  document.getElementById('next-instruction-distance').innerHTML = displayDistance(distanceToNext);
-
-  updateOffsets(distanceToNext);
-  updateCurrentRoad(instruction);
-  updateNextInstruction(instruction);
-  updateDirection(location, instruction);
-  updateRouteStats(distance);
-}
-
-function updateRouteStats(distance){
-  var remainingDistance = (totalDistance -distance)*1000;
-  var remainingTime = remainingDistance / 3.6;
-
-  document.getElementById('total-distance').innerHTML = displayDistance(remainingDistance);
-  document.getElementById('arrival-time').innerHTML = displayArrival(remainingTime);
-}
-
-function updateOffsets(distanceToNext){
-  var offset = 0;
-  if (distanceToNext < 1000){
-    offset = (distanceToNext-1000)*-1/20;   
-  }
-  document.getElementById("next-instruction-distance").style["top"] = offset + 20 + "vh";
-  document.getElementById("next-instruction").style["height"] = offset + 20 + "vh";
-  document.getElementById("current-road").style["height"] = 80 - offset + "vh";
-  document.getElementById("current-road").style["top"] = offset + 20 + "vh";
-  document.getElementById("next-instruction-arrow").style["top"] = offset + 1 + "vh";
-  document.getElementById("next-instruction-road-ref").style["top"] = offset - 11 + "vh";
-}
-
-/**
- * Updates the direction arrow when the location is not yet on the route.
- * 
- * @param {Object} location - current location
- * @param {Object} instruction - current instruction
- */
-function updateDirection(location, instruction) {
-  if (
-    instruction.properties.type === 'enter' ||
-    instruction.properties.type === 'stop'
-  ) {
-    document.getElementById('direction-arrow').style['display'] = 'block';
-
-    var dir = turf.bearing(location, instruction);
-    if (heading) {
-      dir = dir - heading;
-    }
-    document.getElementById('direction-arrow').style[
-      'transform'
-    ] = `rotate(${dir + 90}deg)`;
-  } else {
-    document.getElementById('direction-arrow').style['display'] = 'none';
-  }
-}
-
-/**
- * Updates the view of the current road.
- * 
- * @param {Object} instruction - current instruction 
- */
-function updateCurrentRoad(instruction) {
-  if (instruction.properties.colour) {
-    document.getElementById('current-road').style['background-color'] =
-      instruction.properties.colour;
-  } else {
-    document.getElementById('current-road').style['background-color'] =
-      'lightgrey';
-  }
-
-  if (instruction.properties.type === 'enter') {
-    document.getElementById('current-road-ref').style['display'] = 'none';
-  } else {
-    document.getElementById('current-road-ref').style['display'] = '';
-    document.getElementById('current-road-ref').innerHTML =
-      '' + instruction.properties.ref;
-  }
-}
-
-/**
- * Updates the view for the next instruction.
- * 
- * @param {Object} instruction - the current instruction 
- */
-function updateNextInstruction(instruction) {
-  if (instruction.properties.nextColour) {
-    document.getElementById('next-instruction').style['background-color'] =
-      instruction.properties.nextColour;
-  } else {
-    document.getElementById('next-instruction').style['background-color'] =
-      'lightgrey';
-  }
-  if (instruction.properties.angle) {
-    document.getElementById('next-instruction-arrow-img').style[
-      'transform'
-    ] = `rotate(${arrowDeg[instruction.properties.angle.toLowerCase()]}deg)`;
-  }
-
-  if (instruction.properties.type === 'leave') {
-    document
-      .getElementById('message')
-      .setAttribute('data-l10n-id', 'instr-leave');
-    document.getElementById('message').style['display'] = 'block';
-    document.getElementById('next-instruction-road-ref').style['display'] =
-      'none';
-  } else if (instruction.properties.type === 'stop') {
-    document.getElementById('current-road-ref').style['display'] = 'none';
-    document
-      .getElementById('message')
-      .setAttribute('data-l10n-id', 'instr-destination');
-    document.getElementById('next-instruction-arrow').style['display'] = 'none';
-  } else if (instruction.properties.type === 'enter') {
-    document.getElementById('next-instruction-road-ref').innerHTML =
-      '' + instruction.properties.nextRef;
-    document.getElementById('message').style['display'] = 'block';
-    document
-      .getElementById('message')
-      .setAttribute('data-l10n-id', 'instr-enter');
-  } else {
-    document.getElementById('message').style['display'] = 'none';
-    document.getElementById('next-instruction-road-ref').style['display'] = '';
-    document.getElementById('next-instruction-road-ref').innerHTML =
-      '' + instruction.properties.nextRef;
-  }
+  navView.updateRouteStats(remainingDistance, remainingTime);
+  navView.updateCurrentRoadSquare(instruction);
+  navView.updateNextRoadSquare(instruction, offset);
+  navView.updateCurrentRoadColour(instruction, offset);
+  navView.updateNextRoadColour(instruction, offset);
+  navView.updateNextInstructionDistance(distanceToNext, offset);
+  navView.updateNextRoadDirection(instruction, offset);
+  navView.updateDirectionArrow(instruction, location, heading);
+  navView.updateMessage(instruction);
 }
