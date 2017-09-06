@@ -6,7 +6,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  z-index: auto;
+  z-index: 2;
   background: $primary_color;
   padding: 1em;
   pointer-events: all;
@@ -42,7 +42,7 @@
     &:before {
       bottom: 100%;
       border: solid transparent;
-      content: "";
+      content: '';
       height: 0;
       width: 0;
       position: absolute;
@@ -75,7 +75,7 @@
 }
 
 .mapboxgl-ctrl-bottom-left {
-  z-index: 1;
+  z-index: 0;
 }
 
 .mapboxgl-ctrl-attrib {

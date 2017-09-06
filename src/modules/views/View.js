@@ -15,7 +15,7 @@ export default class View {
   collapseMenu() {
     if (window.innerWidth <= 800) {
       const menu = document.querySelector('.menu');
-      document.querySelector('.dimmed').style.display = 'none';
+      document.querySelector('.dimmed-full').style.display = 'none';
       menu.style.transform = `translateX(-${menu.offsetWidth + 6}px)`;
     }
   }
@@ -156,7 +156,7 @@ export default class View {
     // mobile menu
     menuOpen.addEventListener('click', () => {
       document.querySelector('.menu').style.transform = 'translateX(0)';
-      document.querySelector('.dimmed').style.display = 'block';
+      document.querySelector('.dimmed-full').style.display = 'block';
     });
     // insert menu button before
     const control = document.querySelector('.mapboxgl-ctrl-top-right');
@@ -164,7 +164,7 @@ export default class View {
 
     // collapse menu when the dimmed part is touched
     document
-      .querySelector('.dimmed')
+      .querySelector('.dimmed-full')
       .addEventListener('click', this.collapseMenu);
 
     document.querySelector('.menu-btn-close').addEventListener('click', () => {
@@ -395,12 +395,35 @@ export default class View {
   * Show dialog when no route is found
   */
   toggleErrorDialog() {
+    const dimmed = document.querySelector('.dimmed-map');
     const dialog = document.querySelector('.error-dialog');
     const toggle =
       window.getComputedStyle(dialog, null).display === 'flex'
         ? 'none'
         : 'flex';
+    dimmed.style.display = toggle;
     dialog.style.display = toggle;
+  }
+
+  /*
+   *  Toggle loading icon on map
+   */
+  toggleMapLoading() {
+    const dimmed = document.querySelector('.dimmed-map');
+    const toggle =
+      window.getComputedStyle(dimmed, null).display === 'flex'
+        ? 'none'
+        : 'flex';
+    dimmed.style.display = toggle;
+
+    const loading = document.querySelector('.main-loading');
+    if (toggle === 'none') {
+      loading.classList.remove('visible');
+      loading.classList.add('main-loading--bg');
+    } else {
+      loading.classList.remove('main-loading--bg');
+      loading.classList.add('visible');
+    }
   }
 
   /*

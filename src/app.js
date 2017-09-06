@@ -71,6 +71,7 @@ export function clearAll() {
 * @param Array[string] profiles - Array of the profiles
 */
 function calculateProfiles(places, profiles) {
+  view.toggleMapLoading();
   const { origin, destination } = places;
   profiles.forEach(profile => {
     calculateRoute(origin, destination, profile);
@@ -158,6 +159,9 @@ function calculateRoute(origin, destination, profile) {
         view.showNavigationBox(oldHandler, handlers.nav, distance, time);
 
         mapController.fitToBounds(origin, destination);
+
+        // hide the loading icon
+        view.toggleMapLoading();
       }
     })
     .catch(ex => {
@@ -260,8 +264,8 @@ map.on('load', function() {
       markers.destination.addTo(map);
 
       if (places.origin) {
-        calculateRoute(places.origin, places.destination, 'shortest');
-        calculateRoute(places.origin, places.destination, 'brussels');
+        const { origin, destination } = places;
+        calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
       }
     }
   });
