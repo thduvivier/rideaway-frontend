@@ -205,9 +205,9 @@ function initializeNavigation(jsonresult) {
 /**
  * Initialises the navigation application.
  */
-export default function initialize() {
-  loc1 = getParameterByName('loc1');
-  loc2 = getParameterByName('loc2');
+export default function initialize(origin, destination) {
+  loc1 = origin;
+  loc2 = destination;
   console.log(loc1);
   console.log(loc2);
   const url = `https://cyclerouting-api.osm.be/route?loc1=${loc1}&loc2=${loc2}&profile=brussels&instructions=true`;
@@ -221,13 +221,11 @@ export default function initialize() {
   document
     .getElementById('close-navigation')
     .addEventListener('click', function() {
-      history.replaceState(null, null, '/');
-      router.showRouteplanning();
+      router.goToRouteplanner(true);
     });
 
   document.getElementById('goto-map').addEventListener('click', function() {
-    history.replaceState(null, null, `?loc1=${loc1}&loc2=${loc2}`);
-    router.showRouteplanning();
+    router.goToRouteplanner(false);
   });
 }
 

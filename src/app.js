@@ -29,8 +29,7 @@ import './scss/styles.scss';
 // Global variables
 let places = {
   origin: null,
-  destination: null,
-  userPosition: null
+  destination: null
 };
 
 // Initialize the markers
@@ -44,24 +43,6 @@ let handlers = {
   nav: null
 };
 
-if (location.hash.includes('#nav')) {
-  router.showNavigation();
-} else {
-  router.showRouteplanning();
-}
-
-// Set origin and destination from url params
-const loc1 = findGetParameter('loc1');
-const loc2 = findGetParameter('loc2');
-if (loc1 && loc2) {
-  places.origin = swapArrayValues(
-    loc1.split(',').map(coord => parseFloat(coord))
-  );
-  places.destination = swapArrayValues(
-    loc2.split(',').map(coord => parseFloat(coord))
-  );
-}
-
 // show dialog to add to homescreen
 window.addToHomescreen({
   skipFirstVisit: true,
@@ -71,6 +52,18 @@ window.addToHomescreen({
 
 document.querySelector('.center-btn--icon').src = icons.Center;
 document.querySelector('.nav-white').src = icons.NavWhite;
+
+router.goToRouteplanner();
+
+export function clearAll() {
+  view.hideNavigationBox();
+  mapController.clearRoutes(markers.origin);
+  mapController.clearRoutes(markers.destination);
+  mapController.removeFilter();
+  view.clearGeocoderInputs();
+  places.origin = null;
+  places.destination = null;
+}
 
 /*
 * Calculates route for every profile passed
@@ -148,12 +141,7 @@ function calculateRoute(origin, destination, profile) {
           const originS = [origin[1], origin[0]];
           const destinationS = [destination[1], destination[0]];
 
-          history.pushState(
-            '',
-            'Navigation',
-            `#nav?loc1=${originS}&loc2=${destinationS}`
-          );
-          router.showNavigation();
+          router.goToNavigation(originS, destinationS);
         };
 
         const lastFeature = json.route.features[json.route.features.length - 1];
@@ -193,10 +181,10 @@ function setPoint(result) {
 * if placeToSet is null, it clears the route
 * @param string place - Origin/Destination
 */
-function setPlace(place, placeToSet = places.userPosition) {
+function setPlace(place, placeToSet = geolocController.userPosition) {
   places[place] = placeToSet;
   if (placeToSet === null) {
-    mapController.clearRoutes(map, markers[place]);
+    mapController.clearRoutes(markers[place]);
     view.hideNavigationBox();
   }
   const { origin, destination } = places;

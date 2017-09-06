@@ -1,14 +1,18 @@
 import initializeNav from './modules/controllers/NavigationController';
+import { clearAll } from './app';
 
 class Router {
-  showNavigation() {
-    initializeNav();
+  goToNavigation(origin, destination) {
+    initializeNav(origin, destination);
     document.querySelector('.routeplanner').classList.remove('visible');
     document.querySelector('.main-loading').classList.add('visible');
     document.querySelector('.navigation').classList.add('visible');
   }
 
-  showRouteplanning() {
+  goToRouteplanner(clear) {
+    if (clear) {
+      clearAll();
+    }
     document.querySelector('.navigation').classList.remove('visible');
     document.querySelector('.routeplanner').classList.add('visible');
   }

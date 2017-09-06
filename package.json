@@ -42,9 +42,6 @@
     "l20n": "^5.0.0",
     "lodash": "^4.17.4",
     "mapbox-gl": "^0.39.1",
-    "route-recognizer": "^0.3.3",
-    "router_js": "^1.2.8",
-    "rsvp": "^4.0.1",
     "turf": "^3.0.14",
     "whatwg-fetch": "^2.0.3"
   },
