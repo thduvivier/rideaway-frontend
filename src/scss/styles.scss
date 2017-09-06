@@ -43,16 +43,19 @@ body {
   height: 100vh;
   width: 100vw;
   z-index: 99;
-  background: $primary_color;
   align-items: center;
   justify-content: center;
+}
+
+.main-loading--bg {
+  background: $primary_color;
 }
 
 .visible {
   display: flex;
 }
 
-.dimmed {
+.dimmed-full {
   z-index: 3;
   position: absolute;
   height: 100vh;
@@ -61,37 +64,48 @@ body {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-.error-dialog {
-  z-index: 5;
+.dimmed-map {
   display: none;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.7);
 
-  .error-dialog-content {
-    position: relative;
-    width: 20em;
-    height: 10em;
-    background-color: $primary_color;
-    border-radius: 4px;
-    padding: 0 2em;
-    color: $white;
+  .error-dialog {
+    z-index: 5;
+    display: none;
+    align-items: center;
+    justify-content: center;
 
-    h2 {
-      margin-top: 1em;
-      display: inline-block;
-    }
+    .error-dialog-content {
+      position: relative;
+      width: 20em;
+      height: 10em;
+      background-color: $primary_color;
+      border-radius: 4px;
+      padding: 0 2em;
+      color: $white;
 
-    .error-btn-close {
-      background: url('../icons/close.svg');
-      background-position: center;
-      background-size: contain;
-      background-repeat: no-repeat;
-      cursor: pointer;
-      width: 1.8em;
-      height: 1.8em;
-      position: absolute;
-      top: 1.2em;
-      right: 1.2em;
+      h2 {
+        margin-top: 1em;
+        display: inline-block;
+      }
+
+      .error-btn-close {
+        background: url('../icons/close.svg');
+        background-position: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        width: 1.8em;
+        height: 1.8em;
+        position: absolute;
+        top: 1.2em;
+        right: 1.2em;
+      }
     }
   }
 }

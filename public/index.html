@@ -21,7 +21,7 @@
 </head>
 
 <body>
-  <div class="main-loading visible">
+  <div class="main-loading main-loading--bg visible">
     <div class="sk-double-bounce">
       <div class="sk-child sk-double-bounce1"></div>
       <div class="sk-child sk-double-bounce2"></div>
@@ -29,14 +29,7 @@
   </div>
 
   <div class="routeplanner page">
-    <div class="dimmed"></div>
-    <div class="dimmed error-dialog">
-      <div class="error-dialog-content">
-        <h2 data-l10n-id="error-title"></h2><span>&nbsp;😕</span>
-        <p data-l10n-id="error-content"></p>
-        <div class="error-btn-close"></div>
-      </div>
-    </div>
+    <div class="dimmed-full"></div>
     <div class="menu">
       <div class="menu-top">
         <h1 class="menu-title" data-l10n-id="routes-choose"></h1>
@@ -53,6 +46,15 @@
       </div>
     </div>
     <div id='map'>
+      <div class="dimmed-map">
+        <div class="error-dialog">
+          <div class="error-dialog-content">
+            <h2 data-l10n-id="error-title"></h2><span>&nbsp;😕</span>
+            <p data-l10n-id="error-content"></p>
+            <div class="error-btn-close"></div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="nav-box">
       <ul class="nav-list">
