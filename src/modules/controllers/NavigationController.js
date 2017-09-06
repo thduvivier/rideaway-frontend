@@ -255,7 +255,7 @@ function update(location) {
   var distanceToNext = instruction.properties.distance - (distance*1000);
 
   if (totalDistance - distance < 0.01) {
-    router.showRouteplanning();
+    router.goToRouteplanner(true);
   }
 
   // if the user is more than 25m off route, show a direction arrow to navigate
@@ -303,6 +303,25 @@ function update(location) {
   updateCurrentRoad(instruction);
   updateNextInstruction(instruction);
   updateDirection(location, instruction);
+  updateRouteStats(distance);
+}
+
+function updateRouteStats(distance){
+  var remainingDistance = (totalDistance -distance)*1000;
+  if(remainingDistance > 1000){
+    document.getElementById('total-distance').innerHTML =
+      '' +
+      Math.round(remainingDistance/100)/10 +
+      'km';
+  }
+  else {
+    document.getElementById('total-distance').innerHTML =
+      '' +
+      Math.round(remainingDistance/10)*10 +
+      'm';
+  }
+  
+  //document.getElementById("total-distance")
 }
 
 function updateOffsets(offset){
