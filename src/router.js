@@ -5,7 +5,9 @@ import { findGetParameter, swapArrayValues } from './modules/lib';
 
 class Router {
   goToNavigation(origin, destination) {
-    history.pushState(null, null, `#nav?loc1=${origin}&loc2=${destination}`);
+    const originS = swapArrayValues(origin);
+    const destinationS = swapArrayValues(destination);
+    history.pushState(null, null, `/nav?loc1=${originS}&loc2=${destinationS}`);
     document.querySelector('.routeplanner').classList.remove('visible');
     document.querySelector('.main-loading').classList.add('visible');
     initializeNav(origin, destination);
