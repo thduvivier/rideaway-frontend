@@ -1,5 +1,5 @@
 import turf from 'turf';
-import { fetchJSON, getParameterByName } from '../lib';
+import { fetchJSON, getParameterByName, displayArrival } from '../lib';
 
 import router from '../../router';
 
@@ -308,6 +308,7 @@ function update(location) {
 
 function updateRouteStats(distance){
   var remainingDistance = (totalDistance -distance)*1000;
+  var remainingTime = remainingDistance / 3.6;
   if(remainingDistance > 1000){
     document.getElementById('total-distance').innerHTML =
       '' +
@@ -320,6 +321,8 @@ function updateRouteStats(distance){
       Math.round(remainingDistance/10)*10 +
       'm';
   }
+
+  document.getElementById('arrival-time').innerHTML = displayArrival(remainingTime)
   
   //document.getElementById("total-distance")
 }

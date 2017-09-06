@@ -176,7 +176,12 @@
   left: 2vh;
 }
 
-
+#arrival-time {
+  position: absolute;
+  z-index: 2;
+  bottom: 1vh;
+  right: 2vh;
+}
 
 /*
 #main
