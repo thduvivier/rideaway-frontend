@@ -255,7 +255,7 @@ function update(location) {
   var distanceToNext = instruction.properties.distance - distance * 1000;
 
   if (totalDistance - distance < 0.01) {
-    router.showRouteplanning();
+    router.goToRouteplanner();
   }
 
   // if the user is more than 25m off route, show a direction arrow to navigate
