@@ -205,13 +205,11 @@ export default function initialize() {
   document
     .getElementById('close-navigation')
     .addEventListener('click', function() {
-      history.replaceState(null, null, '/');
-      router.showRouteplanning();
+      router.navigate(null);
     });
 
   document.getElementById('goto-map').addEventListener('click', function() {
-    history.replaceState(null, null, `?loc1=${loc1}&loc2=${loc2}`);
-    router.showRouteplanning();
+    router.navigate(`?loc1=${loc1}&loc2=${loc2}`);
   });
 }
 

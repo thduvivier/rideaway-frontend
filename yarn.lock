@@ -3241,6 +3241,10 @@ nan@^2.3.0, nan@^2.3.2:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.7.0.tgz#d95bf721ec877e08db276ed3fc6eb78f9083ad46"
 
+navigo@^5.3.1:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/navigo/-/navigo-5.3.1.tgz#df22c5b84ebf2a121cdaaac1387a876c9f780606"
+
 ncname@1.0.x:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/ncname/-/ncname-1.0.0.tgz#5b57ad18b1ca092864ef62b0b1ed8194f383b71c"
@@ -4376,18 +4380,6 @@ robust-subtract@^1.0.0:
 robust-sum@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/robust-sum/-/robust-sum-1.0.0.tgz#16646e525292b4d25d82757a286955e0bbfa53d9"
-
-route-recognizer@^0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/route-recognizer/-/route-recognizer-0.3.3.tgz#1d365e27fa6995e091675f7dc940a8c00353bd29"
-
-router_js@^1.2.8:
-  version "1.2.8"
-  resolved "https://registry.yarnpkg.com/router_js/-/router_js-1.2.8.tgz#d2ea5d00726e1fd6494d20ae3ebeb99ce86cf0b3"
-
-rsvp@^4.0.1:
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.0.1.tgz#589fb1004cf5ea3c0c1ace5c655546906559ce11"
 
 rw@^1.3.3:
   version "1.3.3"
