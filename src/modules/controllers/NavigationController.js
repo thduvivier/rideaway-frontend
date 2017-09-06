@@ -1,144 +1,18 @@
 import turf from 'turf';
-import { fetchJSON, getParameterByName, displayArrival } from '../lib';
+import { 
+  fetchJSON, 
+  getParameterByName, 
+  displayArrival, 
+  displayDistance, 
+  lengthOfRoute, 
+  pointAlongRoute, 
+  pointOnRoute, 
+  distanceAtLocation,
+  instructionAt,
+  calculateAngle
+} from '../lib';
 
 import router from '../../router';
-
-/**
- * Calculates the length of the route.
- * 
- * @param {Object} route - the route object.
- * @return {number} length of the route.
- */
-function lengthOfRoute(route) {
-  var length = 0.0;
-  for (var i = 0; i < route.features.length; i++) {
-    var feature = route.features[i];
-    if (feature.geometry.type == 'LineString') {
-      length += turf.lineDistance(feature);
-    }
-  }
-  return length;
-}
-
-/**
- * Returns the feature at the given distance on the route
- * 
- * @param {Object} route - the route object
- * @param {number} distance - distance on route 
- */
-function pointAlongRoute(route, distance) {
-  var length = 0.0;
-  for (var i = 0; i < route.features.length; i++) {
-    var feature = route.features[i];
-    if (feature.geometry.type == 'LineString') {
-      var localLength = turf.lineDistance(feature);
-
-      if (length <= distance && distance <= localLength + length) {
-        return turf.along(feature, distance - length);
-      }
-
-      length += localLength;
-    }
-  }
-  return length;
-}
-
-/**
- * Returns the properties of the geojson feature that is closest to the
- * given point.
- * 
- * @param {Object} route - the route object 
- * @param {Object} point - a coordinate along the route
- */
-function pointOnRoute (route, point) {
-  var ret = {
-      distance: 1000000,
-      point: {},
-      data: {},
-      nextPoint: {}
-  };
-  for(var i = 0; i < route.features.length; i++) {
-      var feature = route.features[i];
-      if (feature.geometry.type == "LineString") {
-          var snapped = turf.pointOnLine(feature, point);
-
-          if (snapped.properties.dist < ret.distance) {
-              ret.distance = snapped.properties.dist;
-              ret.point = snapped.geometry.coordinates;
-              ret.data = feature.properties;
-              ret.nextPoint = feature.geometry.coordinates[snapped.properties.index];
-          }
-      }
-  }
-  return ret;
-}
-
-/**
- * Calculates the distance of the route between the startpoint and the
- * given location.
- * 
- * @param {Object} route - the route object
- * @param {Object} location - point along the route
- */
-function distanceAtLocation(route, location) {
-  var bestDist = null;
-  var bestIndex = null;
-  for (var i = 0; i < route.features.length; i++) {
-    var feature = route.features[i];
-    if (feature.geometry.type == 'LineString') {
-      var snapped = turf.pointOnLine(feature, location);
-      var dist = turf.distance(snapped, location);
-
-      if (bestDist !== null) {
-        if (dist < bestDist) {
-          bestDist = dist;
-          bestIndex = i;
-        }
-      } else {
-        bestDist = dist;
-        bestIndex = i;
-      }
-    }
-  }
-
-  var length = 0.0;
-  for (var j = 0; j < bestIndex; j++) {
-    length += turf.lineDistance(route.features[j]);
-  }
-  length += turf.lineDistance(
-    turf.lineSlice(
-      turf.point(route.features[bestIndex].geometry.coordinates[0]),
-      location,
-      route.features[bestIndex]
-    )
-  );
-
-  return length;
-}
-
-/**
- * Returns the instruction that is next when you are at the given distance on the route
- * 
- * @param {Object} instructions - list of the instructions
- * @param {number} currentDistance - the distance to get the instruction for
- */
-function instructionAt(instructions, currentDistance) {
-  for (var i = 0; i < instructions.features.length; i++) {
-    var instruction = instructions.features[i];
-    if (instruction.properties.distance >= currentDistance) {
-      return instruction;
-    }
-  }
-}
-
-/**
- * Calculates the bearing between the location and the location of the instruction.
- * @param {Object} location - current location
- * @param {Object} instruction - instruction to point to
- */
-function calculateBearing(location, instruction) {
-  return turf.bearing(location, turf.point(instruction.geometry.coordinates));
-}
 
 /**
  * Starts tracking your location and updating the screen.
@@ -146,6 +20,10 @@ function calculateBearing(location, instruction) {
 function startTracking() {
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(position => {
+      if(loading){
+        loading = false;
+        document.querySelector('.main-loading').classList.remove('visible');        
+      }
       var coord = position.coords;
       var location = turf.point([coord.longitude, coord.latitude]);
       heading = position.coords.heading;
@@ -155,6 +33,7 @@ function startTracking() {
     alert("Sorry, your browser doesn't support geolocation!");
   }
 }
+var loading = true;
 
 var result;
 var heading;
@@ -213,10 +92,11 @@ export default function initialize(origin, destination) {
   const url = `https://cyclerouting-api.osm.be/route?loc1=${loc1}&loc2=${loc2}&profile=brussels&instructions=true`;
 
   fetchJSON(url).then(json => {
+    loading = true;
     initializeNavigation(json);
     setTimeout(step, 50);
+    
     //startTracking();
-    document.querySelector('.main-loading').classList.remove('visible');
   });
   document
     .getElementById('close-navigation')
@@ -233,6 +113,10 @@ export default function initialize(origin, destination) {
  * Step function used in debug mode to iterate over the route.
  */
 function step() {
+  if(loading){
+    loading = false;
+    document.querySelector('.main-loading').classList.remove('visible');    
+  }
   var location = pointAlongRoute(result.route, i).geometry.coordinates;
   update(location);
 
@@ -259,47 +143,27 @@ function update(location) {
   }
 
   // if the user is more than 25m off route, show a direction arrow to navigate
-    // back to the route.
-    if (closestPoint.distance > 0.025){
-      distanceToNext = closestPoint.distance * 1000;
-      var angle1 = turf.bearing(location, turf.point(closestPoint.point));
-      var angle2 = turf.bearing(turf.point(closestPoint.point), turf.point(closestPoint.nextPoint));
-      var dif = angle2 - angle1;
-      if (dif < 0){
-          dif += 360
+  // back to the route.
+  if (closestPoint.distance > 0.025){
+    distanceToNext = closestPoint.distance * 1000;
+    instruction = {
+      type: "Feature",
+      properties:{
+        type: "enter",
+        nextColour: instruction.properties.colour,
+        nextRef: instruction.properties.ref,
+        angle: degAngle[calculateAngle(location, closestPoint)]
+      },
+      geometry:{ 
+        type: "Point",
+        coordinates: closestPoint.point
       }
-      dif -= 90
-      dif = Math.round(dif / 45)*45
-
-      instruction = {
-          properties:{
-              type: "enter",
-              nextColour: instruction.properties.colour,
-              nextRef: instruction.properties.ref,
-              angle: degAngle[dif]
-          },
-          geometry: closestPoint.point
-      }
-  }
-  if (distanceToNext > 1000){
-    document.getElementById('next-instruction-distance').innerHTML =
-      '' +
-      Math.round(distanceToNext/100)/10 +
-      'km';
-  }
-  else {
-    document.getElementById('next-instruction-distance').innerHTML =
-      '' +
-      Math.round(distanceToNext/10)*10 +
-      'm';
+    }
   }
 
-  var offset = 20;
-  if (distanceToNext < 1000){
-    offset += (distanceToNext-1000)*-1/20;
-  }
+  document.getElementById('next-instruction-distance').innerHTML = displayDistance(distanceToNext);
 
-  updateOffsets(offset);
+  updateOffsets(distanceToNext);
   updateCurrentRoad(instruction);
   updateNextInstruction(instruction);
   updateDirection(location, instruction);
@@ -309,31 +173,22 @@ function update(location) {
 function updateRouteStats(distance){
   var remainingDistance = (totalDistance -distance)*1000;
   var remainingTime = remainingDistance / 3.6;
-  if(remainingDistance > 1000){
-    document.getElementById('total-distance').innerHTML =
-      '' +
-      Math.round(remainingDistance/100)/10 +
-      'km';
-  }
-  else {
-    document.getElementById('total-distance').innerHTML =
-      '' +
-      Math.round(remainingDistance/10)*10 +
-      'm';
-  }
 
-  document.getElementById('arrival-time').innerHTML = displayArrival(remainingTime)
-  
-  //document.getElementById("total-distance")
+  document.getElementById('total-distance').innerHTML = displayDistance(remainingDistance);
+  document.getElementById('arrival-time').innerHTML = displayArrival(remainingTime);
 }
 
-function updateOffsets(offset){
-  document.getElementById("next-instruction-distance").style["top"] = offset + "vh";
-  document.getElementById("next-instruction").style["height"] = offset + "vh";
-  document.getElementById("current-road").style["height"] = (100 - offset) + "vh";
-  document.getElementById("current-road").style["top"] = offset + "vh";
-  document.getElementById("next-instruction-arrow").style["top"] = offset - 19 + "vh";
-  document.getElementById("next-instruction-road-ref").style["top"] = offset - 31 + "vh";
+function updateOffsets(distanceToNext){
+  var offset = 0;
+  if (distanceToNext < 1000){
+    offset = (distanceToNext-1000)*-1/20;   
+  }
+  document.getElementById("next-instruction-distance").style["top"] = offset + 20 + "vh";
+  document.getElementById("next-instruction").style["height"] = offset + 20 + "vh";
+  document.getElementById("current-road").style["height"] = 80 - offset + "vh";
+  document.getElementById("current-road").style["top"] = offset + 20 + "vh";
+  document.getElementById("next-instruction-arrow").style["top"] = offset + 1 + "vh";
+  document.getElementById("next-instruction-road-ref").style["top"] = offset - 11 + "vh";
 }
 
 /**
@@ -349,7 +204,7 @@ function updateDirection(location, instruction) {
   ) {
     document.getElementById('direction-arrow').style['display'] = 'block';
 
-    var dir = calculateBearing(location, instruction);
+    var dir = turf.bearing(location, instruction);
     if (heading) {
       dir = dir - heading;
     }
