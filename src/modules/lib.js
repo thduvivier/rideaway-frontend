@@ -33,7 +33,7 @@ export function displayDistance(m) {
 */
 export function displayTime(s) {
   if (s < 60) {
-    return `1 min`;
+    return '1 min';
   }
   if (s < 3600) {
     return `${Math.round(s / 60)} min`;
@@ -150,22 +150,22 @@ export function pointAlongRoute(route, distance) {
  * @param {Object} route - the route object 
  * @param {Object} point - a coordinate along the route
  */
-export function pointOnRoute (route, point) {
+export function pointOnRoute(route, point) {
   var ret = {
-      distance: 1000000,
+    distance: 1000000
   };
-  for(var i = 0; i < route.features.length; i++) {
-      var feature = route.features[i];
-      if (feature.geometry.type == "LineString") {
-          var snapped = turf.pointOnLine(feature, point);
+  for (var i = 0; i < route.features.length; i++) {
+    var feature = route.features[i];
+    if (feature.geometry.type == 'LineString') {
+      var snapped = turf.pointOnLine(feature, point);
 
-          if (snapped.properties.dist < ret.distance) {
-              ret.distance = snapped.properties.dist;
-              ret.point = snapped.geometry.coordinates;
-              ret.data = feature.properties;
-              ret.nextPoint = feature.geometry.coordinates[snapped.properties.index];
-          }
+      if (snapped.properties.dist < ret.distance) {
+        ret.distance = snapped.properties.dist;
+        ret.point = snapped.geometry.coordinates;
+        ret.data = feature.properties;
+        ret.nextPoint = feature.geometry.coordinates[snapped.properties.index];
       }
+    }
   }
   return ret;
 }
@@ -228,13 +228,16 @@ export function instructionAt(instructions, currentDistance) {
   }
 }
 
-export function calculateAngle(location, closestPoint){
+export function calculateAngle(location, closestPoint) {
   var angle1 = turf.bearing(location, turf.point(closestPoint.point));
-  var angle2 = turf.bearing(turf.point(closestPoint.point), turf.point(closestPoint.nextPoint));
+  var angle2 = turf.bearing(
+    turf.point(closestPoint.point),
+    turf.point(closestPoint.nextPoint)
+  );
   var dif = angle2 - angle1;
-  if (dif < 0){
-    dif += 360
+  if (dif < 0) {
+    dif += 360;
   }
-  dif -= 90
-  return Math.round(dif / 45)*45
+  dif -= 90;
+  return Math.round(dif / 45) * 45;
 }
