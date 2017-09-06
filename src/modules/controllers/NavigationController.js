@@ -50,25 +50,25 @@ function pointAlongRoute(route, distance) {
  * @param {Object} route - the route object 
  * @param {Object} point - a coordinate along the route
  */
-function pointOnRoute (route, point) {
+function pointOnRoute(route, point) {
   var ret = {
-      distance: 1000000,
-      point: {},
-      data: {},
-      nextPoint: {}
+    distance: 1000000,
+    point: {},
+    data: {},
+    nextPoint: {}
   };
-  for(var i = 0; i < route.features.length; i++) {
-      var feature = route.features[i];
-      if (feature.geometry.type == "LineString") {
-          var snapped = turf.pointOnLine(feature, point);
+  for (var i = 0; i < route.features.length; i++) {
+    var feature = route.features[i];
+    if (feature.geometry.type == 'LineString') {
+      var snapped = turf.pointOnLine(feature, point);
 
-          if (snapped.properties.dist < ret.distance) {
-              ret.distance = snapped.properties.dist;
-              ret.point = snapped.geometry.coordinates;
-              ret.data = feature.properties;
-              ret.nextPoint = feature.geometry.coordinates[snapped.properties.index];
-          }
+      if (snapped.properties.dist < ret.distance) {
+        ret.distance = snapped.properties.dist;
+        ret.point = snapped.geometry.coordinates;
+        ret.data = feature.properties;
+        ret.nextPoint = feature.geometry.coordinates[snapped.properties.index];
       }
+    }
   }
   return ret;
 }
@@ -179,13 +179,13 @@ const arrowDeg = {
 };
 
 const degAngle = {
-  270: "sharpleft",
-  0: "left",
-  45: "slightlyleft",
-  90: "straighton",
-  135: "slightlyright",
-  180: "right",
-  225: "sharpright"
+  270: 'sharpleft',
+  0: 'left',
+  45: 'slightlyleft',
+  90: 'straighton',
+  135: 'slightlyright',
+  180: 'right',
+  225: 'sharpright'
 };
 
 /**
@@ -221,11 +221,11 @@ export default function initialize(origin, destination) {
   document
     .getElementById('close-navigation')
     .addEventListener('click', function() {
-      router.goToRouteplanner(true);
+      router.goToRouteplanner();
     });
 
   document.getElementById('goto-map').addEventListener('click', function() {
-    router.goToRouteplanner(false);
+    router.goToRouteplanner(loc1, loc2);
   });
 }
 
@@ -251,52 +251,50 @@ function step() {
 function update(location) {
   var closestPoint = pointOnRoute(result.route, location);
   var distance = distanceAtLocation(result.route, location);
-  var instruction = instructionAt(result.instructions, distance*1000);
-  var distanceToNext = instruction.properties.distance - (distance*1000);
+  var instruction = instructionAt(result.instructions, distance * 1000);
+  var distanceToNext = instruction.properties.distance - distance * 1000;
 
   if (totalDistance - distance < 0.01) {
     router.showRouteplanning();
   }
 
   // if the user is more than 25m off route, show a direction arrow to navigate
-    // back to the route.
-    if (closestPoint.distance > 0.025){
-      distanceToNext = closestPoint.distance * 1000;
-      var angle1 = turf.bearing(location, turf.point(closestPoint.point));
-      var angle2 = turf.bearing(turf.point(closestPoint.point), turf.point(closestPoint.nextPoint));
-      var dif = angle2 - angle1;
-      if (dif < 0){
-          dif += 360
-      }
-      dif -= 90
-      dif = Math.round(dif / 45)*45
+  // back to the route.
+  if (closestPoint.distance > 0.025) {
+    distanceToNext = closestPoint.distance * 1000;
+    var angle1 = turf.bearing(location, turf.point(closestPoint.point));
+    var angle2 = turf.bearing(
+      turf.point(closestPoint.point),
+      turf.point(closestPoint.nextPoint)
+    );
+    var dif = angle2 - angle1;
+    if (dif < 0) {
+      dif += 360;
+    }
+    dif -= 90;
+    dif = Math.round(dif / 45) * 45;
 
-      instruction = {
-          properties:{
-              type: "enter",
-              nextColour: instruction.properties.colour,
-              nextRef: instruction.properties.ref,
-              angle: degAngle[dif]
-          },
-          geometry: closestPoint.point
-      }
+    instruction = {
+      properties: {
+        type: 'enter',
+        nextColour: instruction.properties.colour,
+        nextRef: instruction.properties.ref,
+        angle: degAngle[dif]
+      },
+      geometry: closestPoint.point
+    };
   }
-  if (distanceToNext > 1000){
+  if (distanceToNext > 1000) {
     document.getElementById('next-instruction-distance').innerHTML =
-      '' +
-      Math.round(distanceToNext/100)/10 +
-      'km';
-  }
-  else {
+      '' + Math.round(distanceToNext / 100) / 10 + 'km';
+  } else {
     document.getElementById('next-instruction-distance').innerHTML =
-      '' +
-      Math.round(distanceToNext/10)*10 +
-      'm';
+      '' + Math.round(distanceToNext / 10) * 10 + 'm';
   }
 
   var offset = 20;
-  if (distanceToNext < 1000){
-    offset += (distanceToNext-1000)*-1/20;
+  if (distanceToNext < 1000) {
+    offset += (distanceToNext - 1000) * -1 / 20;
   }
 
   updateOffsets(offset);
@@ -305,13 +303,16 @@ function update(location) {
   updateDirection(location, instruction);
 }
 
-function updateOffsets(offset){
-  document.getElementById("next-instruction-distance").style["top"] = offset + "vh";
-  document.getElementById("next-instruction").style["height"] = offset + "vh";
-  document.getElementById("current-road").style["height"] = (100 - offset) + "vh";
-  document.getElementById("current-road").style["top"] = offset + "vh";
-  document.getElementById("next-instruction-arrow").style["top"] = offset - 19 + "vh";
-  document.getElementById("next-instruction-road-ref").style["top"] = offset - 31 + "vh";
+function updateOffsets(offset) {
+  document.getElementById('next-instruction-distance').style['top'] =
+    offset + 'vh';
+  document.getElementById('next-instruction').style['height'] = offset + 'vh';
+  document.getElementById('current-road').style['height'] = 100 - offset + 'vh';
+  document.getElementById('current-road').style['top'] = offset + 'vh';
+  document.getElementById('next-instruction-arrow').style['top'] =
+    offset - 19 + 'vh';
+  document.getElementById('next-instruction-road-ref').style['top'] =
+    offset - 31 + 'vh';
 }
 
 /**
@@ -385,12 +386,11 @@ function updateNextInstruction(instruction) {
     document
       .getElementById('message')
       .setAttribute('data-l10n-id', 'instr-leave');
-    document.getElementById('message').style['display'] =
-      'block';
+    document.getElementById('message').style['display'] = 'block';
     document.getElementById('next-instruction-road-ref').style['display'] =
       'none';
   } else if (instruction.properties.type === 'stop') {
-    document.getElementById("current-road-ref").style["display"] = "none";    
+    document.getElementById('current-road-ref').style['display'] = 'none';
     document
       .getElementById('message')
       .setAttribute('data-l10n-id', 'instr-destination');
@@ -398,11 +398,12 @@ function updateNextInstruction(instruction) {
   } else if (instruction.properties.type === 'enter') {
     document.getElementById('next-instruction-road-ref').innerHTML =
       '' + instruction.properties.nextRef;
-    document.getElementById("message").style["display"] = "block";
-    document.getElementById("message").setAttribute("data-l10n-id", "instr-enter");  
+    document.getElementById('message').style['display'] = 'block';
+    document
+      .getElementById('message')
+      .setAttribute('data-l10n-id', 'instr-enter');
   } else {
-    document.getElementById('message').style['display'] =
-      'none';
+    document.getElementById('message').style['display'] = 'none';
     document.getElementById('next-instruction-road-ref').style['display'] = '';
     document.getElementById('next-instruction-road-ref').innerHTML =
       '' + instruction.properties.nextRef;
