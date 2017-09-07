@@ -275,6 +275,13 @@ function bindActions() {
         // Calculate route if destination is filled in
         if (places.destination) {
           const { origin, destination } = places;
+          history.pushState(
+            null,
+            null,
+            `/?loc1=${swapArrayValues(origin)}&loc2=${swapArrayValues(
+              destination
+            )}`
+          );
           calculateProfiles(
             {
               origin,
@@ -297,6 +304,13 @@ function bindActions() {
 
         if (places.origin) {
           const { origin, destination } = places;
+          history.pushState(
+            null,
+            null,
+            `/?loc1=${swapArrayValues(origin)}&loc2=${swapArrayValues(
+              destination
+            )}`
+          );
           calculateProfiles(
             {
               origin,

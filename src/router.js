@@ -18,7 +18,7 @@ class Router {
     document.querySelector('.navigation').classList.remove('visible');
     document.querySelector('.routeplanner').classList.add('visible');
     if (origin && destination) {
-      history.pushState(null, null, `/?loc1=${origin}&loc2=${destination}`);
+      history.replaceState('', null, `/?loc1=${origin}&loc2=${destination}`);
       initializeRouteplanner(origin, destination);
     } else {
       history.pushState('', document.title, '/');
