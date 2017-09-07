@@ -29,7 +29,7 @@ document.querySelector('.nav-white').src = icons.NavWhite;
 document.querySelector('#next-instruction-arrow-img').src = icons.Arrow;
 document.querySelector('#swoosh-left').src = icons.SwooshLeft;
 document.querySelector('#swoosh-right').src = icons.SwooshRight;
-document.querySelector('#bike').src = icons.Bike;
+
 
 router.initialize();
 
