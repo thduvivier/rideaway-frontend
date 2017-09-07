@@ -38,6 +38,8 @@ export default function initialize(origin, destination) {
   // fresh load
   if (!map) {
     if (origin && destination) {
+      origin = swapArrayValues(origin);
+      destination = swapArrayValues(destination);
       places.origin = origin;
       places.destination = destination;
     }
@@ -148,10 +150,8 @@ function calculateRoute(origin, destination, profile) {
         // Set the new handler
         handlers.nav = () => {
           const { origin, destination } = places;
-          const originS = [origin[1], origin[0]];
-          const destinationS = [destination[1], destination[0]];
 
-          router.goToNavigation(originS, destinationS);
+          router.goToNavigation(origin, destination);
         };
 
         const lastFeature = json.route.features[json.route.features.length - 1];
