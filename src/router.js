@@ -26,6 +26,14 @@ class Router {
     }
   }
 
+  prepareHistory(origin, destination) {
+    history.pushState(
+      null,
+      null,
+      `/?loc1=${swapArrayValues(origin)}&loc2=${swapArrayValues(destination)}`
+    );
+  }
+
   initialize() {
     let navigateTo;
 
