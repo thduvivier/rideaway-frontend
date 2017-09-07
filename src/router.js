@@ -10,7 +10,7 @@ class Router {
     history.pushState(null, null, `/nav?loc1=${originS}&loc2=${destinationS}`);
     document.querySelector('.routeplanner').classList.remove('visible');
     document.querySelector('.main-loading').classList.add('visible');
-    initializeNav(origin, destination);
+    initializeNav(originS, destinationS);
     document.querySelector('.navigation').classList.add('visible');
   }
 
@@ -43,10 +43,8 @@ class Router {
     const loc1 = findGetParameter('loc1');
     const loc2 = findGetParameter('loc2');
     if (loc1 && loc2) {
-      origin = swapArrayValues(loc1.split(',').map(coord => parseFloat(coord)));
-      destination = swapArrayValues(
-        loc2.split(',').map(coord => parseFloat(coord))
-      );
+      origin = loc1.split(',').map(coord => parseFloat(coord));
+      destination = loc2.split(',').map(coord => parseFloat(coord));
     }
 
     navigateTo(origin, destination);
