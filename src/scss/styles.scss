@@ -152,6 +152,18 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
   }
+
+  .menu-arrowdown {
+    background: url('../icons/arrow-down.svg');
+    position: fixed;
+    height: 2.5em;
+    width: 2.5em;
+    bottom: 0;
+    left: calc(50% - 1.25em);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
 }
 
 .menu-title {
