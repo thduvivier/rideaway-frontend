@@ -11,7 +11,6 @@ export function createGeocoder(placeholder) {
     accessToken: process.env.MAPBOX_TOKEN,
     flyTo: false,
     placeholder,
-    country: 'BE',
-    bbox: [4.225015, 50.74915, 4.524909, 50.938001]
+    country: 'BE'
   });
 }
