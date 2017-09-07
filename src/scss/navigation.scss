@@ -8,7 +8,6 @@
 }
 
 #next-instruction {
-  background-color: red;
   height: 20vh;
   margin: 0 auto;
   position: absolute;
@@ -18,7 +17,7 @@
 }
 #next-instruction-arrow {
   position: absolute;
-  color: #fff;
+  color: $white;
   height: 45%;
   text-align: center;
   width: 100%;
@@ -38,7 +37,7 @@
   margin: 0 auto;
 }
 #next-instruction-distance {
-  background-color: #fff;
+  background-color: $white;
   border-radius: 25px;
   display: block;
   height: 50px;
@@ -52,7 +51,7 @@
   z-index: 2;
   left: 0;
   right: 0;
-  color: #303030;
+  color: $dark-grey;
 }
 
 #current-road {
@@ -60,7 +59,6 @@
   background-position: bottom 5vh center;
   background-repeat: no-repeat;
   background-size: 30vw;
-  background-color: blue;
   height: 50vh;
   position: absolute;
   top: 50vh;
@@ -79,24 +77,21 @@
   bottom: 25vh;
 }
 
-#debug {
-  display: none;
-}
-
 .road-square {
-  background-color: #fff;
+  background-color: $white;
   border-radius: 10px;
   height: 10vh;
   line-height: 10vh;
   text-align: center;
   width: 10vh;
+  overflow: hidden;
 }
 
 .round-button {
   position: absolute;
   margin: auto;
   z-index: 2;
-  background-color: #fbba00;
+  background-color: $primary-color;
   border-radius: 50%;
   display: inline-block;
   height: 10vh;
@@ -120,7 +115,7 @@
 }
 
 .message-box {
-  background-color: #fff;
+  background-color: $white;
   text-align: center;
 }
 
@@ -132,7 +127,7 @@
 #message {
   position: absolute;
   top: 0vh;
-  z-index: 50;
+  z-index: 2;
 }
 
 #swoosh {
@@ -143,18 +138,18 @@
 
 #swoosh-left {
   float: left;
-  color: #fff;
+  color: $white;
   width: 25%;
 }
 
 #swoosh-right {
   float: right;
-  color: #fff;
+  color: $white;
   width: 25%;
 }
 
 #direction-arrow {
-  background-color: #fbba00;
+  background-color: $primary-color;
   border-radius: 50%;
   position: relative;
   display: block;
@@ -182,59 +177,3 @@
   bottom: 1vh;
   right: 2vh;
 }
-
-/*
-#main
-{
-    background-color: white;
-    position:absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 100%;
-}
-
-.colorbox
-{
-    height: 50px;
-    width: 50px;
-    border-style: solid;
-}
-
-#bike {
-    display: block;
-    margin: auto;
-    width: 40%;
-    position: relative;
-    top: 35%;
-    bottom:50%;
-}
-
-#bikecircle {
-    position: relative;
-    background-color: white;
-    text-align: center;
-    border-radius: 50%;
-    display: block;
-    margin: 0 auto;
-    width: 150px;
-    height: 150px;
-}
-
-#distanceNextContainer
-{
-    text-align: center;
-}
-
-#distanceNext
-{
-    display: inline-block;
-    background-color: yellow;
-}
-
-#direction{
-    position: relative;
-    top: 10%;
-}
-
-*/
