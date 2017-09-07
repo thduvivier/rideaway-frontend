@@ -18,9 +18,10 @@ let places = {
 };
 
 // Initialize the markers
-let markers = {
-  origin: null,
-  destination: null
+let mapboxObjects = {
+  originMarker: null,
+  destinationMarker: null,
+  shortestPopup: null
 };
 
 // Global handlers
@@ -55,8 +56,8 @@ export default function initialize(origin, destination) {
 
 export function clearAll() {
   view.hideNavigationBox();
-  mapController.clearRoutes(markers.origin);
-  mapController.clearRoutes(markers.destination);
+  mapController.clearRoutes();
+  mapController.clearMapboxObjects(mapboxObjects);
   document.querySelector('.routelist-all').click();
   view.clearGeocoderInputs();
   places.origin = null;
@@ -126,18 +127,13 @@ function calculateRoute(origin, destination, profile) {
       }
 
       if (profile === 'shortest') {
-        // test, creates popup for shortest route
         const lastFeature = json.route.features[json.route.features.length - 1];
         const { properties: { time } } = lastFeature;
-        var div = window.document.createElement('div');
-        div.innerHTML = displayTime(time);
-        new mapboxgl.Popup()
-          .setLngLat(
-            json.route.features[Math.round(json.route.features.length / 2)]
-              .geometry.coordinates[0]
-          )
-          .setDOMContent(div)
-          .addTo(map);
+        const text = displayTime(time);
+        const middleFeature =
+          json.route.features[Math.round(json.route.features.length / 2)];
+        const LatLng = middleFeature.geometry.coordinates[0];
+        mapboxObjects.shortestPopup = mapController.addPopup(LatLng, text);
       }
 
       // Move the network layer always on top
@@ -179,8 +175,11 @@ function calculateRoute(origin, destination, profile) {
     })
     .catch(ex => {
       // eslint-disable-next-line
-      console.warn('Problem finding a route: ' + ex);
-      view.toggleErrorDialog();
+      console.warn('Problem calculating route: ', ex);
+      if (profile === 'brussels') {
+        view.toggleMapLoading();
+        view.toggleErrorDialog();
+      }
     });
 }
 
@@ -201,7 +200,8 @@ function setPoint(result) {
 function setPlace(place, placeToSet = geolocController.userPosition) {
   places[place] = placeToSet;
   if (placeToSet === null) {
-    mapController.clearRoutes(markers[place]);
+    mapController.clearRoutes();
+    mapController.clearMapboxObjects(mapboxObjects);
     view.hideNavigationBox();
   }
   const { origin, destination } = places;
@@ -232,10 +232,10 @@ function bindActions() {
       // If the origin & destination were passed, calculate a route
       if (places.origin && places.destination) {
         const { origin, destination } = places;
-        markers.origin = mapController.addMarker(origin);
-        markers.origin.addTo(map);
-        markers.destination = mapController.addMarker(destination);
-        markers.destination.addTo(map);
+        mapboxObjects.originMarker = mapController.addMarker(origin);
+        mapboxObjects.originMarker.addTo(map);
+        mapboxObjects.destinationMarker = mapController.addMarker(destination);
+        mapboxObjects.destinationMarker.addTo(map);
         calculateProfiles(
           {
             origin,
@@ -267,10 +267,10 @@ function bindActions() {
       // from executing our code twice, resulting in errors
       // https://github.com/mapbox/mapbox-gl-geocoder/issues/99
       if (!places.origin || places.origin !== setPoint(result)) {
-        markers.origin && markers.origin.remove();
+        mapboxObjects.originMarker && mapboxObjects.originMarker.remove();
         places.origin = setPoint(result);
-        markers.origin = mapController.addMarker(places.origin);
-        markers.origin.addTo(map);
+        mapboxObjects.originMarker = mapController.addMarker(places.origin);
+        mapboxObjects.originMarker.addTo(map);
 
         // Calculate route if destination is filled in
         if (places.destination) {
@@ -287,10 +287,13 @@ function bindActions() {
     });
     geocoder2.on('result', ({ result }) => {
       if (!places.destination || places.destination !== setPoint(result)) {
-        markers.destination && markers.destination.remove();
+        mapboxObjects.destinationMarker &&
+          mapboxObjects.destinationMarker.remove();
         places.destination = setPoint(result);
-        markers.destination = mapController.addMarker(places.destination);
-        markers.destination.addTo(map);
+        mapboxObjects.destinationMarker = mapController.addMarker(
+          places.destination
+        );
+        mapboxObjects.destinationMarker.addTo(map);
 
         if (places.origin) {
           const { origin, destination } = places;
@@ -306,12 +309,20 @@ function bindActions() {
     });
     // Functions fired when the geocoder is cleared
     geocoder.on('clear', () => {
-      mapController.clearRoutes(markers.origin);
+      mapController.clearRoutes();
+      mapController.clearMapboxObjects([
+        mapboxObjects.originMarker,
+        mapboxObjects.shortestPopup
+      ]);
       places.origin = null;
       view.hideNavigationBox();
     });
     geocoder2.on('clear', () => {
-      mapController.clearRoutes(markers.destination);
+      mapController.clearRoutes();
+      mapController.clearMapboxObjects([
+        mapboxObjects.destinationMarker,
+        mapboxObjects.shortestPopup
+      ]);
       places.destination = null;
       view.hideNavigationBox();
     });

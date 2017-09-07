@@ -61,7 +61,7 @@ export default class MapController {
   * @param mapboxglmap map - The map
   * @param Marker marker - The marker (origin/dest)
   */
-  clearRoutes(marker) {
+  clearRoutes() {
     const map = this.map;
 
     if (map.getSource('brussels')) {
@@ -72,7 +72,28 @@ export default class MapController {
       map.removeLayer('shortest');
       map.removeSource('shortest');
     }
-    marker && marker.remove();
+  }
+
+  /*
+  * Clears all the passed mapboxobjects
+  */
+  clearMapboxObjects(object) {
+    // Check if a single mapboxobject was passed
+    if (object instanceof (mapboxgl.Marker || mapboxgl.Popup)) {
+      object.remove();
+      return;
+    }
+    // Also accepts arrays
+    if (Array.isArray(object)) {
+      object.forEach(obj => {
+        obj && obj.remove();
+      });
+      return;
+    }
+    // Remove all inside the object
+    Object.keys(object).forEach(key => {
+      object[key] && object[key].remove();
+    });
   }
 
   /*
@@ -188,6 +209,16 @@ export default class MapController {
     return new mapboxgl.Marker(el, {
       offset: [0, -marker.properties.iconSize[1] / 2]
     }).setLngLat(marker.geometry.coordinates);
+  }
+
+  addPopup(LatLng, text) {
+    var div = window.document.createElement('div');
+    div.innerHTML = text;
+
+    return new mapboxgl.Popup()
+      .setLngLat(LatLng)
+      .setDOMContent(div)
+      .addTo(this.map);
   }
 
   fitToBounds(origin, destination) {

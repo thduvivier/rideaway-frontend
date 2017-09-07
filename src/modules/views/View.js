@@ -410,20 +410,13 @@ export default class View {
    */
   toggleMapLoading() {
     const dimmed = document.querySelector('.dimmed-map');
+    const loading = document.querySelector('.loading');
     const toggle =
       window.getComputedStyle(dimmed, null).display === 'flex'
         ? 'none'
         : 'flex';
     dimmed.style.display = toggle;
-
-    const loading = document.querySelector('.main-loading');
-    if (toggle === 'none') {
-      loading.classList.remove('visible');
-      loading.classList.add('main-loading--bg');
-    } else {
-      loading.classList.remove('main-loading--bg');
-      loading.classList.add('visible');
-    }
+    loading.style.display = toggle;
   }
 
   /*
