@@ -1,4 +1,5 @@
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import { center } from '../lib';
 
 /*
 * Returns a geocoder object
@@ -11,6 +12,7 @@ export function createGeocoder(placeholder) {
     accessToken: process.env.MAPBOX_TOKEN,
     flyTo: false,
     placeholder,
-    country: 'BE'
+    country: 'BE',
+    proximity: center
   });
 }
