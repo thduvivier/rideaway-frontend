@@ -63,6 +63,7 @@ function initializeNavigation(jsonresult) {
     result.route.features[result.route.features.length - 1].properties;
   totalDistance = dataAtLast.distance / 1000.0;
   totalTime = dataAtLast.time;
+  i = 0;
 }
 
 /**
