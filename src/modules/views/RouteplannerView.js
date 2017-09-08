@@ -423,8 +423,12 @@ export default class View {
   * Set the data attribute on the geocoders for the translations
   */
   configureGeocoders() {
-    const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
-    inputs.forEach(input => {
+    const geocoders = document.querySelectorAll('.mapboxgl-ctrl-geocoder');
+    geocoders[0].dataset.place = 'origin';
+    geocoders[1].dataset.place = 'destination';
+
+    geocoders.forEach(geocoder => {
+      const input = geocoder.querySelector('input');
       input.setAttribute('data-l10n-id', `${input.placeholder}-input`);
     });
   }
