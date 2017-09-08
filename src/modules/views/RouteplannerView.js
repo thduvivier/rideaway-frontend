@@ -424,6 +424,8 @@ export default class View {
   */
   configureGeocoders() {
     const geocoders = document.querySelectorAll('.mapboxgl-ctrl-geocoder');
+    geocoders[0].classList.add('origin');
+    geocoders[1].classList.add('destination');
     geocoders[0].dataset.place = 'origin';
     geocoders[1].dataset.place = 'destination';
 
@@ -451,5 +453,13 @@ export default class View {
       '.geocoder-icon.geocoder-icon-close'
     );
     closeIcons.forEach(icon => (icon.style.display = 'none'));
+  }
+
+  setGeocoderInput(place, text) {
+    const input = document.querySelector(
+      `.mapboxgl-ctrl-geocoder.mapboxgl-ctrl.${place} input`
+    );
+    input.value = text;
+    this.showCloseButton(place);
   }
 }

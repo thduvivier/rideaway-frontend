@@ -1,5 +1,6 @@
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
-import { center } from '../lib';
+import { fetchJSON } from '../lib';
+import { center } from '../../constants';
 
 /*
 * Returns a geocoder object
@@ -13,6 +14,14 @@ export function createGeocoder(placeholder) {
     flyTo: false,
     placeholder,
     country: 'BE',
-    proximity: center
+    proximity: { latitude: center.latlng[0], longitude: center.latlng[1] }
+  });
+}
+
+export function getReverseLookup(LatLng) {
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${LatLng[0]},${LatLng[1]}.json?limit=1&access_token=${process
+    .env.MAPBOX_TOKEN}`;
+  return fetchJSON(url).then(json => {
+    return json.features[0].place_name;
   });
 }

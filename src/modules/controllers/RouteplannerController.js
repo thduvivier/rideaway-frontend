@@ -6,7 +6,7 @@ import { swapArrayValues, fetchJSON, displayTime } from '../lib';
 
 import MapController from './MapController';
 import GeolocationController from './GeolocationController';
-import { createGeocoder } from './GeocoderController';
+import { createGeocoder, getReverseLookup } from './GeocoderController';
 import View from '../views/RouteplannerView';
 
 import router from '../../router';
@@ -290,6 +290,15 @@ function bindActions() {
 
     // Configure all elements (geocoder, inputs, etc)
     view.configureAllElements(setPlace);
+
+    if (routeChosen) {
+      getReverseLookup(places.origin).then(result =>
+        view.setGeocoderInput('origin', result)
+      );
+      getReverseLookup(places.destination).then(result =>
+        view.setGeocoderInput('destination', result)
+      );
+    }
 
     // Fire functions on result
     // !!!!! Geocoder also fires this when the input box is unfocused
