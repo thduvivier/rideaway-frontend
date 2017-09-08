@@ -210,6 +210,42 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
   }
 }
 
+function onPlaceClear(place) {
+  mapController.clearRoutes();
+  mapController.clearMapboxObjects([
+    mapboxObjects[place + 'Marker'],
+    mapboxObjects.shortestPopup
+  ]);
+  places[place] = null;
+  view.hideNavigationBox();
+}
+
+function onPlaceResult(place, result) {
+  // result event fires twice for some reason, this prevents it
+  // from executing our code twice, resulting in errors
+  // https://github.com/mapbox/mapbox-gl-geocoder/issues/99
+  if (!places[place] || places[place] !== setPoint(result)) {
+    mapboxObjects[place + 'Marker'] && mapboxObjects[place + 'Marker'].remove();
+    places[place] = setPoint(result);
+    mapboxObjects[place + 'Marker'] = mapController.addMarker(places[place]);
+    mapboxObjects[place + 'Marker'].addTo(map);
+
+    // Calculate route if both are filled in
+    if (places.origin && places.destination) {
+      const { origin, destination } = places;
+      // prepare the url
+      router.prepareHistory(origin, destination);
+      calculateProfiles(
+        {
+          origin,
+          destination
+        },
+        ['shortest', 'brussels']
+      );
+    }
+  }
+}
+
 function bindActions() {
   const routeChosen = places.origin && places.destination;
 
@@ -263,72 +299,17 @@ function bindActions() {
     // => weird behaviour when you unfocus after manually emptying the input
     // p l s use a different geocoder
     geocoder.on('result', ({ result }) => {
-      // result event fires twice for some reason, this prevents it
-      // from executing our code twice, resulting in errors
-      // https://github.com/mapbox/mapbox-gl-geocoder/issues/99
-      if (!places.origin || places.origin !== setPoint(result)) {
-        mapboxObjects.originMarker && mapboxObjects.originMarker.remove();
-        places.origin = setPoint(result);
-        mapboxObjects.originMarker = mapController.addMarker(places.origin);
-        mapboxObjects.originMarker.addTo(map);
-
-        // Calculate route if destination is filled in
-        if (places.destination) {
-          const { origin, destination } = places;
-          // prepare the url
-          router.prepareHistory(origin, destination);
-          calculateProfiles(
-            {
-              origin,
-              destination
-            },
-            ['shortest', 'brussels']
-          );
-        }
-      }
+      onPlaceResult('origin', result);
     });
     geocoder2.on('result', ({ result }) => {
-      if (!places.destination || places.destination !== setPoint(result)) {
-        mapboxObjects.destinationMarker &&
-          mapboxObjects.destinationMarker.remove();
-        places.destination = setPoint(result);
-        mapboxObjects.destinationMarker = mapController.addMarker(
-          places.destination
-        );
-        mapboxObjects.destinationMarker.addTo(map);
-
-        if (places.origin) {
-          const { origin, destination } = places;
-          // prepare URL
-          router.prepareHistory(origin, destination);
-          calculateProfiles(
-            {
-              origin,
-              destination
-            },
-            ['shortest', 'brussels']
-          );
-        }
-      }
+      onPlaceResult('destination', result);
     });
     // Functions fired when the geocoder is cleared
     geocoder.on('clear', () => {
-      mapController.clearRoutes();
-      mapController.clearMapboxObjects([
-        mapboxObjects.originMarker,
-        mapboxObjects.shortestPopup
-      ]);
-      places.origin = null;
-      view.hideNavigationBox();
+      onPlaceClear('origin');
     });
     geocoder2.on('clear', () => {
-      mapController.clearRoutes();
-      mapController.clearMapboxObjects([
-        mapboxObjects.destinationMarker,
-        mapboxObjects.shortestPopup
-      ]);
-      places.destination = null;
-      view.hideNavigationBox();
+      onPlaceClear('destination');
     });
 
     view.configureCenterButton();
