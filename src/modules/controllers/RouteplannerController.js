@@ -345,6 +345,7 @@ function bindActions() {
     });
 
     setMapClick(map);
+
     view.configureCenterButton();
   });
 }

@@ -215,7 +215,7 @@ export default class MapController {
     var div = window.document.createElement('div');
     div.innerHTML = text;
 
-    return new mapboxgl.Popup()
+    return new mapboxgl.Popup({ closeOnClick: false })
       .setLngLat(LatLng)
       .setDOMContent(div)
       .addTo(this.map);
