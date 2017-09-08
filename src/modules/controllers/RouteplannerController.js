@@ -198,14 +198,21 @@ function setPoint(result) {
 * @param string place - Origin/Destination
 */
 function setPlace(place, placeToSet = geolocController.userPosition) {
-  places[place] = placeToSet;
-  if (placeToSet === null) {
+  // switches around origin and destination
+  if (placeToSet === 'origin' || placeToSet === 'destination') {
+    const oldPlace = places[place];
+    places[place] = places[placeToSet];
+    places[placeToSet] = oldPlace;
+  } else if (placeToSet === null) {
     mapController.clearRoutes();
     mapController.clearMapboxObjects(mapboxObjects);
     view.hideNavigationBox();
+  } else {
+    places[place] = placeToSet;
   }
   const { origin, destination } = places;
   if (origin && destination) {
+    router.prepareHistory(origin, destination);
     calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
   }
 }

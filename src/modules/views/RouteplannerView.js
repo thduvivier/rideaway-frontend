@@ -175,11 +175,11 @@ export default class View {
   /*
   * configures the reverse button
   */
-  configureReverse() {
+  configureReverse(setPlace) {
     const reverse = document.createElement('div');
     reverse.className = 'reverse-btn';
     reverse.addEventListener('click', () => {
-      this.mapController.reverseInputs();
+      setPlace('origin', 'destination');
     });
     // insert reverse button before second input
     const control = document.querySelector(
@@ -360,7 +360,7 @@ export default class View {
     this.configureGeocoders();
     this.configureMobileMenu();
     this.configureInputs(setPlace);
-    this.configureReverse();
+    this.configureReverse(setPlace);
     document
       .querySelector('.error-btn-close')
       .addEventListener('click', this.toggleErrorDialog);
