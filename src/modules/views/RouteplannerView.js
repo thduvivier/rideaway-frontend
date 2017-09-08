@@ -173,6 +173,22 @@ export default class View {
   }
 
   /*
+  * configures the reverse button
+  */
+  configureReverse() {
+    const reverse = document.createElement('div');
+    reverse.className = 'reverse-btn';
+    reverse.addEventListener('click', () => {
+      this.mapController.reverseInputs();
+    });
+    // insert reverse button before second input
+    const control = document.querySelector(
+      '.mapboxgl-ctrl-geocoder.mapboxgl-ctrl.origin'
+    );
+    control.insertAdjacentElement('afterend', reverse);
+  }
+
+  /*
   * Prepares the inputs for my location
   * @param setPlace - for setting global variables
   */
@@ -344,6 +360,7 @@ export default class View {
     this.configureGeocoders();
     this.configureMobileMenu();
     this.configureInputs(setPlace);
+    this.configureReverse();
     document
       .querySelector('.error-btn-close')
       .addEventListener('click', this.toggleErrorDialog);
