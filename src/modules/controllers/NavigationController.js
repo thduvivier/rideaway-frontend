@@ -124,10 +124,7 @@ function update(location) {
   var distanceToNext = instruction.properties.distance - distance * 1000;
   var remainingDistance = (totalDistance -distance)*1000;
   var remainingTime = remainingDistance / 3.6;
-  var offset = 0;
-  if (distanceToNext < 1000){
-    offset = (distanceToNext-1000)*-1/20;   
-  }
+  
 
   if (totalDistance - distance < 0.01) {
     router.goToRouteplanner();
@@ -152,6 +149,11 @@ function update(location) {
       }
     }
   } 
+
+  var offset = 0;
+  if (distanceToNext < 1000){
+    offset = (distanceToNext-1000)*-1/20;   
+  }
 
   navView.updateRouteStats(remainingDistance, remainingTime);
   navView.updateCurrentRoadSquare(instruction);
