@@ -7,7 +7,7 @@ import { swapArrayValues, fetchJSON, displayTime } from '../lib';
 import MapController from './MapController';
 import GeolocationController from './GeolocationController';
 import { createGeocoder } from './GeocoderController';
-import View from '../views/View';
+import View from '../views/RouteplannerView';
 
 import router from '../../router';
 
