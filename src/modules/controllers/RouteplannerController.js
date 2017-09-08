@@ -246,6 +246,29 @@ function onPlaceResult(place, result) {
   }
 }
 
+function setMapClick(map) {
+  map.on('click', e => {
+    const LngLat = [e.lngLat.lng, e.lngLat.lat];
+    // don't set if we already have a route
+    if (places.origin && places.destination) {
+      return;
+    }
+    // prepare result for function
+    const result = { geometry: { coordinates: LngLat } };
+    if (!places.origin) {
+      getReverseLookup(LngLat).then(result =>
+        view.setGeocoderInput('origin', result)
+      );
+      onPlaceResult('origin', result);
+    } else {
+      getReverseLookup(LngLat).then(result =>
+        view.setGeocoderInput('destination', result)
+      );
+      onPlaceResult('destination', result);
+    }
+  });
+}
+
 function bindActions() {
   const routeChosen = places.origin && places.destination;
 
@@ -321,6 +344,7 @@ function bindActions() {
       onPlaceClear('destination');
     });
 
+    setMapClick(map);
     view.configureCenterButton();
   });
 }
