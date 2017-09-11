@@ -1,4 +1,6 @@
 import turf from 'turf';
+import _ from 'lodash';
+
 import {
   fetchJSON,
   getParameterByName,
@@ -70,11 +72,14 @@ function initializeNavigation(jsonresult) {
  * Initialises the navigation application.
  */
 export default function initialize(origin, destination) {
+  // do not reinitialize if everything is already set
+  if (_.isEqual(loc1, origin) && _.isEqual(loc2, destination)) {
+    document.querySelector('.main-loading').classList.remove('visible');
+    return;
+  }
   navView = new NavView();
   loc1 = origin;
   loc2 = destination;
-  console.log(loc1);
-  console.log(loc2);
   const url = `https://cyclerouting-api.osm.be/route?loc1=${loc1}&loc2=${loc2}&profile=brussels&instructions=true`;
 
   fetchJSON(url).then(json => {

@@ -150,7 +150,10 @@ function calculateRoute(origin, destination, profile) {
         handlers.nav = () => {
           const { origin, destination } = places;
 
-          router.goToNavigation(origin, destination);
+          router.goToNavigation(
+            swapArrayValues(origin),
+            swapArrayValues(destination)
+          );
         };
 
         const lastFeature = json.route.features[json.route.features.length - 1];

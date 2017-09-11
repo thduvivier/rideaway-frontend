@@ -5,12 +5,14 @@ import { findGetParameter, swapArrayValues } from './modules/lib';
 
 class Router {
   goToNavigation(origin, destination) {
-    const originS = swapArrayValues(origin);
-    const destinationS = swapArrayValues(destination);
-    history.pushState(null, null, `/#nav?loc1=${originS}&loc2=${destinationS}`);
+    history.pushState(
+      null,
+      null,
+      `/?nav=true&loc1=${origin}&loc2=${destination}`
+    );
     document.querySelector('.routeplanner').classList.remove('visible');
     document.querySelector('.main-loading').classList.add('visible');
-    initializeNav(originS, destinationS);
+    initializeNav(origin, destination);
     document.querySelector('.navigation').classList.add('visible');
   }
 
@@ -38,7 +40,7 @@ class Router {
     let navigateTo;
 
     // check if we should navigate or plan a route
-    if (location.href.includes('nav')) {
+    if (findGetParameter('nav') === 'true') {
       navigateTo = (origin, destination) =>
         this.goToNavigation(origin, destination);
     } else {
