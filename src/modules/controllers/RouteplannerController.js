@@ -17,13 +17,6 @@ let places = {
   destination: null
 };
 
-// Initialize the markers
-let mapboxObjects = {
-  originMarker: null,
-  destinationMarker: null,
-  shortestPopup: null
-};
-
 // Global handlers
 let handlers = {
   nav: null
@@ -58,8 +51,7 @@ export default function initialize(origin, destination) {
 
 export function clearAll() {
   view.hideNavigationBox();
-  mapController.clearRoutes();
-  mapController.clearMapboxObjects(mapboxObjects);
+  mapController.clearAllMapObjectsAndRoutes();
   document.querySelector('.routelist-all').click();
   view.clearGeocoderInputs();
   places.origin = null;
@@ -134,7 +126,7 @@ function calculateRoute(origin, destination, profile) {
         const middleFeature =
           json.route.features[Math.round(json.route.features.length / 2)];
         const LatLng = middleFeature.geometry.coordinates[0];
-        mapboxObjects.shortestPopup = mapController.addPopup(LatLng, text);
+        mapController.addPopup(LatLng, text);
       }
 
       // Move the network layer always on top
@@ -207,13 +199,9 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
     places[place] = places[placeToSet];
     places[placeToSet] = oldPlace;
 
-    // swap markers
-    const originMarker = mapboxObjects.originMarker;
-    mapboxObjects.originMarker = mapboxObjects.destinationMarker;
-    mapboxObjects.destinationMarker = originMarker;
+    mapController.swapOriginDestMarkers();
   } else if (placeToSet === null) {
-    mapController.clearRoutes();
-    mapController.clearMapboxObjects(mapboxObjects);
+    mapController.clearAllMapObjectsAndRoutes();
     view.hideNavigationBox();
   } else {
     // set userposition as place
@@ -222,7 +210,7 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
   const { origin, destination } = places;
   if (origin && destination) {
     // remove popup
-    mapboxObjects.shortestPopup.remove();
+    mapController.clearMapObject('shortestPopup');
 
     router.prepareHistory(origin, destination);
     calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
@@ -231,10 +219,7 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
 
 function onPlaceClear(place) {
   mapController.clearRoutes();
-  mapController.clearMapboxObjects([
-    mapboxObjects[place + 'Marker'],
-    mapboxObjects.shortestPopup
-  ]);
+  mapController.clearMapObjects([`${place}Marker`, 'shortestPopup']);
   places[place] = null;
   view.hideNavigationBox();
 }
@@ -244,10 +229,9 @@ function onPlaceResult(place, result) {
   // from executing our code twice, resulting in errors
   // https://github.com/mapbox/mapbox-gl-geocoder/issues/99
   if (!places[place] || places[place] !== setPoint(result)) {
-    mapboxObjects[place + 'Marker'] && mapboxObjects[place + 'Marker'].remove();
+    mapController.clearMapObject(`${place}Marker`);
     places[place] = setPoint(result);
-    mapboxObjects[place + 'Marker'] = mapController.addMarker(places[place]);
-    mapboxObjects[place + 'Marker'].addTo(map);
+    mapController.addMarker(place, places[place]);
 
     // Calculate route if both are filled in
     if (places.origin && places.destination) {
@@ -310,10 +294,8 @@ function bindActions() {
       // If the origin & destination were passed, calculate a route
       if (places.origin && places.destination) {
         const { origin, destination } = places;
-        mapboxObjects.originMarker = mapController.addMarker(origin);
-        mapboxObjects.originMarker.addTo(map);
-        mapboxObjects.destinationMarker = mapController.addMarker(destination);
-        mapboxObjects.destinationMarker.addTo(map);
+        mapController.addMarker('origin', origin);
+        mapController.addMarker('destination', destination);
         calculateProfiles(
           {
             origin,

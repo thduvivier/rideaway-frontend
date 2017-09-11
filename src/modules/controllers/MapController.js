@@ -9,6 +9,11 @@ import { urls, center } from '../../constants';
 export default class MapController {
   constructor(map) {
     this.map = map;
+    this.mapObjects = {
+      originMarker: null,
+      destinationMarker: null,
+      shortestPopup: null
+    };
 
     // Create a mapbox
     mapboxgl.accessToken = '';
@@ -58,8 +63,6 @@ export default class MapController {
 
   /*
   * Clears the calculated routes
-  * @param mapboxglmap map - The map
-  * @param Marker marker - The marker (origin/dest)
   */
   clearRoutes() {
     const map = this.map;
@@ -75,25 +78,41 @@ export default class MapController {
   }
 
   /*
-  * Clears all the passed mapboxobjects
+  * Clears a map object
+  * @param string identifier - Object identifier
   */
-  clearMapboxObjects(object) {
-    // Check if a single mapboxobject was passed
-    if (object instanceof (mapboxgl.Marker || mapboxgl.Popup)) {
-      object.remove();
-      return;
-    }
-    // Also accepts arrays
-    if (Array.isArray(object)) {
-      object.forEach(obj => {
-        obj && obj.remove();
-      });
-      return;
-    }
-    // Remove all inside the object
-    Object.keys(object).forEach(key => {
-      object[key] && object[key].remove();
+  clearMapObject(identifier) {
+    this.mapObjects[identifier] && this.mapObjects[identifier].remove();
+    this.mapObjects[identifier] = null;
+  }
+
+  /*
+  * Clears the mapobjects following the passed identifiers
+  * @param Array<string> identifiers - identifiers
+  */
+  clearMapObjects(identifiers) {
+    identifiers.forEach(identifier => {
+      this.clearMapObject(identifier);
     });
+  }
+
+  /*
+  * Clears all map objects
+  */
+  clearAllMapObjectsAndRoutes() {
+    this.clearRoutes();
+    Object.keys(this.mapObjects).forEach(key => {
+      this.clearMapObject(key);
+    });
+  }
+
+  /*
+  * Swaps around the origin and destination marker
+  */
+  swapOriginDestMarkers() {
+    const originMarker = this.mapObjects.markerOrigin;
+    this.mapObjects.markerOrigin = this.mapObjects.markerDest;
+    this.mapObjects.markerDest = originMarker;
   }
 
   /*
@@ -179,7 +198,7 @@ export default class MapController {
   * @param Array[int, int] LatLng - The coords
   * @returns mapboxgl.Marker marker - The marker
   */
-  addMarker(LatLng) {
+  addMarker(place, LatLng) {
     // create Geojson with the coords
     const geojson = {
       type: 'FeatureCollection',
@@ -205,17 +224,18 @@ export default class MapController {
     el.style.width = marker.properties.iconSize[0] + 'px';
     el.style.height = marker.properties.iconSize[1] + 'px';
 
-    // Return marker so we can reuse it
-    return new mapboxgl.Marker(el, {
+    this.mapObjects[`${place}Marker`] = new mapboxgl.Marker(el, {
       offset: [0, -marker.properties.iconSize[1] / 2]
-    }).setLngLat(marker.geometry.coordinates);
+    })
+      .setLngLat(marker.geometry.coordinates)
+      .addTo(this.map);
   }
 
   addPopup(LatLng, text) {
     var div = window.document.createElement('div');
     div.innerHTML = text;
 
-    return new mapboxgl.Popup({ closeOnClick: false })
+    this.mapObjects.shortestPopup = new mapboxgl.Popup({ closeOnClick: false })
       .setLngLat(LatLng)
       .setDOMContent(div)
       .addTo(this.map);
