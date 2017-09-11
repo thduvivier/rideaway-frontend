@@ -283,10 +283,15 @@ function bindActions() {
     // Start stracking the user
     geolocController.startTracking(map);
 
-    // Show all the routes on the map
+    // turn on loading screen for map
+    view.toggleMapLoading();
+
     fetchJSON(urls.network).then(json => {
-      view.addFilters(json.features);
+      // Show all the routes on the map
       mapController.addAllRoutes(json);
+
+      // turn off loading screen of map
+      view.toggleMapLoading();
 
       routeChosen && mapController.toggleLayer('GFR_routes', 'none');
       routeChosen && mapController.toggleLayer('GFR_symbols', 'none');
@@ -304,7 +309,12 @@ function bindActions() {
           ['shortest', 'brussels']
         );
       }
+
+      // add filters in mobile menu last to decrease loading time
+      view.addFilters(json.features);
     });
+
+    view.toggleMainLoading();
 
     // Create geocoders and add to map
     const geocoder = createGeocoder('origin');

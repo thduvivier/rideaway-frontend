@@ -433,6 +433,18 @@ export default class View {
   }
 
   /*
+  * Toggle the main loading screen
+  */
+  toggleMainLoading() {
+    const loading = document.querySelector('.main-loading');
+    const toggle =
+      window.getComputedStyle(loading, null).display === 'flex'
+        ? 'none'
+        : 'flex';
+    loading.style.display = toggle;
+  }
+
+  /*
    *  Toggle loading icon on map
    */
   toggleMapLoading() {
