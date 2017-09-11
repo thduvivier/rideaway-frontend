@@ -178,7 +178,17 @@ export default class View {
   configureReverse(setPlace) {
     const reverse = document.createElement('div');
     reverse.className = 'reverse-btn';
+    const geocoders = document.querySelectorAll(
+      '.mapboxgl-ctrl-geocoder input'
+    );
     reverse.addEventListener('click', () => {
+      // save value for swapping
+      const origin = geocoders[0].value;
+      // swap values
+      geocoders[0].value = geocoders[1].value;
+      geocoders[1].value = origin;
+
+      // swap variables
       setPlace('origin', 'destination');
     });
     // insert reverse button before second input
