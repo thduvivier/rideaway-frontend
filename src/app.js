@@ -24,10 +24,4 @@ window.addToHomescreen({
   maxDisplayCount: 1
 });
 
-document.querySelector('.center-btn--icon').src = icons.Center;
-document.querySelector('.nav-white').src = icons.NavWhite;
-document.querySelector('#next-instruction-arrow-img').src = icons.Arrow;
-document.querySelector('#swoosh-left').src = icons.SwooshLeft;
-document.querySelector('#swoosh-right').src = icons.SwooshRight;
-
 router.initialize();

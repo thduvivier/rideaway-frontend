@@ -78,9 +78,16 @@
           <div class="nav-arrival"></div>
         </li>
       </ul>
-      <button class="nav-btn"><img alt="marker white" class="nav-white"></button>
+      <button class="nav-btn">
+        <img alt="marker white" class="nav-white" src=
+        <%=require("../src/icons/marker-white.svg")%> />
+      </button>
     </div>
-    <button class="center-btn" disabled><div class="sk-spinner sk-spinner-pulse"></div><img class="center-btn--icon" alt="marker icon"></button>
+    <button class="center-btn" disabled>
+      <div class="sk-spinner sk-spinner-pulse"></div>
+      <img class="center-btn--icon" alt="marker icon"
+        src=<%=require("../src/icons/center.svg")%> />
+    </button>
   </div>
 
   <div class="navigation page">
@@ -90,7 +97,7 @@
           <div id="next-instruction-road-ref" class="road-square">3</div>
         </div>
         <div id="next-instruction-arrow">
-          <img id="next-instruction-arrow-img"></img>
+          <img id="next-instruction-arrow-img" src=<%=require( "../src/icons/arrow.svg")%> />
         </div>
       </div>
 
@@ -110,8 +117,8 @@
       <div id="current-road-ref" class="road-square">3</div>
 
       <div id="swoosh">
-        <img id="swoosh-left"></img>
-        <img id="swoosh-right"></img>
+        <img id="swoosh-left" src=<%=require( "../src/icons/swoosh-left.svg")%> />
+        <img id="swoosh-right" src=<%=require( "../src/icons/swoosh-right.svg")%> />
       </div>
 
       <div id="total-distance"></div>
