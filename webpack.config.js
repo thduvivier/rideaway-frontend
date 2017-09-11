@@ -15,7 +15,7 @@ const extractSass = new ExtractTextPlugin({
 
 const prodPlugins = [
   new OfflinePlugin({
-    publicPath: 'https://osoc17.github.io/rideaway-frontend',
+    publicPath: 'https://osoc.osm.be',
     caches: {
       main: ['main.*.css', 'app.*.js'],
       additional: [':externals:'],
