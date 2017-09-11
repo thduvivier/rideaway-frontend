@@ -1,21 +1,21 @@
 import turf from 'turf';
-import { 
-  fetchJSON, 
-  getParameterByName, 
-  displayArrival, 
-  displayDistance, 
-  lengthOfRoute, 
-  pointAlongRoute, 
-  pointOnRoute, 
+import {
+  fetchJSON,
+  getParameterByName,
+  displayArrival,
+  displayDistance,
+  lengthOfRoute,
+  pointAlongRoute,
+  pointOnRoute,
   distanceAtLocation,
   instructionAt,
   calculateAngle
 } from '../lib';
-import {degAngle} from '../../constants'
+import { degAngle } from '../../constants';
 
 import router from '../../router';
 
-import NavView from '../views/NavView'
+import NavView from '../views/NavView';
 
 /**
  * Starts tracking your location and updating the screen.
@@ -23,9 +23,9 @@ import NavView from '../views/NavView'
 function startTracking() {
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(position => {
-      if(loading){
+      if (loading) {
         loading = false;
-        document.querySelector('.main-loading').classList.remove('visible');        
+        document.querySelector('.main-loading').classList.remove('visible');
       }
       var coord = position.coords;
       var location = turf.point([coord.longitude, coord.latitude]);
@@ -70,7 +70,7 @@ function initializeNavigation(jsonresult) {
  * Initialises the navigation application.
  */
 export default function initialize(origin, destination) {
-  navView = new NavView()
+  navView = new NavView();
   loc1 = origin;
   loc2 = destination;
   console.log(loc1);
@@ -80,9 +80,9 @@ export default function initialize(origin, destination) {
   fetchJSON(url).then(json => {
     loading = true;
     initializeNavigation(json);
-    setTimeout(step, 50);
-    
-    //startTracking();
+    //setTimeout(step, 50);
+
+    startTracking();
   });
   document
     .getElementById('close-navigation')
@@ -99,9 +99,9 @@ export default function initialize(origin, destination) {
  * Step function used in debug mode to iterate over the route.
  */
 function step() {
-  if(loading){
+  if (loading) {
     loading = false;
-    document.querySelector('.main-loading').classList.remove('visible');    
+    document.querySelector('.main-loading').classList.remove('visible');
   }
   var location = pointAlongRoute(result.route, i).geometry.coordinates;
   update(location);
@@ -123,9 +123,8 @@ function update(location) {
   var distance = distanceAtLocation(result.route, location);
   var instruction = instructionAt(result.instructions, distance * 1000);
   var distanceToNext = instruction.properties.distance - distance * 1000;
-  var remainingDistance = (totalDistance -distance)*1000;
+  var remainingDistance = (totalDistance - distance) * 1000;
   var remainingTime = remainingDistance / 3.6;
-  
 
   if (totalDistance - distance < 0.01) {
     router.goToRouteplanner();
@@ -133,27 +132,27 @@ function update(location) {
 
   // if the user is more than 25m off route, show a direction arrow to navigate
   // back to the route.
-  if (closestPoint.distance > 0.025){
+  if (closestPoint.distance > 0.025) {
     distanceToNext = closestPoint.distance * 1000;
-    distance+= closestPoint.distance;
+    distance += closestPoint.distance;
     instruction = {
-      type: "Feature",
-      properties:{
-        type: "enter",
+      type: 'Feature',
+      properties: {
+        type: 'enter',
         nextColour: instruction.properties.colour,
         nextRef: instruction.properties.ref,
         angle: degAngle[calculateAngle(location, closestPoint)]
       },
-      geometry:{ 
-        type: "Point",
+      geometry: {
+        type: 'Point',
         coordinates: closestPoint.point
       }
-    }
-  } 
+    };
+  }
 
   var offset = 0;
-  if (distanceToNext < 1000){
-    offset = (distanceToNext-1000)*-1/20;   
+  if (distanceToNext < 1000) {
+    offset = (distanceToNext - 1000) * -1 / 20;
   }
 
   navView.updateRouteStats(remainingDistance, remainingTime);
