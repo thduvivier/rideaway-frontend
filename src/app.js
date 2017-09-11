@@ -5,8 +5,6 @@ import 'l20n';
 // eslint-disable-next-line
 require('add-to-homescreen');
 
-import icons from './icons';
-
 import router from './router';
 
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
