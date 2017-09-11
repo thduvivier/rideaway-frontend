@@ -33,7 +33,6 @@ export default class GeolocationController {
   startTracking(map) {
     // Add a marker to the map for userposition
     const marker = this.createMarker();
-    const updatePosition = this.updatePosition;
     if (navigator.geolocation) {
       navigator.geolocation.watchPosition(position =>
         this.onPosition(position, marker, map, LngLat =>

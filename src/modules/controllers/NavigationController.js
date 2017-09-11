@@ -3,9 +3,6 @@ import _ from 'lodash';
 
 import {
   fetchJSON,
-  getParameterByName,
-  displayArrival,
-  displayDistance,
   lengthOfRoute,
   pointAlongRoute,
   pointOnRoute,
@@ -25,14 +22,14 @@ import NavView from '../views/NavView';
 function startTracking() {
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(position => {
-      if (loading) {
-        loading = false;
-        document.querySelector('.main-loading').classList.remove('visible');
-      }
       var coord = position.coords;
       var location = turf.point([coord.longitude, coord.latitude]);
       heading = position.coords.heading;
       update(location);
+      if (loading) {
+        loading = false;
+        document.querySelector('.main-loading').classList.remove('visible');
+      }
     });
   } else {
     alert("Sorry, your browser doesn't support geolocation!");
@@ -71,12 +68,13 @@ function initializeNavigation(jsonresult) {
 /**
  * Initialises the navigation application.
  */
-export default function initialize(origin, destination) {
+export default function initialize(origin, destination, userPosition) {
   // do not reinitialize if everything is already set
   if (_.isEqual(loc1, origin) && _.isEqual(loc2, destination)) {
     document.querySelector('.main-loading').classList.remove('visible');
     return;
   }
+
   navView = new NavView();
   loc1 = origin;
   loc2 = destination;
@@ -87,6 +85,15 @@ export default function initialize(origin, destination) {
     initializeNavigation(json);
     //setTimeout(step, 50);
 
+    if (userPosition) {
+      console.log(userPosition);
+      var location = turf.point(userPosition);
+      update(location);
+      if (loading) {
+        loading = false;
+        document.querySelector('.main-loading').classList.remove('visible');
+      }
+    }
     startTracking();
   });
   document

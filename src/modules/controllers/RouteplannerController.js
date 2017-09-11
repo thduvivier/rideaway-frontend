@@ -144,7 +144,8 @@ function calculateRoute(origin, destination, profile) {
 
           router.goToNavigation(
             swapArrayValues(origin),
-            swapArrayValues(destination)
+            swapArrayValues(destination),
+            geolocController.userPosition
           );
         };
 

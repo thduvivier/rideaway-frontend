@@ -4,7 +4,7 @@ import initializeRouteplanner from './modules/controllers/RouteplannerController
 import { findGetParameter, swapArrayValues } from './modules/lib';
 
 class Router {
-  goToNavigation(origin, destination) {
+  goToNavigation(origin, destination, userPosition = null) {
     history.pushState(
       null,
       null,
@@ -12,7 +12,7 @@ class Router {
     );
     document.querySelector('.routeplanner').classList.remove('visible');
     document.querySelector('.main-loading').classList.add('visible');
-    initializeNav(origin, destination);
+    initializeNav(origin, destination, userPosition);
     document.querySelector('.navigation').classList.add('visible');
   }
 
