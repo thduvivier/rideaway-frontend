@@ -45,7 +45,7 @@
     "whatwg-fetch": "2.0.3"
   },
   "renovate": {
-    "baseBranch": "develop",
-    "labels": ["dependency update", "bot"]
+    "labels": ["dependency update", "bot"],
+    "baseBranch": "develop"
   }
 }
