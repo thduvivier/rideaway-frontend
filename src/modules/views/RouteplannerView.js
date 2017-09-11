@@ -424,12 +424,13 @@ export default class View {
   toggleErrorDialog() {
     const dimmed = document.querySelector('.dimmed-map');
     const dialog = document.querySelector('.error-dialog');
-    const toggle =
-      window.getComputedStyle(dialog, null).display === 'flex'
-        ? 'none'
-        : 'flex';
-    dimmed.style.display = toggle;
-    dialog.style.display = toggle;
+    if (dialog.className.includes('visible')) {
+      dimmed.classList.remove('visible');
+      dialog.classList.remove('visible');
+    } else {
+      dimmed.classList.add('visible');
+      dialog.classList.add('visible');
+    }
   }
 
   /*
@@ -437,11 +438,11 @@ export default class View {
   */
   toggleMainLoading() {
     const loading = document.querySelector('.main-loading');
-    const toggle =
-      window.getComputedStyle(loading, null).display === 'flex'
-        ? 'none'
-        : 'flex';
-    loading.style.display = toggle;
+    if (loading.className.includes('visible')) {
+      loading.classList.remove('visible');
+    } else {
+      loading.classList.add('visible');
+    }
   }
 
   /*
@@ -450,12 +451,13 @@ export default class View {
   toggleMapLoading() {
     const dimmed = document.querySelector('.dimmed-map');
     const loading = document.querySelector('.loading');
-    const toggle =
-      window.getComputedStyle(dimmed, null).display === 'flex'
-        ? 'none'
-        : 'flex';
-    dimmed.style.display = toggle;
-    loading.style.display = toggle;
+    if (loading.className.includes('visible')) {
+      dimmed.classList.remove('visible');
+      loading.classList.remove('visible');
+    } else {
+      dimmed.classList.add('visible');
+      loading.classList.add('visible');
+    }
   }
 
   /*
