@@ -30,7 +30,4 @@ document.querySelector('#next-instruction-arrow-img').src = icons.Arrow;
 document.querySelector('#swoosh-left').src = icons.SwooshLeft;
 document.querySelector('#swoosh-right').src = icons.SwooshRight;
 
-
 router.initialize();
-
-window.onpopstate = () => router.initialize();

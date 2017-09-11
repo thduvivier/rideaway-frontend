@@ -7,7 +7,7 @@ class Router {
   goToNavigation(origin, destination) {
     const originS = swapArrayValues(origin);
     const destinationS = swapArrayValues(destination);
-    history.pushState(null, null, `/nav?loc1=${originS}&loc2=${destinationS}`);
+    history.pushState(null, null, `/#nav?loc1=${originS}&loc2=${destinationS}`);
     document.querySelector('.routeplanner').classList.remove('visible');
     document.querySelector('.main-loading').classList.add('visible');
     initializeNav(originS, destinationS);
@@ -34,7 +34,7 @@ class Router {
     );
   }
 
-  initialize() {
+  onURLChanged() {
     let navigateTo;
 
     // check if we should navigate or plan a route
@@ -56,6 +56,12 @@ class Router {
     }
 
     navigateTo(origin, destination);
+  }
+
+  initialize() {
+    this.onURLChanged();
+    // keep watching changes
+    window.onpopstate = () => this.onURLChanged();
   }
 }
 
