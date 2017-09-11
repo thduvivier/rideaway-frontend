@@ -73,6 +73,8 @@ export function clearAll() {
 */
 function calculateProfiles(places, profiles) {
   view.toggleMapLoading();
+  // Clear routes just to be sure
+  mapController.clearRoutes();
   const { origin, destination } = places;
   profiles.forEach(profile => {
     calculateRoute(origin, destination, profile);
@@ -86,9 +88,6 @@ function calculateProfiles(places, profiles) {
 * @param String profile - The routing profile
 */
 function calculateRoute(origin, destination, profile) {
-  // Clear routes just to be sure
-  mapController.clearRoutes();
-
   // Swap around values for the API
   const originS = swapArrayValues(origin);
   const destinationS = swapArrayValues(destination);
@@ -200,18 +199,28 @@ function setPoint(result) {
 function setPlace(place, placeToSet = geolocController.userPosition) {
   // switches around origin and destination
   if (placeToSet === 'origin' || placeToSet === 'destination') {
+    // swap variables
     const oldPlace = places[place];
     places[place] = places[placeToSet];
     places[placeToSet] = oldPlace;
+
+    // swap markers
+    const originMarker = mapboxObjects.originMarker;
+    mapboxObjects.originMarker = mapboxObjects.destinationMarker;
+    mapboxObjects.destinationMarker = originMarker;
   } else if (placeToSet === null) {
     mapController.clearRoutes();
     mapController.clearMapboxObjects(mapboxObjects);
     view.hideNavigationBox();
   } else {
+    // set userposition as place
     places[place] = placeToSet;
   }
   const { origin, destination } = places;
   if (origin && destination) {
+    // remove popup
+    mapboxObjects.shortestPopup.remove();
+
     router.prepareHistory(origin, destination);
     calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
   }
