@@ -36,6 +36,10 @@ class Router {
     );
   }
 
+  clearHistory() {
+    history.pushState(null, null, '/');
+  }
+
   onURLChanged() {
     let navigateTo;
 

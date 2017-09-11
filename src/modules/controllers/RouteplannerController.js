@@ -222,6 +222,7 @@ function onPlaceClear(place) {
   mapController.clearMapObjects([`${place}Marker`, 'shortestPopup']);
   places[place] = null;
   view.hideNavigationBox();
+  router.clearHistory();
 }
 
 function onPlaceResult(place, result) {
