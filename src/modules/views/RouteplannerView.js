@@ -138,13 +138,16 @@ export default class View {
     }
   }
 
-  /*
-  * Hides my location from the suggestions
-  * @param Element input - The input element
-  */
-  hideMyLocationSuggestion(input) {
-    const suggestions = input.parentElement.querySelector('.suggestions');
-    suggestions.style.display = 'none';
+  configureCloseButtons() {
+    const buttons = document.querySelectorAll(
+      '.geocoder-icon.geocoder-icon-close'
+    );
+    const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        inputs.forEach(input => (input.dataset.userLocation = null));
+      });
+    });
   }
 
   /*
@@ -206,47 +209,41 @@ export default class View {
     const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
     inputs.forEach(input => {
       // Define which input it is, would be better with a different data attribute
-      const place = input.getAttribute('data-l10n-id').replace('-input', '');
+      const place = input.parentElement.dataset.place;
 
-      // Show location on focus
+      // Show location when empty field
+
       input.addEventListener('focus', () => {
         this.showMyLocationSuggestion(input, setPlace);
       });
 
       input.addEventListener('keyup', e => {
         // Show location on keyup and empty field
-        if (input.value.length === 0) {
-          this.showMyLocationSuggestion(input, setPlace);
-        }
+        this.showMyLocationSuggestion(input, setPlace);
 
         // Clear place
         if (input.value === '') {
           setPlace(place, null);
+          input.dataset.userLocation = null;
         }
 
         // Set location on enter
-        if (
-          e.key === 'Enter' &&
-          (input.value === '' || input.value === 'My location')
-        ) {
-          input.value = 'My location';
+        if (e.key === 'Enter' && input.value === '') {
+          input.value = input.parentElement.querySelector(
+            '.mylocation a'
+          ).innerHTML;
+
+          input.dataset.userLocation = true;
           if (place === 'origin') {
             this.showCloseButton('origin');
-            this.hideMyLocationSuggestion(inputs[1]);
           } else {
             this.showCloseButton('destination');
-            this.hideMyLocationSuggestion(inputs[0]);
           }
           setPlace(place);
 
           // Unfocus the input
           input.blur();
         }
-      });
-
-      // Hide my location
-      input.addEventListener('focusout', () => {
-        this.hideMyLocationSuggestion(input);
       });
     });
   }
@@ -262,58 +259,49 @@ export default class View {
       return;
     }
 
-    // Queryselectors
     const suggestions = input.parentElement.querySelector('.suggestions');
 
     // If the option doesn't exist, add it
-    const myLoc = input.parentElement.querySelector('.mylocation');
+    let myLoc = input.parentElement.querySelector('.mylocation');
 
     if (!myLoc) {
-      const el = document.createElement('li');
+      myLoc = document.createElement('li');
       // Need to access the link for the translation
+      myLoc.className = 'mylocation active';
+      myLoc.style.display = 'none';
+
       const a = document.createElement('a');
-      el.className = 'mylocation active';
       a.setAttribute('data-l10n-id', 'suggestion-location');
 
       // Event listener
       a.addEventListener('mousedown', () => {
         input.value = a.innerHTML;
 
-        // Translation config
-        const place = input.getAttribute('data-l10n-id').replace('-input', '');
+        // set userlocation on input
+        const place = input.parentElement.dataset.place;
+        input.dataset.userLocation = true;
 
+        // show the close button & set the variable
         this.showCloseButton(place);
         setPlace(place);
       });
 
-      el.appendChild(a);
-      suggestions.appendChild(el);
+      myLoc.appendChild(a);
+      suggestions.appendChild(myLoc);
     }
 
-    // don't show my location if the one of the inputs is already showing it
-    // disgusting if statements, because of the translations this is pretty hard
-    // tbh you need a new geocoder component, hooking into the mapbox one sucks,
-    // maybe try forking the mapbox one to add a my location functionality
-    /*if (input.getAttribute('data-l10n-id').replace('-input', '') === 'origin') {
-    if (
-      inputs[1].value !== '' &&
-      inputs[1].value ===
-        suggestions.querySelector('.mylocation').firstChild.innerHTML
-    ) {
-      return;
+    if (input.value === '') {
+      // Only show if none are already set
+      const inputs = document.querySelectorAll('.mapboxgl-ctrl-geocoder input');
+      if (
+        !(inputs[0].dataset.userLocation === 'true') &&
+        !(inputs[1].dataset.userLocation === 'true')
+      ) {
+        myLoc.style.display = 'block';
+        // Show the suggestions
+        suggestions.style.display = 'block';
+      }
     }
-  } else {
-    if (
-      inputs[0].value !== '' &&
-      inputs[0].value ===
-        suggestions.querySelector('.mylocation').firstChild.innerHTML
-    ) {
-      return;
-    }
-  }*/
-
-    // Show the suggestions
-    suggestions.style.display = 'block';
   }
 
   /*
@@ -474,6 +462,8 @@ export default class View {
       const input = geocoder.querySelector('input');
       input.setAttribute('data-l10n-id', `${input.placeholder}-input`);
     });
+
+    this.configureCloseButtons();
   }
 
   configureCenterButton() {
