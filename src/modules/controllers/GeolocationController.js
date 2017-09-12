@@ -33,7 +33,6 @@ export default class GeolocationController {
   * @param Function updatePosition - callback function
   */
   startTracking(map) {
-    console.log('starting to track user');
     if (navigator.geolocation) {
       navigator.geolocation.watchPosition(position =>
         this.onUpdate(position, map)
