@@ -14,19 +14,6 @@ import { degAngle } from '../../constants';
 
 import NavView from '../views/NavView';
 
-/**
- * Starts tracking your location and updating the screen.
- */
-function startTracking(position) {
-  var coord = position.coords;
-  var location = turf.point([coord.longitude, coord.latitude]);
-  heading = this.userHeading;
-  update(location);
-  if (loading) {
-    loading = false;
-    document.querySelector('.main-loading').classList.remove('visible');
-  }
-}
 var navView;
 var router;
 var loading = true;
@@ -80,6 +67,9 @@ export default function initialize(origin, destination, routerContext) {
     initializeNavigation(json);
     //setTimeout(step, 50);
 
+    // keep updating when the userposition changes
+    router.geolocController.onUpdate = startTracking;
+
     // if the userposition is already found, do a single update
     // if not, start tracking
     if (router.geolocController.userPosition) {
@@ -93,9 +83,6 @@ export default function initialize(origin, destination, routerContext) {
     } else {
       router.geolocController.startTracking();
     }
-
-    // keep updating when the userposition changes
-    router.geolocController.onUpdate = startTracking;
   });
   document
     .getElementById('close-navigation')
@@ -106,6 +93,20 @@ export default function initialize(origin, destination, routerContext) {
   document.getElementById('goto-map').addEventListener('click', function() {
     router.goToRouteplanner(loc1, loc2);
   });
+}
+
+/**
+ * Starts tracking your location and updating the screen.
+ */
+function startTracking(position) {
+  var coord = position.coords;
+  var location = turf.point([coord.longitude, coord.latitude]);
+  heading = this.userHeading;
+  update(location);
+  if (loading) {
+    loading = false;
+    document.querySelector('.main-loading').classList.remove('visible');
+  }
 }
 
 /**
@@ -175,7 +176,6 @@ function update(location) {
   navView.updateNextRoadColour(instruction, offset);
   navView.updateNextInstructionDistance(distanceToNext, offset);
   navView.updateNextRoadDirection(instruction, offset);
-  console.log('updated heading:' + heading);
   navView.updateDirectionArrow(instruction, location, heading);
   navView.updateMessage(instruction);
 }

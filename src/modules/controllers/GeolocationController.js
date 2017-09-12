@@ -47,8 +47,6 @@ export default class GeolocationController {
   }
 
   _setHeading(e) {
-    console.log('old heading: ' + this.userHeading);
-    console.log('new heading: ' + e.alpha);
     this.userHeading = e.alpha || e.webkitCompassHeading;
   }
 
