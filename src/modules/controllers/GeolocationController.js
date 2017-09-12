@@ -3,6 +3,7 @@ import mapboxgl from 'mapbox-gl';
 export default class GeolocationController {
   constructor() {
     this.userPosition = null;
+    this.userHeading = 0;
     this.onUpdate = null;
     this.marker = this.createMarker();
   }
@@ -40,12 +41,21 @@ export default class GeolocationController {
     } else {
       alert("Sorry, your browser doesn't support geolocation!");
     }
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', e => this._setHeading(e));
+    }
+  }
+
+  _setHeading(e) {
+    console.log('old heading: ' + this.userHeading);
+    console.log('new heading: ' + e.alpha);
+    this.userHeading = e.alpha || e.webkitCompassHeading;
   }
 
   /*
   * Stops tracking the user
   */
   stopTracking() {
-    navigator.geolocation.clearWatch(this.state.watchPositionId);
+    navigator.geolocation.clearWatch(this.watchPositionId);
   }
 }

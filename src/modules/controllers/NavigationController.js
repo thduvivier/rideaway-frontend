@@ -20,7 +20,7 @@ import NavView from '../views/NavView';
 function startTracking(position) {
   var coord = position.coords;
   var location = turf.point([coord.longitude, coord.latitude]);
-  heading = position.coords.heading;
+  heading = this.userHeading;
   update(location);
   if (loading) {
     loading = false;
@@ -84,6 +84,7 @@ export default function initialize(origin, destination, routerContext) {
     // if not, start tracking
     if (router.geolocController.userPosition) {
       var location = turf.point(router.geolocController.userPosition);
+      heading = router.geolocController.userHeading;
       update(location);
       if (loading) {
         loading = false;
@@ -174,6 +175,7 @@ function update(location) {
   navView.updateNextRoadColour(instruction, offset);
   navView.updateNextInstructionDistance(distanceToNext, offset);
   navView.updateNextRoadDirection(instruction, offset);
+  console.log('updated heading:' + heading);
   navView.updateDirectionArrow(instruction, location, heading);
   navView.updateMessage(instruction);
 }

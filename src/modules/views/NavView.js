@@ -107,7 +107,7 @@ export default class NavView {
       }
       document.getElementById('direction-arrow').style[
         'transform'
-      ] = `rotate(${dir + 90}deg)`;
+      ] = `rotate(${dir}deg)`;
     } else {
       document.getElementById('direction-arrow').style['display'] = 'none';
     }
