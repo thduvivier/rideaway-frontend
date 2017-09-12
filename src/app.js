@@ -5,7 +5,7 @@ import 'l20n';
 // eslint-disable-next-line
 require('add-to-homescreen');
 
-import router from './router';
+import Router from './router';
 
 import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 // eslint-disable-next-line
@@ -22,4 +22,4 @@ window.addToHomescreen({
   maxDisplayCount: 1
 });
 
-router.initialize();
+new Router();

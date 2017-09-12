@@ -1,10 +1,18 @@
 import initializeNav from './modules/controllers/NavigationController';
 import initializeRouteplanner from './modules/controllers/RouteplannerController';
+import GeolocationController from './modules/controllers/GeolocationController';
 
 import { findGetParameter, swapArrayValues } from './modules/lib';
 
 class Router {
-  goToNavigation(origin, destination, userPosition = null) {
+  constructor() {
+    this.geolocController = new GeolocationController();
+    this.onURLChanged();
+    // keep watching changes
+    window.onpopstate = () => this.onURLChanged();
+  }
+
+  goToNavigation(origin, destination) {
     history.pushState(
       null,
       null,
@@ -12,7 +20,7 @@ class Router {
     );
     document.querySelector('.routeplanner').classList.remove('visible');
     document.querySelector('.main-loading').classList.add('visible');
-    initializeNav(origin, destination, userPosition);
+    initializeNav(origin, destination, this);
     document.querySelector('.navigation').classList.add('visible');
   }
 
@@ -21,10 +29,10 @@ class Router {
     document.querySelector('.routeplanner').classList.add('visible');
     if (origin && destination) {
       history.replaceState('', null, `/?loc1=${origin}&loc2=${destination}`);
-      initializeRouteplanner(origin, destination);
+      initializeRouteplanner(origin, destination, this);
     } else {
       history.pushState('', document.title, '/');
-      initializeRouteplanner();
+      initializeRouteplanner(null, null, this);
     }
   }
 
@@ -63,12 +71,6 @@ class Router {
 
     navigateTo(origin, destination);
   }
-
-  initialize() {
-    this.onURLChanged();
-    // keep watching changes
-    window.onpopstate = () => this.onURLChanged();
-  }
 }
 
-export default new Router();
+export default Router;

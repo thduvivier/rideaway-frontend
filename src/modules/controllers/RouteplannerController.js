@@ -5,11 +5,8 @@ import { urls } from '../../constants';
 import { swapArrayValues, fetchJSON, displayTime } from '../lib';
 
 import MapController from './MapController';
-import GeolocationController from './GeolocationController';
 import { createGeocoder, getReverseLookup } from './GeocoderController';
 import View from '../views/RouteplannerView';
-
-import router from '../../router';
 
 // Global variables
 let places = {
@@ -22,12 +19,13 @@ let handlers = {
   nav: null
 };
 
+let router;
 let map;
 let mapController;
 let geolocController;
 let view;
 
-export default function initialize(origin, destination) {
+export default function initialize(origin, destination, routerContext) {
   // fresh load
   if (!map) {
     if (origin && destination) {
@@ -37,16 +35,46 @@ export default function initialize(origin, destination) {
       places.destination = destination;
     }
 
+    // set router and update function
+    router = routerContext;
+    router.geolocController.onUpdate = startTracking;
+
+    // initialize controllers and views
     mapController = new MapController(map);
-    geolocController = new GeolocationController();
+    geolocController = router.geolocController;
     view = new View(mapController, geolocController);
     map = mapController.map;
+
+    // bind our actions
     bindActions();
   } else {
     if (!origin || !destination) {
       clearAll();
     }
   }
+}
+
+/*
+* Updates the position variable and holds some other functions
+* @param Array[int, int] position - The position of the user
+*/
+function startTracking(position, map) {
+  // Get coords
+  const LngLat = [position.coords.longitude, position.coords.latitude];
+  if (!this.userPosition) {
+    window.userLocated = true;
+    document.querySelector(
+      '.center-btn .sk-spinner.sk-spinner-pulse'
+    ).style.display =
+      'none';
+    document.querySelector('.center-btn--icon').style.display = 'block';
+    document.querySelector('.center-btn').disabled = false;
+  }
+  this.userPosition = LngLat;
+  // hide loader icon and show center button
+  // Add marker to map
+  this.marker.setLngLat(LngLat);
+  this.marker.addTo(map);
 }
 
 export function clearAll() {
@@ -144,8 +172,7 @@ function calculateRoute(origin, destination, profile) {
 
           router.goToNavigation(
             swapArrayValues(origin),
-            swapArrayValues(destination),
-            geolocController.userPosition
+            swapArrayValues(destination)
           );
         };
 

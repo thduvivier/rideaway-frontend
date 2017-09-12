@@ -3,6 +3,8 @@ import mapboxgl from 'mapbox-gl';
 export default class GeolocationController {
   constructor() {
     this.userPosition = null;
+    this.onUpdate = null;
+    this.marker = this.createMarker();
   }
 
   /*
@@ -31,13 +33,10 @@ export default class GeolocationController {
   * @param Function updatePosition - callback function
   */
   startTracking(map) {
-    // Add a marker to the map for userposition
-    const marker = this.createMarker();
+    console.log('starting to track user');
     if (navigator.geolocation) {
       navigator.geolocation.watchPosition(position =>
-        this.onPosition(position, marker, map, LngLat =>
-          this.updatePosition(LngLat)
-        )
+        this.onUpdate(position, map)
       );
     } else {
       alert("Sorry, your browser doesn't support geolocation!");
@@ -45,46 +44,9 @@ export default class GeolocationController {
   }
 
   /*
-  * Callback function everytime the userposition is updated
-  * @param Object{} position - Position returned by navigator API
-  * @param Marker marker - The marker
-  * @param mapboxgl map - The map
-  * @param Function updatePosition - The callback function
-  */
-  onPosition(position, marker, map, updatePosition) {
-    // Get coords
-    const LngLat = [position.coords.longitude, position.coords.latitude];
-
-    // Set user position in global variables
-    updatePosition(LngLat);
-
-    // Add marker to map
-    marker.setLngLat(LngLat);
-    marker.addTo(map);
-  }
-
-  /*
   * Stops tracking the user
   */
   stopTracking() {
     navigator.geolocation.clearWatch(this.state.watchPositionId);
-  }
-
-  /*
-  * Updates the position variable and holds some other functions
-  * @param Array[int, int] position - The position of the user
-  */
-  updatePosition(position) {
-    // hide loader icon and show center button
-    if (!this.userPosition) {
-      window.userLocated = true;
-      document.querySelector(
-        '.center-btn .sk-spinner.sk-spinner-pulse'
-      ).style.display =
-        'none';
-      document.querySelector('.center-btn--icon').style.display = 'block';
-      document.querySelector('.center-btn').disabled = false;
-    }
-    this.userPosition = position;
   }
 }

@@ -12,30 +12,23 @@ import {
 } from '../lib';
 import { degAngle } from '../../constants';
 
-import router from '../../router';
-
 import NavView from '../views/NavView';
 
 /**
  * Starts tracking your location and updating the screen.
  */
-function startTracking() {
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(position => {
-      var coord = position.coords;
-      var location = turf.point([coord.longitude, coord.latitude]);
-      heading = position.coords.heading;
-      update(location);
-      if (loading) {
-        loading = false;
-        document.querySelector('.main-loading').classList.remove('visible');
-      }
-    });
-  } else {
-    alert("Sorry, your browser doesn't support geolocation!");
+function startTracking(position) {
+  var coord = position.coords;
+  var location = turf.point([coord.longitude, coord.latitude]);
+  heading = position.coords.heading;
+  update(location);
+  if (loading) {
+    loading = false;
+    document.querySelector('.main-loading').classList.remove('visible');
   }
 }
 var navView;
+var router;
 var loading = true;
 
 var result;
@@ -68,12 +61,14 @@ function initializeNavigation(jsonresult) {
 /**
  * Initialises the navigation application.
  */
-export default function initialize(origin, destination, userPosition) {
+export default function initialize(origin, destination, routerContext) {
   // do not reinitialize if everything is already set
   if (_.isEqual(loc1, origin) && _.isEqual(loc2, destination)) {
     document.querySelector('.main-loading').classList.remove('visible');
     return;
   }
+
+  router = routerContext;
 
   navView = new NavView();
   loc1 = origin;
@@ -85,16 +80,21 @@ export default function initialize(origin, destination, userPosition) {
     initializeNavigation(json);
     //setTimeout(step, 50);
 
-    if (userPosition) {
-      console.log(userPosition);
-      var location = turf.point(userPosition);
+    // if the userposition is already found, do a single update
+    // if not, start tracking
+    if (router.geolocController.userPosition) {
+      var location = turf.point(router.geolocController.userPosition);
       update(location);
       if (loading) {
         loading = false;
         document.querySelector('.main-loading').classList.remove('visible');
       }
+    } else {
+      router.geolocController.startTracking();
     }
-    startTracking();
+
+    // keep updating when the userposition changes
+    router.geolocController.onUpdate = startTracking;
   });
   document
     .getElementById('close-navigation')
