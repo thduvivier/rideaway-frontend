@@ -1,6 +1,6 @@
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { fetchJSON } from '../lib';
-import { center } from '../../constants';
+import { center, boundingBox } from '../../constants';
 
 /*
 * Returns a geocoder object
@@ -14,7 +14,8 @@ export function createGeocoder(placeholder) {
     flyTo: false,
     placeholder,
     country: 'BE',
-    proximity: { latitude: center.latlng[0], longitude: center.latlng[1] }
+    proximity: { latitude: center.latlng[0], longitude: center.latlng[1] },
+    bbox: boundingBox
   });
 }
 
