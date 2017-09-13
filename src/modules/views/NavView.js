@@ -102,12 +102,13 @@ export default class NavView {
       document.getElementById('direction-arrow').style['display'] = 'block';
 
       var dir = turf.bearing(location, instruction);
-      if (heading) {
-        dir = dir + heading;
-      }
+      console.log('dir and heading: ', dir, heading);
+      dir -= heading;
+      if (dir < -180) dir = 360 + dir;
+      console.log('calculated rotation: ', dir);
       document.getElementById('direction-arrow').style[
         'transform'
-      ] = `rotate(${dir + 90}deg)`;
+      ] = `rotate(${90 + dir}deg)`;
     } else {
       document.getElementById('direction-arrow').style['display'] = 'none';
     }
