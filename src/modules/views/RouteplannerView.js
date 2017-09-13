@@ -449,6 +449,19 @@ export default class View {
   }
 
   /*
+  * Runs when the location is found
+  */
+  toggleLocationLoading() {
+    if (!window.userLocated) window.userLocated = true;
+    document.querySelector(
+      '.center-btn .sk-spinner.sk-spinner-pulse'
+    ).style.display =
+      'none';
+    document.querySelector('.center-btn--icon').style.display = 'block';
+    document.querySelector('.center-btn').disabled = false;
+  }
+
+  /*
   * Set the data attribute on the geocoders for the translations
   */
   configureGeocoders() {

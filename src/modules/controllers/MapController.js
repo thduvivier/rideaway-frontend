@@ -14,6 +14,7 @@ export default class MapController {
       destinationMarker: null,
       shortestPopup: null
     };
+    this.userMarker = this.createUserMarker();
 
     // Create a mapbox
     mapboxgl.accessToken = '';
@@ -236,6 +237,33 @@ export default class MapController {
       .setLngLat(LatLng)
       .setDOMContent(div)
       .addTo(this.map);
+  }
+
+  /*
+  * Creates a marker with a pulsating dot (for my location)
+  * @returns Marker marker - The marker
+  */
+  createUserMarker() {
+    // Create our pulsating dot
+    let el = document.createElement('div');
+    el.className = 'marker';
+    let child1 = document.createElement('div');
+    child1.className = 'dot';
+    let child2 = document.createElement('div');
+    child2.className = 'pulse';
+    el.appendChild(child1);
+    el.appendChild(child2);
+
+    return new mapboxgl.Marker(el, {
+      offset: [-10 / 2, -10]
+    });
+  }
+
+  /*
+  * Sets a new LngLat for the usermarker
+  */
+  setUserMarker(LngLat) {
+    this.userMarker.setLngLat(LngLat).addTo(this.map);
   }
 
   fitToBounds(origin, destination) {

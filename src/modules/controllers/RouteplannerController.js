@@ -26,6 +26,10 @@ let geolocController;
 let view;
 
 export default function initialize(origin, destination, routerContext) {
+  // set router and update function
+  router = routerContext;
+  router.geolocController.onUpdate = startTracking;
+
   // fresh load
   if (!map) {
     if (origin && destination) {
@@ -35,14 +39,16 @@ export default function initialize(origin, destination, routerContext) {
       places.destination = destination;
     }
 
-    // set router and update function
-    router = routerContext;
-    router.geolocController.onUpdate = startTracking;
-
     // initialize controllers and views
     mapController = new MapController(map);
     geolocController = router.geolocController;
     view = new View(mapController, geolocController);
+
+    // check if navigating from nav
+    if (router.geolocController.userPosition) {
+      view.toggleMainLoading();
+    }
+
     map = mapController.map;
 
     // bind our actions
@@ -58,23 +64,13 @@ export default function initialize(origin, destination, routerContext) {
 * Updates the position variable and holds some other functions
 * @param Array[int, int] position - The position of the user
 */
-function startTracking(position, map) {
+function startTracking(position) {
   // Get coords
   const LngLat = [position.coords.longitude, position.coords.latitude];
-  if (!this.userPosition) {
-    window.userLocated = true;
-    document.querySelector(
-      '.center-btn .sk-spinner.sk-spinner-pulse'
-    ).style.display =
-      'none';
-    document.querySelector('.center-btn--icon').style.display = 'block';
-    document.querySelector('.center-btn').disabled = false;
-  }
+
+  if (!this.userPosition) view.toggleLocationLoading();
   this.userPosition = LngLat;
-  // hide loader icon and show center button
-  // Add marker to map
-  this.marker.setLngLat(LngLat);
-  this.marker.addTo(map);
+  mapController.setUserMarker(LngLat);
 }
 
 export function clearAll() {
@@ -309,8 +305,14 @@ function bindActions() {
     // Change the position of the copyright controls
     map.addControl(new mapboxgl.AttributionControl(), 'bottom-left');
 
-    // Start stracking the user
-    geolocController.startTracking(map);
+    // only start tracking if userPosition isn't defined yet
+    // else add the already found position to the map
+    if (!geolocController.userPosition) {
+      geolocController.startTracking();
+    } else {
+      view.toggleLocationLoading();
+      mapController.setUserMarker(geolocController.userPosition);
+    }
 
     // turn on loading screen for map
     view.toggleMapLoading();
