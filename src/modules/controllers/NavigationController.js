@@ -3,7 +3,6 @@ import _ from 'lodash';
 
 import {
   fetchJSON,
-  lengthOfRoute,
   pointAlongRoute,
   pointOnRoute,
   distanceAtLocation,
@@ -14,21 +13,20 @@ import { degAngle } from '../../constants';
 
 import NavView from '../views/NavView';
 
-var navView;
-var router;
-var loading = true;
+let navView;
+let router;
 
-var result;
-var heading;
+let loading = true;
 
-var length;
-var dataAtLast;
-var totalDistance;
-var totalTime;
+let result;
 
-var i = 0;
-var loc1;
-var loc2;
+let dataAtLast;
+let totalDistance;
+let totalTime;
+
+let i = 0;
+let loc1;
+let loc2;
 
 /**
  * Initialises the navigation with the result from the api.
@@ -37,7 +35,6 @@ var loc2;
  */
 function initializeNavigation(jsonresult) {
   result = jsonresult;
-  length = lengthOfRoute(result.route);
   dataAtLast =
     result.route.features[result.route.features.length - 1].properties;
   totalDistance = dataAtLast.distance / 1000.0;
@@ -73,15 +70,19 @@ export default function initialize(origin, destination, routerContext) {
     // if the userposition is already found, do a single update
     // if not, start tracking
     if (router.geolocController.userPosition) {
-      var location = turf.point(router.geolocController.userPosition);
-      heading = router.geolocController.userHeading;
-      update(location);
+      update();
+      // set an interval update for the directional arrow
+      setInterval(onIntervalUpdate, 1000);
+
+      // remove the loading screen
       if (loading) {
         loading = false;
         document.querySelector('.main-loading').classList.remove('visible');
       }
     } else {
       router.geolocController.startTracking();
+      // set an interval update for the directional arrow
+      setInterval(onIntervalUpdate, 1000);
     }
   });
   document
@@ -99,14 +100,26 @@ export default function initialize(origin, destination, routerContext) {
  * Starts tracking your location and updating the screen.
  */
 function startTracking(position) {
-  var coord = position.coords;
-  var location = turf.point([coord.longitude, coord.latitude]);
-  heading = this.userHeading;
-  update(location);
+  this.userPosition = [position.coords.longitude, position.coords.latitude];
+  // update
+  update();
   if (loading) {
     loading = false;
     document.querySelector('.main-loading').classList.remove('visible');
   }
+}
+
+/*
+* Updates the direction arrow
+*/
+function onIntervalUpdate() {
+  const { userPosition, userHeading } = router.geolocController;
+  if (!userPosition || !userHeading) {
+    return;
+  }
+  const distance = distanceAtLocation(result.route, userPosition);
+  const instruction = instructionAt(result.instructions, distance * 1000);
+  navView.updateDirectionArrow(instruction, userPosition, userHeading);
 }
 
 /**
@@ -132,15 +145,17 @@ function step() {
  * 
  * @param {Object} location - the current location 
  */
-function update(location) {
-  var closestPoint = pointOnRoute(result.route, location);
-  var distance = distanceAtLocation(result.route, location);
-  var instruction = instructionAt(result.instructions, distance * 1000);
-  var distanceToNext = instruction.properties.distance - distance * 1000;
-  var remainingDistance = (totalDistance - distance) * 1000;
-  var remainingTime = remainingDistance / 3.6;
+function update() {
+  const location = turf.point(router.geolocController.userPosition);
+  const closestPoint = pointOnRoute(result.route, location);
+  let distance = distanceAtLocation(result.route, location);
+  let instruction = instructionAt(result.instructions, distance * 1000);
+  let distanceToNext = instruction.properties.distance - distance * 1000;
+  const remainingDistance = (totalDistance - distance) * 1000;
+  const remainingTime = remainingDistance / 3.6;
 
   if (totalDistance - distance < 0.01) {
+    // navigation finished
     router.goToRouteplanner();
   }
 
@@ -164,11 +179,12 @@ function update(location) {
     };
   }
 
-  var offset = 0;
+  let offset = 0;
   if (distanceToNext < 1000) {
     offset = (distanceToNext - 1000) * -1 / 20;
   }
 
+  // update the view
   navView.updateRouteStats(remainingDistance, remainingTime);
   navView.updateCurrentRoadSquare(instruction);
   navView.updateNextRoadSquare(instruction, offset);
@@ -176,6 +192,5 @@ function update(location) {
   navView.updateNextRoadColour(instruction, offset);
   navView.updateNextInstructionDistance(distanceToNext, offset);
   navView.updateNextRoadDirection(instruction, offset);
-  navView.updateDirectionArrow(instruction, location, heading);
   navView.updateMessage(instruction);
 }

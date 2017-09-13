@@ -35,8 +35,10 @@ export default class GeolocationController {
   */
   startTracking(map) {
     if (navigator.geolocation) {
-      navigator.geolocation.watchPosition(position =>
-        this.onUpdate(position, map)
+      navigator.geolocation.watchPosition(
+        position => this.onUpdate(position, map),
+        null,
+        { enableHighAccuracy: true }
       );
     } else {
       alert("Sorry, your browser doesn't support geolocation!");
