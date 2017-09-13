@@ -1,3 +1,5 @@
+import { compassHeading } from '../lib';
+
 export default class GeolocationController {
   constructor() {
     this.userPosition = null;
@@ -24,7 +26,8 @@ export default class GeolocationController {
   }
 
   _setHeading(e) {
-    this.userHeading = e.alpha || e.webkitCompassHeading;
+    this.userHeading =
+      compassHeading(e.alpha, e.beta, e.gamma) || e.webkitCompassHeading;
   }
 
   /*
