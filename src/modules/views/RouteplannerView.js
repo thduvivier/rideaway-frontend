@@ -34,6 +34,10 @@ export default class View {
       all.className += ' routelist-item--active';
       this.mapController.removeFilter();
       this.collapseMenu();
+      this.mapController.map.flyTo({
+        center: center.latlng,
+        zoom: [center.zoom]
+      });
     });
     const none = document.querySelector('.routelist-none');
     none.addEventListener('click', () => {
@@ -46,6 +50,10 @@ export default class View {
       this.mapController.toggleLayer('GFR_routes', 'none');
       this.mapController.toggleLayer('GFR_symbols', 'none');
       this.collapseMenu();
+      this.mapController.map.flyTo({
+        center: center.latlng,
+        zoom: [center.zoom]
+      });
     });
   }
 
