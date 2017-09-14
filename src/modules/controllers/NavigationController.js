@@ -163,7 +163,7 @@ function update() {
   const remainingTime = remainingDistance / 3.6;
 
   // if we arrive at stop, set the interval again
-  if (instruction.properties.type === 'stop') {
+  if (instruction.properties.type === 'stop' && !interval) {
     interval = setInterval(onIntervalUpdate, 1000);
   }
 
