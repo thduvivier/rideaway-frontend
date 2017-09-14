@@ -395,11 +395,14 @@ export default class View {
 
     const buttonNav = document.querySelector('.nav-btn');
 
-    // Remove the old handler when starting navigation
-    oldHandler && buttonNav.removeEventListener('click', oldHandler);
+    if (window.userLocated) {
+      // Remove the old handler when starting navigation
+      oldHandler && buttonNav.removeEventListener('click', oldHandler);
 
-    // Add the new handler
-    buttonNav.addEventListener('click', navHandler);
+      // Add the new handler
+      buttonNav.addEventListener('click', navHandler);
+      buttonNav.classList.add('visible-regular');
+    }
 
     // Show the navbox
     navBox.style.transform = 'translateY(0)';
