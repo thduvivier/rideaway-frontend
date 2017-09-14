@@ -7,8 +7,10 @@ import { findGetParameter, swapArrayValues } from './modules/lib';
 class Router {
   constructor() {
     this.geolocController = new GeolocationController();
+
+    // replace the state because we're fresh loading
     history.replaceState('routeplanner', null, null);
-    this.onURLChanged(true);
+    this.onURLChanged();
     // keep watching changes
     window.onpopstate = () => {
       if (history.state) {
@@ -50,7 +52,7 @@ class Router {
     history.pushState('routeplanner', null, '/');
   }
 
-  onURLChanged(freshLoad) {
+  onURLChanged() {
     let navigateTo;
 
     // check if we should navigate or plan a route
