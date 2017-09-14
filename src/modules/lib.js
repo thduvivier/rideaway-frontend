@@ -282,3 +282,25 @@ export function compassHeading(alpha, beta, gamma) {
 
   return compassHeading;
 }
+
+/**
+ * Calculates the rotation angle correctly, using the previous
+ * angle so the whole thing doesn't spin around
+ * @param {int} pR Previous rotation angle
+ * @param {int} nR New rotation angle
+ */
+export function calculateRotationAngle(pR, nR) {
+  let aR;
+  let rot = pR;
+  aR = rot % 360;
+  if (aR < 0) {
+    aR += 360;
+  }
+  if (aR < 180 && nR > aR + 180) {
+    rot -= 360;
+  }
+  if (aR >= 180 && nR <= aR - 180) {
+    rot += 360;
+  }
+  return (rot += nR - aR);
+}
