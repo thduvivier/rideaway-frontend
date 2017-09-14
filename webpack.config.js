@@ -21,6 +21,7 @@ const prodPlugins = [
       additional: [':externals:'],
       optional: [':rest:']
     },
+    events: true,
     externals: ['./'],
     ServiceWorker: {
       navigateFallbackURL: './'
@@ -42,7 +43,7 @@ module.exports = {
   entry: './src/app.js',
   output: {
     path: __dirname + '/build',
-    filename: 'app.bundle.js'
+    filename: 'app.bundle.[hash].js'
   },
   module: {
     noParse: /(mapbox-gl)\.js$/,
