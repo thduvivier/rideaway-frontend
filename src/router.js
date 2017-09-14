@@ -2,7 +2,7 @@ import initializeNav from './modules/controllers/NavigationController';
 import initializeRouteplanner from './modules/controllers/RouteplannerController';
 import GeolocationController from './modules/controllers/GeolocationController';
 
-import { findGetParameter, swapArrayValues } from './modules/lib';
+import { findGetParameter } from './modules/lib';
 
 class Router {
   constructor() {
@@ -36,7 +36,7 @@ class Router {
     history.pushState(
       'routeplanner',
       null,
-      `/?loc1=${swapArrayValues(origin)}&loc2=${swapArrayValues(destination)}`
+      `/?loc1=${origin}&loc2=${destination}`
     );
   }
 
