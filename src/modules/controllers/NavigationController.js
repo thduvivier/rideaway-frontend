@@ -162,6 +162,12 @@ function update() {
   const remainingDistance = (totalDistance - distance) * 1000;
   const remainingTime = remainingDistance / 3.6;
 
+  console.log(location);
+  console.log(closestPoint);
+  console.log(distance);
+  console.log(instruction);
+  console.log(distanceToNext);
+
   // if we arrive at stop, set the interval again
   if (instruction.properties.type === 'stop' && !interval) {
     interval = setInterval(onIntervalUpdate, 1000);
