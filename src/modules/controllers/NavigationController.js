@@ -87,10 +87,12 @@ export default function initialize(origin, destination, routerContext) {
   document
     .getElementById('close-navigation')
     .addEventListener('click', function() {
+      router.clearHistory();
       router.goToRouteplanner();
     });
 
   document.getElementById('goto-map').addEventListener('click', function() {
+    router.prepareRouteplannerHistory(loc1, loc2);
     router.goToRouteplanner(loc1, loc2);
   });
 }
@@ -175,6 +177,7 @@ function update() {
 
   if (totalDistance - distance < 0.01) {
     // navigation finished
+    router.clearHistory();
     router.goToRouteplanner();
   }
 

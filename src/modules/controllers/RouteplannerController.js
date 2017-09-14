@@ -166,6 +166,10 @@ function calculateRoute(origin, destination, profile) {
         handlers.nav = () => {
           const { origin, destination } = places;
 
+          router.prepareNavHistory(
+            swapArrayValues(origin),
+            swapArrayValues(destination)
+          );
           router.goToNavigation(
             swapArrayValues(origin),
             swapArrayValues(destination)
@@ -236,7 +240,7 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
     // remove popup
     mapController.clearMapObject('shortestPopup');
 
-    router.prepareHistory(origin, destination);
+    router.prepareRouteplannerHistory(origin, destination);
     calculateProfiles({ origin, destination }, ['shortest', 'brussels']);
   }
 }
@@ -262,7 +266,7 @@ function onPlaceResult(place, result) {
     if (places.origin && places.destination) {
       const { origin, destination } = places;
       // prepare the url
-      router.prepareHistory(origin, destination);
+      router.prepareRouteplannerHistory(origin, destination);
       calculateProfiles(
         {
           origin,

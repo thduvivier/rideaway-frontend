@@ -7,17 +7,17 @@ import { findGetParameter, swapArrayValues } from './modules/lib';
 class Router {
   constructor() {
     this.geolocController = new GeolocationController();
-    this.onURLChanged();
+    history.replaceState('routeplanner', null, null);
+    this.onURLChanged(true);
     // keep watching changes
-    window.onpopstate = () => this.onURLChanged();
+    window.onpopstate = () => {
+      if (history.state) {
+        this.onURLChanged();
+      }
+    };
   }
 
   goToNavigation(origin, destination) {
-    history.pushState(
-      null,
-      null,
-      `/?nav=true&loc1=${origin}&loc2=${destination}`
-    );
     document.querySelector('.routeplanner').classList.remove('visible');
     document.querySelector('.main-loading').classList.add('visible');
     initializeNav(origin, destination, this);
@@ -27,28 +27,30 @@ class Router {
   goToRouteplanner(origin, destination) {
     document.querySelector('.navigation').classList.remove('visible');
     document.querySelector('.routeplanner').classList.add('visible');
-    if (origin && destination) {
-      history.replaceState('', null, `/?loc1=${origin}&loc2=${destination}`);
-      initializeRouteplanner(origin, destination, this);
-    } else {
-      history.pushState('', document.title, '/');
-      initializeRouteplanner(null, null, this);
-    }
+    initializeRouteplanner(origin, destination, this);
   }
 
-  prepareHistory(origin, destination) {
+  prepareRouteplannerHistory(origin, destination) {
     history.pushState(
-      null,
+      'routeplanner',
       null,
       `/?loc1=${swapArrayValues(origin)}&loc2=${swapArrayValues(destination)}`
     );
   }
 
-  clearHistory() {
-    history.pushState(null, null, '/');
+  prepareNavHistory(origin, destination) {
+    history.pushState(
+      'navigation',
+      null,
+      `/?nav=true&loc1=${origin}&loc2=${destination}`
+    );
   }
 
-  onURLChanged() {
+  clearHistory() {
+    history.pushState('routeplanner', null, '/');
+  }
+
+  onURLChanged(freshLoad) {
     let navigateTo;
 
     // check if we should navigate or plan a route
