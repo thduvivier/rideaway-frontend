@@ -44,6 +44,11 @@ export const boundingBox = [
   51.0552073386
 ];
 
+export const bounds = [
+  [boundingBox[0], boundingBox[1]],
+  [boundingBox[2], boundingBox[3]]
+];
+
 export const angleDeg = {
   sharpleft: -45,
   left: 0,

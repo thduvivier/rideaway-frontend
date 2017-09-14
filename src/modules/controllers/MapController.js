@@ -1,7 +1,7 @@
 import mapboxgl from 'mapbox-gl';
 
 import icons from '../../icons';
-import { urls, center } from '../../constants';
+import { urls, center, bounds } from '../../constants';
 
 /*
 * @constructor
@@ -23,7 +23,8 @@ export default class MapController {
       style: urls.mapStyle, //stylesheet location
       center: center.latlng, // starting position
       zoom: center.zoom, // starting zoom
-      attributionControl: false
+      attributionControl: false,
+      maxBounds: bounds
     });
   }
 
