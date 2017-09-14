@@ -1,6 +1,6 @@
 import mapboxgl from 'mapbox-gl';
 
-import { urls } from '../../constants';
+import { urls, boundingBox } from '../../constants';
 
 import { swapArrayValues, fetchJSON, displayTime } from '../lib';
 
@@ -67,10 +67,19 @@ export default function initialize(origin, destination, routerContext) {
 function startTracking(position) {
   // Get coords
   const LngLat = [position.coords.longitude, position.coords.latitude];
-
-  if (!this.userPosition) view.toggleLocationLoading();
-  this.userPosition = LngLat;
-  mapController.setUserMarker(LngLat);
+  // Check if user position is inside bounding box
+  if (
+    boundingBox[0] <= LngLat[0] &&
+    LngLat[0] <= boundingBox[2] &&
+    boundingBox[1] <= LngLat[1] &&
+    LngLat[1] <= boundingBox[3]
+  ) {
+    if (!this.userPosition) view.toggleLocationLoading();
+    this.userPosition = LngLat;
+    mapController.setUserMarker(LngLat);
+  } else {
+    console.log('Userposition not in Brussels, disabling my location');
+  }
 }
 
 export function clearAll() {
