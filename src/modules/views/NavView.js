@@ -1,4 +1,8 @@
-import { displayArrival, displayDistance } from '../lib';
+import {
+  displayArrival,
+  displayDistance,
+  calculateRotationAngle
+} from '../lib';
 import { angleDeg } from '../../constants';
 import turf from 'turf';
 
@@ -95,22 +99,29 @@ export default class NavView {
   }
 
   updateDirectionArrow(instruction, location, heading) {
+    const arrow = document.getElementById('direction-arrow');
     if (
       instruction.properties.type === 'enter' ||
       instruction.properties.type === 'stop'
     ) {
-      document.getElementById('direction-arrow').style['display'] = 'block';
+      arrow.style['display'] = 'block';
 
-      var dir = turf.bearing(location, instruction);
-      console.log('dir and heading: ', dir, heading);
+      let dir = turf.bearing(location, instruction);
+
+      // new direction
       dir -= heading;
-      if (dir < -180) dir = 360 + dir;
-      console.log('calculated rotation: ', dir);
-      document.getElementById('direction-arrow').style[
-        'transform'
-      ] = `rotate(${90 + dir}deg)`;
+      if (dir < 0) {
+        dir = dir + 360;
+      }
+      dir = Math.round(dir);
+
+      const previousDir = parseInt(arrow.dataset.dir) || 0;
+      const calculatedDir = calculateRotationAngle(previousDir, dir);
+      arrow.dataset.dir = calculatedDir;
+
+      arrow.style['transform'] = `rotate(${calculatedDir + 90}deg)`;
     } else {
-      document.getElementById('direction-arrow').style['display'] = 'none';
+      arrow.style['display'] = 'none';
     }
   }
 
