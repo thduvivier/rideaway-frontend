@@ -5,6 +5,7 @@ export default class GeolocationController {
     this.userPosition = null;
     this.userHeading = 0;
     this.onUpdate = null;
+    this.trackingMode = 'default';
   }
 
   /*

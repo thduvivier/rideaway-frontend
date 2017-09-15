@@ -493,14 +493,29 @@ export default class View {
     this.configureCloseButtons();
   }
 
-  configureCenterButton() {
-    // Configure the center button
-    document.querySelector('.center-btn').addEventListener('click', () => {
-      this.geolocController.userPosition &&
-        this.mapController.map.flyTo({
-          center: this.geolocController.userPosition,
-          zoom: [15]
-        });
+  /**
+   * Add a click event listener to change tracking mode
+   * and run the callback function that was passed
+   * @param {function} changeTrackingMode 
+   */
+  configureCenterButton(changeTrackingMode) {
+    const btn = document.querySelector('.center-btn');
+    btn.addEventListener('click', () => {
+      const trackingMode = this.geolocController.trackingMode;
+      // if currently default mode => change it to centered
+      // if currently centered mode => change it to tracking
+      // if currently pitched mode => change it to pitched-centered
+      // if anything else => change to regular centered
+      if (trackingMode === 'default') {
+        this.geolocController.trackingMode = 'centered';
+      } else if (trackingMode === 'centered') {
+        this.geolocController.trackingMode = 'tracking';
+      } else if (trackingMode === 'pitched') {
+        this.geolocController.trackingMode = 'pitched-centered';
+      } else {
+        this.geolocController.trackingMode = 'centered';
+      }
+      changeTrackingMode();
     });
   }
 

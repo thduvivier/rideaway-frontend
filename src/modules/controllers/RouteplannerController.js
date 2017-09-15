@@ -19,6 +19,8 @@ let handlers = {
   nav: null
 };
 
+let updateHeading;
+
 let router;
 let map;
 let mapController;
@@ -77,6 +79,27 @@ function startTracking(position) {
     if (!this.userPosition) view.hideLocationLoading();
     this.userPosition = LngLat;
     mapController.setUserMarker(LngLat);
+    view.toggleCenterButton(true);
+  } else {
+    mapController.userMarker.remove();
+    view.toggleCenterButton(false);
+  }
+}
+
+function keepTracking(position) {
+  // Get coords
+  const LngLat = [position.coords.longitude, position.coords.latitude];
+  // Check if user position is inside bounding box
+  if (
+    boundingBox[0] <= LngLat[0] &&
+    LngLat[0] <= boundingBox[2] &&
+    boundingBox[1] <= LngLat[1] &&
+    LngLat[1] <= boundingBox[3]
+  ) {
+    this.userPosition = LngLat;
+    map.flyTo({ center: this.userPosition });
+    mapController.setUserMarker(LngLat);
+    view.toggleCenterButton(true);
   } else {
     mapController.userMarker.remove();
     view.toggleCenterButton(false);
@@ -318,6 +341,38 @@ function setMapClick(map) {
   });
 }
 
+/**
+ * Called everytime the tracking mode changes, passed as callback,
+ * handles the different scenario's
+ */
+function changeTrackingMode() {
+  if (geolocController.trackingMode === 'default') {
+    geolocController.onUpdate = startTracking;
+  }
+  if (geolocController.trackingMode === 'centered') {
+    map.setPitch(0);
+    map.flyTo({ center: geolocController.userPosition, zoom: 15 });
+    if (updateHeading) {
+      clearInterval(updateHeading);
+      updateHeading = null;
+    }
+    geolocController.onUpdate = startTracking;
+  }
+  if (geolocController.trackingMode === 'tracking') {
+    map.setPitch(75);
+    updateHeading = setInterval(
+      () => map.setBearing(geolocController.userHeading),
+      100
+    );
+    geolocController.onUpdate = keepTracking;
+  }
+  if (geolocController.trackingMode === 'pitched-centered') {
+    clearInterval(updateHeading);
+    updateHeading = null;
+    map.flyTo({ center: geolocController.userPosition, zoom: 15 });
+  }
+}
+
 function bindActions() {
   const routeChosen = places.origin && places.destination;
 
@@ -409,6 +464,21 @@ function bindActions() {
 
     setMapClick(map);
 
-    view.configureCenterButton();
+    view.configureCenterButton(changeTrackingMode);
+  });
+
+  /**
+   * When the map is touched, the tracking mode should change
+   * so the user can still move around
+   */
+  map.on('touchend', () => {
+    // if currently center => go to default mode
+    // if currently tracking => go to pitched default mode
+    if (geolocController.trackingMode === 'centered') {
+      geolocController.trackingMode = 'default';
+    } else if (geolocController.trackingMode === 'tracking') {
+      geolocController.trackingMode = 'pitched';
+    }
+    changeTrackingMode();
   });
 }
