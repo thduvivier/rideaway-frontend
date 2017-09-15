@@ -416,6 +416,9 @@ export default class View {
     navBox.style.transform = 'translateY(175px)';
   }
 
+  /**
+   * Toggles the center button
+   */
   toggleCenterButton() {
     document.querySelector('center-btn').classList.toggle('visible-regular');
   }
@@ -424,23 +427,23 @@ export default class View {
   * Show dialog when no route is found
   */
   toggleErrorDialog() {
-    document.querySelector('.dimmed-map').toggle('visible');
-    document.querySelector('.error-dialog').toggle('visible');
+    document.querySelector('.dimmed-map').classList.toggle('visible');
+    document.querySelector('.error-dialog').classList.toggle('visible');
   }
 
   /*
   * Toggle the main loading screen
   */
   toggleMainLoading() {
-    document.querySelector('.main-loading').toggle('visible');
+    document.querySelector('.main-loading').classList.toggle('visible');
   }
 
   /*
    *  Toggle loading icon on map
    */
   toggleMapLoading() {
-    document.querySelector('.dimmed-map').toggle('visible');
-    document.querySelector('.loading').toggle('visible');
+    document.querySelector('.dimmed-map').classList.toggle('visible');
+    document.querySelector('.loading').classList.toggle('visible');
   }
 
   /*

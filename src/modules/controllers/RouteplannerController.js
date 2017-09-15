@@ -79,6 +79,7 @@ function startTracking(position) {
     mapController.setUserMarker(LngLat);
   } else {
     console.log('Userposition not in Brussels, disabling my location');
+    view.hideCenterButton();
   }
 }
 
