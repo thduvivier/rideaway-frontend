@@ -383,8 +383,8 @@ export default class View {
     const navBox = document.querySelector('.nav-box');
     const button = document.querySelector('.center-btn');
 
-    // Hide the center button
-    button.classList.remove('visible-regular');
+    // Move the center button up
+    button.classList.add('center-btn--navigating');
 
     // Set information in the navigation box
     document.querySelector('.nav-distance').innerHTML = displayDistance(
@@ -414,6 +414,9 @@ export default class View {
   hideNavigationBox() {
     const navBox = document.querySelector('.nav-box');
     navBox.style.transform = 'translateY(175px)';
+    document
+      .querySelector('.center-btn')
+      .classList.remove('center-btn--navigating');
   }
 
   /**
