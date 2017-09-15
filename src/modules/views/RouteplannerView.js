@@ -414,49 +414,33 @@ export default class View {
   hideNavigationBox() {
     const navBox = document.querySelector('.nav-box');
     navBox.style.transform = 'translateY(175px)';
-    document.querySelector('.center-btn').style.display = 'block';
+  }
+
+  toggleCenterButton() {
+    document.querySelector('center-btn').classList.toggle('visible-regular');
   }
 
   /*
   * Show dialog when no route is found
   */
   toggleErrorDialog() {
-    const dimmed = document.querySelector('.dimmed-map');
-    const dialog = document.querySelector('.error-dialog');
-    if (dialog.className.includes('visible')) {
-      dimmed.classList.remove('visible');
-      dialog.classList.remove('visible');
-    } else {
-      dimmed.classList.add('visible');
-      dialog.classList.add('visible');
-    }
+    document.querySelector('.dimmed-map').toggle('visible');
+    document.querySelector('.error-dialog').toggle('visible');
   }
 
   /*
   * Toggle the main loading screen
   */
   toggleMainLoading() {
-    const loading = document.querySelector('.main-loading');
-    if (loading.className.includes('visible')) {
-      loading.classList.remove('visible');
-    } else {
-      loading.classList.add('visible');
-    }
+    document.querySelector('.main-loading').toggle('visible');
   }
 
   /*
    *  Toggle loading icon on map
    */
   toggleMapLoading() {
-    const dimmed = document.querySelector('.dimmed-map');
-    const loading = document.querySelector('.loading');
-    if (loading.className.includes('visible')) {
-      dimmed.classList.remove('visible');
-      loading.classList.remove('visible');
-    } else {
-      dimmed.classList.add('visible');
-      loading.classList.add('visible');
-    }
+    document.querySelector('.dimmed-map').toggle('visible');
+    document.querySelector('.loading').toggle('visible');
   }
 
   /*
