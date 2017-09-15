@@ -468,7 +468,8 @@ export default class View {
     document.querySelector('.center-btn--icon').style.display = 'block';
     const btn = document.querySelector('.center-btn');
     btn.disabled = false;
-    this.toggleCenterButton();
+    // show center button
+    this.toggleCenterButton(true);
   }
 
   /*

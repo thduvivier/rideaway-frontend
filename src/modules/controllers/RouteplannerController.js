@@ -74,12 +74,12 @@ function startTracking(position) {
     boundingBox[1] <= LngLat[1] &&
     LngLat[1] <= boundingBox[3]
   ) {
-    if (!this.userPosition) view.toggleLocationLoading();
+    if (!this.userPosition) view.hideLocationLoading();
     this.userPosition = LngLat;
     mapController.setUserMarker(LngLat);
   } else {
-    console.log('Userposition not in Brussels, disabling my location');
-    view.hideCenterButton();
+    mapController.userMarker.remove();
+    view.toggleCenterButton(false);
   }
 }
 
