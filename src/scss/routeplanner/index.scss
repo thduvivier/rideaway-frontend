@@ -101,6 +101,10 @@
   }
 }
 
+.center-btn--centered {
+  background: $secondary_color;
+}
+
 .center-btn--navigating {
   transform: translateY(-175px);
 }

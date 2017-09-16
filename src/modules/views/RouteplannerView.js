@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import { routeConfig, center } from '../../constants';
 import { displayDistance, displayTime, displayArrival } from '../lib';
+import icons from '../../icons';
 
 export default class View {
   constructor(mapController, geolocController) {
@@ -508,11 +509,18 @@ export default class View {
       // if anything else => change to regular centered
       if (trackingMode === 'default') {
         this.geolocController.trackingMode = 'centered';
+        btn.classList.add('center-btn--centered');
       } else if (trackingMode === 'centered') {
+        btn.querySelector('img').src = icons.Navigate;
         this.geolocController.trackingMode = 'tracking';
       } else if (trackingMode === 'pitched') {
+        btn.classList.add('center-btn--centered');
         this.geolocController.trackingMode = 'pitched-centered';
+      } else if (trackingMode === 'pitched-centered') {
+        btn.querySelector('img').src = icons.Navigate;
+        this.geolocController.trackingMode = 'tracking';
       } else {
+        btn.querySelector('img').src = icons.Center;
         this.geolocController.trackingMode = 'centered';
       }
       changeTrackingMode();

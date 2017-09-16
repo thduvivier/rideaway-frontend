@@ -3,6 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import { urls, boundingBox } from '../../constants';
 
 import { swapArrayValues, fetchJSON, displayTime } from '../lib';
+import icons from '../../icons';
 
 import MapController from './MapController';
 import { createGeocoder, getReverseLookup } from './GeocoderController';
@@ -472,11 +473,15 @@ function bindActions() {
    * so the user can still move around
    */
   map.on('touchend', () => {
+    const btn = document.querySelector('.center-btn');
     // if currently center => go to default mode
     // if currently tracking => go to pitched default mode
     if (geolocController.trackingMode === 'centered') {
       geolocController.trackingMode = 'default';
+      btn.classList.remove('center-btn--centered');
     } else if (geolocController.trackingMode === 'tracking') {
+      btn.querySelector('img').src = icons.Center;
+      btn.classList.remove('center-btn--centered');
       geolocController.trackingMode = 'pitched';
     }
     changeTrackingMode();
