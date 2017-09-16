@@ -268,20 +268,12 @@ export default class MapController {
   }
 
   fitToBounds(origin, destination) {
-    // sets the bounding box correctly
-    let bbox = [];
-    if (origin[0] > destination[0] && origin[1] > destination[1]) {
-      bbox = [destination, origin];
-    } else if (origin[0] < destination[0] && origin[1] > destination[1]) {
-      bbox = [[origin[0], destination[1]], [destination[0], origin[1]]];
-    } else if (origin[0] > destination[0] && origin[1] < destination[1]) {
-      bbox = [[destination[0], origin[1]], [origin[0], destination[1]]];
-    } else {
-      bbox = [origin, destination];
-    }
+    let bounds = new mapboxgl.LngLatBounds();
+    bounds.extend(origin);
+    bounds.extend(destination);
 
     // Fit the map to the route
-    this.map.fitBounds(bbox, {
+    this.map.fitBounds(bounds, {
       padding: {
         top: 75,
         right: 50,
