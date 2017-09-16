@@ -60,8 +60,10 @@
 }
 
 #map {
-  height: 100vh;
+  margin-top: 120px;
+  height: calc(100vh - 120px);
   width: 100%;
+  overflow: visible;
 }
 
 .reverse-btn {
