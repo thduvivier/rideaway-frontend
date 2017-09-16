@@ -363,6 +363,7 @@ function changeTrackingMode() {
   }
   if (geolocController.trackingMode === 'tracking') {
     map.setPitch(75);
+    map.setZoom(18.5);
     updateHeading = setInterval(
       () => map.setBearing(geolocController.userHeading),
       100
