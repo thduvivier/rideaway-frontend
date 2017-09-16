@@ -66,6 +66,11 @@
   overflow: visible;
 }
 
+#map.map--route-calculated {
+  height: calc(100vh - 120px - 150px);
+  margin-bottom: 150px;
+}
+
 .reverse-btn {
   float: right;
   z-index: 1;
