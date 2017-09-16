@@ -283,9 +283,9 @@ export default class MapController {
     // Fit the map to the route
     this.map.fitBounds(bbox, {
       padding: {
-        top: 200,
+        top: 75,
         right: 50,
-        bottom: 200,
+        bottom: 75,
         left: 50
       }
     });

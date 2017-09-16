@@ -407,8 +407,8 @@ export default class View {
 
     // Show the navbox
     navBox.style.transform = 'translateY(0)';
-    document.querySelector('#map').classList.add('map--route-calculated');
 
+    document.querySelector('#map').classList.add('map--route-calculated');
     // wait for the animation to finish, then resize the container
     setTimeout(() => this.mapController.map.resize(), 300);
   }
@@ -422,8 +422,8 @@ export default class View {
     document
       .querySelector('.center-btn')
       .classList.remove('center-btn--navigating');
-    document.querySelector('#map').classList.remove('map--route-calculated');
 
+    document.querySelector('#map').classList.remove('map--route-calculated');
     // resize immediately
     this.mapController.map.resize();
   }

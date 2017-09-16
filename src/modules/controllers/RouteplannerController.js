@@ -224,10 +224,12 @@ function calculateRoute(origin, destination, profile) {
         // Show the navigation box, change the handler
         view.showNavigationBox(oldHandler, handlers.nav, distance, time);
 
-        mapController.fitToBounds(origin, destination);
-
-        // hide the loading icon
-        view.toggleMapLoading();
+        // only fit bounds once we know the map is fully resized
+        setTimeout(() => {
+          mapController.fitToBounds(origin, destination);
+          // hide the loading icon
+          view.toggleMapLoading();
+        }, 350);
       }
     })
     .catch(ex => {
