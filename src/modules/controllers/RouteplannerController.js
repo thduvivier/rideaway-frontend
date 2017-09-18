@@ -338,47 +338,51 @@ function setMapClick(map) {
  * handles the different scenario's
  */
 function changeTrackingMode() {
-  if (geolocController.trackingMode === 'default') {
-    if (updateHeading) {
-      clearInterval(updateHeading);
-      updateHeading = null;
-    }
-    map.easeTo({
-      center: center.latlng,
-      zoom: center.zoom,
-      pitch: 0,
-      bearing: 0
-    });
-  }
-  if (geolocController.trackingMode === 'centered') {
-    // if we were updating the heading => clear
-    if (updateHeading) {
-      clearInterval(updateHeading);
-      updateHeading = null;
-    }
-    map.easeTo({
-      center: geolocController.userPosition,
-      zoom: 15,
-      bearing: 0,
-      pitch: 0
-    });
-  }
-  if (geolocController.trackingMode === 'tracking') {
-    updateHeading = setInterval(() => {
+  switch (geolocController.trackingMode) {
+    case 'default':
+      if (updateHeading) {
+        clearInterval(updateHeading);
+        updateHeading = null;
+      }
+      map.easeTo({
+        center: center.latlng,
+        zoom: center.zoom,
+        pitch: 0,
+        bearing: 0
+      });
+      break;
+    case 'centered':
+      // if we were updating the heading => clear
+      if (updateHeading) {
+        clearInterval(updateHeading);
+        updateHeading = null;
+      }
       map.easeTo({
         center: geolocController.userPosition,
-        zoom: 18.5,
-        pitch: 75,
-        bearing: geolocController.userHeading
+        zoom: 15,
+        bearing: 0,
+        pitch: 0
       });
-    }, 100);
-  }
-  if (geolocController.trackingMode === 'pitched') {
-    clearInterval(updateHeading);
-    updateHeading = null;
-  }
-  if (geolocController.trackingMode === 'pitched-centered') {
-    map.flyTo({ center: geolocController.userPosition, zoom: 15 });
+      break;
+    case 'tracking':
+      updateHeading = setInterval(() => {
+        map.easeTo({
+          center: geolocController.userPosition,
+          zoom: 18.5,
+          pitch: 75,
+          bearing: geolocController.userHeading
+        });
+      }, 100);
+      break;
+    case 'pitched':
+      clearInterval(updateHeading);
+      updateHeading = null;
+      break;
+    case 'pitched-centered':
+      map.flyTo({ center: geolocController.userPosition, zoom: 15 });
+      break;
+    default:
+      break;
   }
 }
 
@@ -484,9 +488,6 @@ function bindActions() {
     const btn = document.querySelector('.center-btn');
     // if currently center => go to default mode
     // if currently tracking => go to pitched default mode
-    if (map.getBearing() !== 0) {
-      console.log('show compass');
-    }
     if (geolocController.trackingMode === 'centered') {
       geolocController.trackingMode = 'default';
       btn.classList.remove('center-btn--centered');

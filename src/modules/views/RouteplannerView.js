@@ -525,21 +525,27 @@ export default class View {
       // if currently centered mode => change it to tracking
       // if currently pitched mode => change it to pitched-centered
       // if anything else => change to regular centered
-      if (trackingMode === 'default') {
-        this.geolocController.trackingMode = 'centered';
-        btn.classList.add('center-btn--centered');
-      } else if (trackingMode === 'centered') {
-        btn.querySelector('img').src = icons.Navigate;
-        this.geolocController.trackingMode = 'tracking';
-      } else if (trackingMode === 'pitched') {
-        btn.classList.add('center-btn--centered');
-        this.geolocController.trackingMode = 'pitched-centered';
-      } else if (trackingMode === 'pitched-centered') {
-        btn.querySelector('img').src = icons.Navigate;
-        this.geolocController.trackingMode = 'tracking';
-      } else {
-        btn.querySelector('img').src = icons.Center;
-        this.geolocController.trackingMode = 'centered';
+      switch (trackingMode) {
+        case 'default':
+          this.geolocController.trackingMode = 'centered';
+          btn.classList.add('center-btn--centered');
+          break;
+        case 'centered':
+          this.geolocController.trackingMode = 'tracking';
+          btn.querySelector('img').src = icons.Navigate;
+          break;
+        case 'pitched':
+          this.geolocController.trackingMode = 'pitched-centered';
+          btn.classList.add('center-btn--centered');
+          break;
+        case 'pitched-centered':
+          this.geolocController.trackingMode = 'tracking';
+          btn.querySelector('img').src = icons.Navigate;
+          break;
+        default:
+          this.geolocController.trackingMode = 'centered';
+          btn.querySelector('img').src = icons.Center;
+          break;
       }
       changeTrackingMode();
     });
