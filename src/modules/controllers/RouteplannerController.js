@@ -93,26 +93,6 @@ function startTracking(position) {
   }
 }
 
-function keepTracking(position) {
-  // Get coords
-  const LngLat = [position.coords.longitude, position.coords.latitude];
-  // Check if user position is inside bounding box
-  if (
-    boundingBox[0] <= LngLat[0] &&
-    LngLat[0] <= boundingBox[2] &&
-    boundingBox[1] <= LngLat[1] &&
-    LngLat[1] <= boundingBox[3]
-  ) {
-    this.userPosition = LngLat;
-    map.flyTo({ center: this.userPosition });
-    mapController.setUserMarker(LngLat);
-    view.toggleCenterButton(true);
-  } else {
-    mapController.userMarker.remove();
-    view.toggleCenterButton(false);
-  }
-}
-
 export function clearAll() {
   view.hideNavigationBox();
   mapController.clearAllMapObjectsAndRoutes();
@@ -354,9 +334,6 @@ function setMapClick(map) {
  * handles the different scenario's
  */
 function changeTrackingMode() {
-  if (geolocController.trackingMode === 'default') {
-    geolocController.onUpdate = startTracking;
-  }
   if (geolocController.trackingMode === 'centered') {
     // if we were updating the heading => clear
     if (updateHeading) {
@@ -369,17 +346,16 @@ function changeTrackingMode() {
       bearing: 0,
       pitch: 0
     });
-    geolocController.onUpdate = startTracking;
   }
   if (geolocController.trackingMode === 'tracking') {
     updateHeading = setInterval(() => {
       map.easeTo({
+        center: geolocController.userPosition,
         zoom: 18.5,
         pitch: 75,
         bearing: geolocController.userHeading
       });
     }, 100);
-    geolocController.onUpdate = keepTracking;
   }
   if (geolocController.trackingMode === 'pitched') {
     clearInterval(updateHeading);
