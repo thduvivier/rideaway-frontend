@@ -192,22 +192,25 @@ function calculateRoute(origin, destination, profile) {
       if (profile === 'brussels') {
         const oldHandler = handlers.nav;
 
-        const { destination } = places;
-        // set origin as default start, use slice to copy
-        const origin = geolocController.userPosition.slice();
+        // prepare the navigation stuff when a userposition is found
+        if (geolocController.userPosition) {
+          const { destination } = places;
+          // set origin as default start, use slice to copy
+          const origin = geolocController.userPosition.slice();
 
-        // Set the new handler
-        handlers.nav = () => {
-          router.prepareNavHistory(
-            swapArrayValues(origin),
-            swapArrayValues(destination)
-          );
+          // Set the new handler
+          handlers.nav = () => {
+            router.prepareNavHistory(
+              swapArrayValues(origin),
+              swapArrayValues(destination)
+            );
 
-          router.goToNavigation(
-            swapArrayValues(origin),
-            swapArrayValues(destination)
-          );
-        };
+            router.goToNavigation(
+              swapArrayValues(origin),
+              swapArrayValues(destination)
+            );
+          };
+        }
 
         const lastFeature = json.route.features[json.route.features.length - 1];
         const { properties: { distance, time } } = lastFeature;
