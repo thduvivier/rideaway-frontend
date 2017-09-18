@@ -92,6 +92,7 @@ export default function initialize(origin, destination, routerContext) {
     });
 
   document.getElementById('goto-map').addEventListener('click', function() {
+    router.geolocController.trackingMode = 'tracking';
     router.prepareRouteplannerHistory(loc1, loc2);
     router.goToRouteplanner(loc1, loc2);
   });
