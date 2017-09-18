@@ -184,16 +184,17 @@ function calculateRoute(origin, destination, profile) {
       if (profile === 'brussels') {
         const oldHandler = handlers.nav;
 
+        const { destination } = places;
+        // set origin as default start, use slice to copy
+        const origin = geolocController.userPosition.slice();
+
         // Set the new handler
         handlers.nav = () => {
-          const { destination } = places;
-          // set origin as default start
-          const origin = geolocController.userPosition;
-
           router.prepareNavHistory(
             swapArrayValues(origin),
             swapArrayValues(destination)
           );
+
           router.goToNavigation(
             swapArrayValues(origin),
             swapArrayValues(destination)
