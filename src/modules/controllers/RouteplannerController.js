@@ -187,6 +187,7 @@ function calculateRoute(origin, destination, profile) {
         // Set the new handler
         handlers.nav = () => {
           const { destination } = places;
+          // set origin as default start
           const origin = geolocController.userPosition;
 
           router.prepareNavHistory(
@@ -379,7 +380,7 @@ function bindActions() {
     if (!geolocController.userPosition) {
       geolocController.startTracking();
     } else {
-      view.toggleLocationLoading();
+      view.hideLocationLoading();
       mapController.setUserMarker(geolocController.userPosition);
     }
 
