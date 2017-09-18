@@ -353,26 +353,34 @@ function changeTrackingMode() {
     geolocController.onUpdate = startTracking;
   }
   if (geolocController.trackingMode === 'centered') {
-    map.setPitch(0);
-    map.flyTo({ center: geolocController.userPosition, zoom: 15 });
+    // if we were updating the heading => clear
     if (updateHeading) {
       clearInterval(updateHeading);
       updateHeading = null;
     }
+    map.easeTo({
+      center: geolocController.userPosition,
+      zoom: 15,
+      bearing: 0,
+      pitch: 0
+    });
     geolocController.onUpdate = startTracking;
   }
   if (geolocController.trackingMode === 'tracking') {
-    map.setPitch(75);
-    map.setZoom(18.5);
-    updateHeading = setInterval(
-      () => map.setBearing(geolocController.userHeading),
-      100
-    );
+    updateHeading = setInterval(() => {
+      map.easeTo({
+        zoom: 18.5,
+        pitch: 75,
+        bearing: geolocController.userHeading
+      });
+    }, 100);
     geolocController.onUpdate = keepTracking;
   }
-  if (geolocController.trackingMode === 'pitched-centered') {
+  if (geolocController.trackingMode === 'pitched') {
     clearInterval(updateHeading);
     updateHeading = null;
+  }
+  if (geolocController.trackingMode === 'pitched-centered') {
     map.flyTo({ center: geolocController.userPosition, zoom: 15 });
   }
 }
@@ -479,13 +487,16 @@ function bindActions() {
     const btn = document.querySelector('.center-btn');
     // if currently center => go to default mode
     // if currently tracking => go to pitched default mode
+    if (map.getBearing() !== 0) {
+      console.log('show compass');
+    }
     if (geolocController.trackingMode === 'centered') {
       geolocController.trackingMode = 'default';
       btn.classList.remove('center-btn--centered');
     } else if (geolocController.trackingMode === 'tracking') {
+      geolocController.trackingMode = 'pitched';
       btn.querySelector('img').src = icons.Center;
       btn.classList.remove('center-btn--centered');
-      geolocController.trackingMode = 'pitched';
     }
     changeTrackingMode();
   });
