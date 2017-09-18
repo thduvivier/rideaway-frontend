@@ -267,8 +267,7 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
 
     mapController.swapOriginDestMarkers();
   } else if (placeToSet === null) {
-    mapController.clearAllMapObjectsAndRoutes();
-    view.hideNavigationBox();
+    onPlaceClear(place);
   } else {
     // set userposition as place
     places[place] = placeToSet;
