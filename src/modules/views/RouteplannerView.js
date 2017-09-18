@@ -466,6 +466,16 @@ export default class View {
   toggleMapLoading() {
     document.querySelector('.dimmed-map').classList.toggle('visible');
     document.querySelector('.loading').classList.toggle('visible');
+    this.toggleLockTopControls();
+  }
+
+  /**
+   * Toggles an overlay on the top controls
+   */
+  toggleLockTopControls() {
+    document
+      .querySelector('.controls-lock')
+      .classList.toggle('visible-regular');
   }
 
   /*
