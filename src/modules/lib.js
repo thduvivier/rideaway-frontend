@@ -222,7 +222,7 @@ export function distanceAtLocation(route, location) {
 export function instructionAt(instructions, currentDistance) {
   for (var i = 0; i < instructions.features.length; i++) {
     var instruction = instructions.features[i];
-    if (instruction.properties.distance >= currentDistance) {
+    if (instruction.properties.distance > currentDistance) {
       return instruction;
     }
   }
