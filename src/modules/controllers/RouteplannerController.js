@@ -1,7 +1,7 @@
 import mapboxgl from 'mapbox-gl';
 import _ from 'lodash';
 
-import { urls, boundingBox } from '../../constants';
+import { urls, boundingBox, center } from '../../constants';
 
 import { swapArrayValues, fetchJSON, displayTime } from '../lib';
 import icons from '../../icons';
@@ -58,13 +58,15 @@ export default function initialize(origin, destination, routerContext) {
     // bind our actions
     bindActions();
   } else {
+    if (!origin || !destination) {
+      clearAll();
+      geolocController.trackingMode = 'default';
+      changeTrackingMode();
+    }
     if (!_.isEqual(places.origin, swapArrayValues(origin))) {
       mapController.clearMapObject('originMarker');
       places.origin = swapArrayValues(origin);
       calculateProfiles(places, ['shortest', 'brussels']);
-    }
-    if (!origin || !destination) {
-      clearAll();
     }
   }
 }
@@ -336,6 +338,18 @@ function setMapClick(map) {
  * handles the different scenario's
  */
 function changeTrackingMode() {
+  if (geolocController.trackingMode === 'default') {
+    if (updateHeading) {
+      clearInterval(updateHeading);
+      updateHeading = null;
+    }
+    map.easeTo({
+      center: center.latlng,
+      zoom: center.zoom,
+      pitch: 0,
+      bearing: 0
+    });
+  }
   if (geolocController.trackingMode === 'centered') {
     // if we were updating the heading => clear
     if (updateHeading) {
