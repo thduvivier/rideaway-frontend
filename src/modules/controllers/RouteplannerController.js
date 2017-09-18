@@ -67,13 +67,13 @@ export default function initialize(origin, destination, routerContext) {
         bearing: 0
       });
       geolocController.trackingMode = 'default';
-      changeTrackingMode();
     }
     if (!_.isEqual(places.origin, swapArrayValues(origin))) {
       mapController.clearMapObject('originMarker');
       places.origin = swapArrayValues(origin);
       calculateProfiles(places, ['shortest', 'brussels']);
     }
+    changeTrackingMode();
   }
 }
 
@@ -344,6 +344,7 @@ function setMapClick(map) {
  * handles the different scenario's
  */
 function changeTrackingMode() {
+  const btn = document.querySelector('.center-btn');
   switch (geolocController.trackingMode) {
     case 'default':
       if (updateHeading) {
@@ -353,6 +354,8 @@ function changeTrackingMode() {
       break;
     case 'centered':
       // if we were updating the heading => clear
+      btn.querySelector('img').src = icons.Center;
+      btn.classList.add('center-btn--centered');
       if (updateHeading) {
         clearInterval(updateHeading);
         updateHeading = null;
@@ -365,20 +368,24 @@ function changeTrackingMode() {
       });
       break;
     case 'tracking':
-      updateHeading = setInterval(() => {
-        map.easeTo({
-          center: geolocController.userPosition,
-          zoom: 18.5,
-          pitch: 75,
-          bearing: geolocController.userHeading
-        });
-      }, 100);
+      btn.querySelector('img').src = icons.Navigate;
+      if (!updateHeading) {
+        updateHeading = setInterval(() => {
+          map.easeTo({
+            center: geolocController.userPosition,
+            zoom: 18.5,
+            pitch: 75,
+            bearing: geolocController.userHeading
+          });
+        }, 100);
+      }
       break;
     case 'pitched':
       clearInterval(updateHeading);
       updateHeading = null;
       break;
     case 'pitched-centered':
+      btn.classList.add('center-btn--centered');
       map.flyTo({ center: geolocController.userPosition, zoom: 15 });
       break;
     default:

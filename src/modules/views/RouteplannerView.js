@@ -528,23 +528,18 @@ export default class View {
       switch (trackingMode) {
         case 'default':
           this.geolocController.trackingMode = 'centered';
-          btn.classList.add('center-btn--centered');
           break;
         case 'centered':
           this.geolocController.trackingMode = 'tracking';
-          btn.querySelector('img').src = icons.Navigate;
           break;
         case 'pitched':
           this.geolocController.trackingMode = 'pitched-centered';
-          btn.classList.add('center-btn--centered');
           break;
         case 'pitched-centered':
           this.geolocController.trackingMode = 'tracking';
-          btn.querySelector('img').src = icons.Navigate;
           break;
         default:
           this.geolocController.trackingMode = 'centered';
-          btn.querySelector('img').src = icons.Center;
           break;
       }
       changeTrackingMode();
