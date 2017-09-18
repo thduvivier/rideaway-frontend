@@ -1,4 +1,5 @@
 import mapboxgl from 'mapbox-gl';
+import _ from 'lodash';
 
 import { urls, boundingBox } from '../../constants';
 
@@ -57,6 +58,11 @@ export default function initialize(origin, destination, routerContext) {
     // bind our actions
     bindActions();
   } else {
+    if (!_.isEqual(places.origin, swapArrayValues(origin))) {
+      mapController.clearMapObject('originMarker');
+      places.origin = swapArrayValues(origin);
+      calculateProfiles(places, ['shortest', 'brussels']);
+    }
     if (!origin || !destination) {
       clearAll();
     }
@@ -123,6 +129,8 @@ export function clearAll() {
 */
 function calculateProfiles(places, profiles) {
   view.toggleMapLoading();
+  // remove popup
+  mapController.clearMapObject('shortestPopup');
   // Clear routes just to be sure
   mapController.clearRoutes();
   const { origin, destination } = places;
@@ -274,9 +282,6 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
   }
   const { origin, destination } = places;
   if (origin && destination) {
-    // remove popup
-    mapController.clearMapObject('shortestPopup');
-
     router.prepareRouteplannerHistory(
       swapArrayValues(origin),
       swapArrayValues(destination)
