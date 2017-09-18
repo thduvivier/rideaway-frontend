@@ -60,6 +60,12 @@ export default function initialize(origin, destination, routerContext) {
   } else {
     if (!origin || !destination) {
       clearAll();
+      map.easeTo({
+        center: center.latlng,
+        zoom: center.zoom,
+        pitch: 0,
+        bearing: 0
+      });
       geolocController.trackingMode = 'default';
       changeTrackingMode();
     }
@@ -344,12 +350,6 @@ function changeTrackingMode() {
         clearInterval(updateHeading);
         updateHeading = null;
       }
-      map.easeTo({
-        center: center.latlng,
-        zoom: center.zoom,
-        pitch: 0,
-        bearing: 0
-      });
       break;
     case 'centered':
       // if we were updating the heading => clear
@@ -484,7 +484,7 @@ function bindActions() {
    * When the map is touched, the tracking mode should change
    * so the user can still move around
    */
-  map.on('touchend', () => {
+  map.on('touchstart', () => {
     const btn = document.querySelector('.center-btn');
     // if currently center => go to default mode
     // if currently tracking => go to pitched default mode
