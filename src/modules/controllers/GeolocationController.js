@@ -1,6 +1,9 @@
 import { compassHeading } from '../lib';
 
 export default class GeolocationController {
+  /**
+   * @constructor
+   */
   constructor() {
     this.userPosition = null;
     this.userHeading = 0;
@@ -9,8 +12,8 @@ export default class GeolocationController {
   }
 
   /*
-  * Start tracking the user
-  */
+   * Start tracking the user
+   */
   startTracking() {
     if (navigator.geolocation) {
       navigator.geolocation.watchPosition(
@@ -26,14 +29,19 @@ export default class GeolocationController {
     }
   }
 
+  /**
+   * Sets the heading
+   * @param {event} e 
+   */
   _setHeading(e) {
     this.userHeading =
       compassHeading(e.alpha, e.beta, e.gamma) || e.webkitCompassHeading;
   }
 
   /*
-  * Stops tracking the user
-  */
+   * Stops tracking the user // not used because the entire app
+   * uses tracking
+   */
   stopTracking() {
     navigator.geolocation.clearWatch(this.watchPositionId);
   }
