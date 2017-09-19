@@ -396,6 +396,7 @@ export default class View {
 
     const buttonNav = document.querySelector('.nav-btn');
 
+    // configure the navigation button
     if (window.userLocated) {
       // Remove the old handler when starting navigation
       oldHandler && buttonNav.removeEventListener('click', oldHandler);
@@ -429,19 +430,23 @@ export default class View {
   }
 
   /**
-   * Toggles the center button, hides with passed param
+   * Toggles the center and nav button, hides with passed param
    * @param {boolean} toggle 
    */
-  toggleCenterButton(toggle) {
+  toggleLocationBasedButtons(toggle) {
     const btn = document.querySelector('.center-btn');
+    const btnNav = document.querySelector('.nav-btn');
     if (toggle === undefined) {
       btn.classList.toggle('visible-regular');
+      btnNav.classList.toggle('visible-regular');
       return;
     }
     if (toggle) {
       btn.classList.add('visible-regular');
+      btnNav.classList.add('visible-regular');
     } else {
       btn.classList.remove('visible-regular');
+      btnNav.classList.remove('visible-regular');
     }
   }
 
@@ -482,7 +487,6 @@ export default class View {
   * Runs when the location is found
   */
   hideLocationLoading() {
-    if (!window.userLocated) window.userLocated = true;
     document.querySelector(
       '.center-btn .sk-spinner.sk-spinner-pulse'
     ).style.display =
@@ -491,7 +495,7 @@ export default class View {
     const btn = document.querySelector('.center-btn');
     btn.disabled = false;
     // show center button
-    this.toggleCenterButton(true);
+    this.toggleLocationBasedButtons(true);
   }
 
   /*

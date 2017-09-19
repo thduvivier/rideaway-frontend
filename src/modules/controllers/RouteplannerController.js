@@ -92,6 +92,13 @@ export default function initialize(origin, destination, routerContext) {
  * @param {Array[int, int]} position - The position of the user
  */
 function startTracking(position) {
+  // when position is unavailable
+  if (!position) {
+    window.userLocated = false;
+    mapController.userMarker.remove();
+    view.toggleLocationBasedButtons(false);
+    return;
+  }
   // Get coords
   const LngLat = [position.coords.longitude, position.coords.latitude];
   // Check if user position is inside bounding box
@@ -101,13 +108,20 @@ function startTracking(position) {
     boundingBox[1] <= LngLat[1] &&
     LngLat[1] <= boundingBox[3]
   ) {
-    if (!this.userPosition) view.hideLocationLoading();
+    if (!this.userPosition && !window.userLocated) {
+      window.userLocated = true;
+      view.hideLocationLoading();
+    }
     this.userPosition = LngLat;
     mapController.setUserMarker(LngLat);
-    view.toggleCenterButton(true);
+    view.toggleLocationBasedButtons(true);
   } else {
-    mapController.userMarker.remove();
-    view.toggleCenterButton(false);
+    if (this.userPosition && window.userLocated) {
+      this.userPosition = null;
+      window.userLocated = false;
+      mapController.userMarker.remove();
+      view.toggleLocationBasedButtons(false);
+    }
   }
 }
 

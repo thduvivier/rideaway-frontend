@@ -18,7 +18,7 @@ export default class GeolocationController {
     if (navigator.geolocation) {
       navigator.geolocation.watchPosition(
         position => this.onUpdate(position),
-        null,
+        this.onUpdate(null),
         { enableHighAccuracy: true }
       );
     } else {
