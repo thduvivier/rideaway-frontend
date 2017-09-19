@@ -77,7 +77,7 @@ export default function initialize(origin, destination, routerContext) {
       geolocController.trackingMode = 'default';
     }
     // if origin has changed, change it and recalculate
-    if (!_.isEqual(places.origin, swapArrayValues(origin))) {
+    if (origin && !_.isEqual(places.origin, swapArrayValues(origin))) {
       mapController.clearMapObject('originMarker');
       places.origin = swapArrayValues(origin);
       calculateProfiles(places, ['shortest', 'brussels']);
@@ -400,6 +400,7 @@ function changeTrackingMode() {
       btn.querySelector('img').src = icons.Navigate;
       if (!updateHeading) {
         updateHeading = setInterval(() => {
+          console.log(geolocController.userHeading);
           map.easeTo({
             center: geolocController.userPosition,
             zoom: 18.5,
