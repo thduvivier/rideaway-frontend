@@ -3,10 +3,10 @@ import mapboxgl from 'mapbox-gl';
 import icons from '../../icons';
 import { urls, center, bounds } from '../../constants';
 
-/*
-* @constructor
-*/
 export default class MapController {
+  /**
+   * @constructor
+   */
   constructor(map) {
     this.map = map;
     this.mapObjects = {
@@ -28,11 +28,10 @@ export default class MapController {
     });
   }
 
-  /*
-  * Filters out the routes to a single route
-  * @param map mapboxglmap - The map
-  * @param route String
-  */
+  /**
+   * Filters out the routes to a single route
+   * @param {Array<string>} inactives - the inactive route(s)
+   */
   filterRoutes(inactives) {
     const map = this.map;
     // Filters, also filter out a/b routes
@@ -50,10 +49,9 @@ export default class MapController {
     map.setLayoutProperty('GFR_symbols', 'visibility', 'visible');
   }
 
-  /*
-  * Removes all the filters from the map
-  * @param map mapboxglmap - The map
-  */
+  /**
+   * Removes all the filters from the map
+   */
   removeFilter() {
     const map = this.map;
 
@@ -63,9 +61,9 @@ export default class MapController {
     map.setFilter('GFR_symbols', null);
   }
 
-  /*
-  * Clears the calculated routes
-  */
+  /**
+   * Clears the calculated routes
+   */
   clearRoutes() {
     const map = this.map;
 
@@ -79,28 +77,28 @@ export default class MapController {
     }
   }
 
-  /*
-  * Clears a map object
-  * @param string identifier - Object identifier
-  */
+  /**
+   * Clears a map object
+   * @param {string} identifier - Object identifier
+   */
   clearMapObject(identifier) {
     this.mapObjects[identifier] && this.mapObjects[identifier].remove();
     this.mapObjects[identifier] = null;
   }
 
-  /*
-  * Clears the mapobjects following the passed identifiers
-  * @param Array<string> identifiers - identifiers
-  */
+  /**
+   * Clears the mapobjects following the passed identifiers
+   * @param {Array<string>} identifiers - identifiers
+   */
   clearMapObjects(identifiers) {
     identifiers.forEach(identifier => {
       this.clearMapObject(identifier);
     });
   }
 
-  /*
-  * Clears all map objects
-  */
+  /**
+   * Clears all map objects
+   */
   clearAllMapObjectsAndRoutes() {
     this.clearRoutes();
     Object.keys(this.mapObjects).forEach(key => {
@@ -108,21 +106,20 @@ export default class MapController {
     });
   }
 
-  /*
-  * Swaps around the origin and destination marker
-  */
+  /**
+   * Swaps around the origin and destination marker
+   */
   swapOriginDestMarkers() {
     const originMarker = this.mapObjects.markerOrigin;
     this.mapObjects.markerOrigin = this.mapObjects.markerDest;
     this.mapObjects.markerDest = originMarker;
   }
 
-  /*
-  * Toggles the visibility of a layer
-  * @param mapboxglmap map - The map
-  * @param string id - The id of the layer
-  * @param boolean showLayer - Force hide/show
-  */
+  /**
+   * Toggles the visibility of a layer
+   * @param {string} id - The id of the layer
+   * @param {boolean} showLayer - Force hide/show
+   */
   toggleLayer(id, showLayer) {
     const map = this.map;
 
@@ -140,10 +137,10 @@ export default class MapController {
     map.setLayoutProperty(id, 'visibility', visibility);
   }
 
-  /*
-* Adds the filters and adds all of the routes to the map
-* @param Object geojson - The geojson routes to add
-*/
+  /**
+   * Adds the passed geojson to the map as GFR (with symbols)
+   * @param {Object} geojson - The geojson routes to add
+   */
   addAllRoutes(geojson) {
     const map = this.map;
 
@@ -192,11 +189,11 @@ export default class MapController {
     });
   }
 
-  /*
-  * Adds a yellow marker to the map
-  * @param Array[int, int] LatLng - The coords
-  * @returns mapboxgl.Marker marker - The marker
-  */
+  /**
+   * Adds a yellow marker to the map, set using place (originMarker/DestinationMarker)
+   * @param {string} place - The marker name
+   * @param {Array[int, int]} LatLng - The coords
+   */
   addMarker(place, LatLng) {
     // create Geojson with the coords
     const geojson = {
@@ -204,13 +201,8 @@ export default class MapController {
       features: [
         {
           type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: LatLng
-          },
-          properties: {
-            iconSize: [50, 50]
-          }
+          geometry: { type: 'Point', coordinates: LatLng },
+          properties: { iconSize: [50, 50] }
         }
       ]
     };
@@ -240,10 +232,10 @@ export default class MapController {
       .addTo(this.map);
   }
 
-  /*
-  * Creates a marker with a pulsating dot (for my location)
-  * @returns Marker marker - The marker
-  */
+  /**
+   * Creates a marker with a pulsating dot (for my location)
+   * @returns {mapboxgl.Marker} marker - The marker
+   */
   createUserMarker() {
     // Create our pulsating dot
     let el = document.createElement('div');
@@ -260,13 +252,19 @@ export default class MapController {
     });
   }
 
-  /*
-  * Sets a new LngLat for the usermarker
-  */
+  /**
+   * Sets a new LngLat for the usermarker
+   * @param {Array[double, double]} LngLat - The new LngLat
+   */
   setUserMarker(LngLat) {
     this.userMarker.setLngLat(LngLat).addTo(this.map);
   }
 
+  /**
+   * Fits the map to the bounds of 2 coordinates
+   * @param {Array[double, double]} origin - The origin
+   * @param {Array[double, double]} destination - The destination
+   */
   fitToBounds(origin, destination) {
     let bounds = new mapboxgl.LngLatBounds();
     bounds.extend(origin);
