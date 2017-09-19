@@ -435,6 +435,8 @@ function changeTrackingMode() {
   const btn = document.querySelector('.center-btn');
   switch (geolocController.trackingMode) {
     case 'default':
+      btn.querySelector('img').src = icons.Center;
+      btn.classList.remove('center-btn--active');
       if (updateHeading) {
         clearInterval(updateHeading);
         updateHeading = null;
