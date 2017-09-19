@@ -27,12 +27,7 @@ export default class View {
   configureAllNone() {
     const all = document.querySelector('.routelist-all');
     all.addEventListener('click', () => {
-      const items = document.querySelectorAll('.routelist-item');
-      items.forEach(item => item.classList.remove('routelist-item--inactive'));
-      document
-        .querySelector('.routelist-none')
-        .classList.remove('routelist-top-item--active');
-      all.className += ' routelist-top-item--active';
+      this.clearShowAllRoutes('all');
       this.mapController.removeFilter();
       this.collapseMenu();
       this.mapController.map.flyTo({
@@ -40,14 +35,10 @@ export default class View {
         zoom: [center.zoom]
       });
     });
+
     const none = document.querySelector('.routelist-none');
     none.addEventListener('click', () => {
-      const items = document.querySelectorAll('.routelist-item');
-      items.forEach(item => item.classList.add('routelist-item--inactive'));
-      document
-        .querySelector('.routelist-all')
-        .classList.remove('routelist-top-item--active');
-      none.className += ' routelist-top-item--active';
+      this.clearShowAllRoutes('none');
       this.mapController.toggleLayer('GFR_routes', 'none');
       this.mapController.toggleLayer('GFR_symbols', 'none');
       this.collapseMenu();
@@ -56,6 +47,17 @@ export default class View {
         zoom: [center.zoom]
       });
     });
+  }
+
+  clearShowAllRoutes(type) {
+    const opposite = type === 'all' ? 'none' : 'all';
+    const button = document.querySelector(`.routelist-${type}`);
+    const items = document.querySelectorAll('.routelist-item');
+    items.forEach(item => item.classList.add('routelist-item--inactive'));
+    document
+      .querySelector(`.routelist-${opposite}`)
+      .classList.remove('routelist-top-item--active');
+    button.classList.add('routelist-top-item--active');
   }
 
   /*
@@ -373,14 +375,14 @@ export default class View {
       .addEventListener('click', this.toggleErrorDialog);
   }
 
-  /*
-  * Shows the navigation box when a route is found
-  * @param oldHandler - The previous handler to go to navigation
-  * @param navHandler - The new handler with updated coords
-  * @param int distance - The distance between the coords
-  * @param int time - The time in seconds
-  */
-  showNavigationBox(oldHandler, navHandler, distance, time) {
+  /**
+   * Shows the navigation box when a route is found
+   * @param oldHandler - The previous handler to go to navigation
+   * @param navHandler - The new handler with updated coords
+   * @param int distance - The distance between the coords
+   * @param int time - The time in seconds
+   */
+  showNavigationBox(oldHandler, navHandler, distance, time, showNavButton) {
     const navBox = document.querySelector('.nav-box');
     const button = document.querySelector('.center-btn');
 
@@ -397,13 +399,15 @@ export default class View {
     const buttonNav = document.querySelector('.nav-btn');
 
     // configure the navigation button
-    if (window.userLocated) {
+    if (showNavButton) {
       // Remove the old handler when starting navigation
       oldHandler && buttonNav.removeEventListener('click', oldHandler);
 
       // Add the new handler
       buttonNav.addEventListener('click', navHandler);
       buttonNav.classList.add('visible-regular');
+    } else {
+      buttonNav.classList.remove('visible-regular');
     }
 
     // Show the navbox
@@ -433,20 +437,16 @@ export default class View {
    * Toggles the center and nav button, hides with passed param
    * @param {boolean} toggle 
    */
-  toggleLocationBasedButtons(toggle) {
+  toggleCenterButton(toggle) {
     const btn = document.querySelector('.center-btn');
-    const btnNav = document.querySelector('.nav-btn');
     if (toggle === undefined) {
       btn.classList.toggle('visible-regular');
-      btnNav.classList.toggle('visible-regular');
       return;
     }
     if (toggle) {
       btn.classList.add('visible-regular');
-      btnNav.classList.add('visible-regular');
     } else {
       btn.classList.remove('visible-regular');
-      btnNav.classList.remove('visible-regular');
     }
   }
 
@@ -495,7 +495,7 @@ export default class View {
     const btn = document.querySelector('.center-btn');
     btn.disabled = false;
     // show center button
-    this.toggleLocationBasedButtons(true);
+    this.toggleCenterButton(true);
   }
 
   /*

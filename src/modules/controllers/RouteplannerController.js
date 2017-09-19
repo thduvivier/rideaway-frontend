@@ -1,4 +1,5 @@
 import mapboxgl from 'mapbox-gl';
+import turf from 'turf';
 import _ from 'lodash';
 
 import { urls, boundingBox, center } from '../../constants';
@@ -96,7 +97,7 @@ function startTracking(position) {
   if (!position) {
     window.userLocated = false;
     mapController.userMarker.remove();
-    view.toggleLocationBasedButtons(false);
+    view.toggleCenterButton(false);
     return;
   }
   // Get coords
@@ -114,13 +115,34 @@ function startTracking(position) {
     }
     this.userPosition = LngLat;
     mapController.setUserMarker(LngLat);
-    view.toggleLocationBasedButtons(true);
+    if (geolocController.trackingMode === 'centered') {
+      map.easeTo({ center: this.userPosition });
+    }
+
+    // if we're navigating from my location and the location
+    // changes, check if change is bigger than 100m, then re-
+    // calculate
+    if (this.myLocationSelected['origin']) {
+      const distance = turf.distance(LngLat, places.origin);
+      if (distance > 0.1) {
+        places.origin = LngLat;
+        calculateProfiles(places, ['shortest', 'brussels'], true);
+      }
+    }
+    if (this.myLocationSelected['destination']) {
+      const distance = turf.distance(LngLat, places.destination);
+      if (distance > 0.1) {
+        places.destination = LngLat;
+        calculateProfiles(places, ['shortest', 'brussels'], true);
+      }
+    }
+    view.toggleCenterButton(true);
   } else {
     if (this.userPosition && window.userLocated) {
       this.userPosition = null;
       window.userLocated = false;
       mapController.userMarker.remove();
-      view.toggleLocationBasedButtons(false);
+      view.toggleCenterButton(false);
     }
   }
 }
@@ -141,16 +163,13 @@ export function clearAll() {
  * Calculates route for every profile passed
  * @param {Object{origin: Array[int, int], destination: Array[int, int]}} places - Origin / Dest
  * @param {Array[string]} profiles - Array of the profiles
+ * @param {boolean} update - Used when my location is set as origin -> silent recalculate
  */
-function calculateProfiles(places, profiles) {
-  view.toggleMapLoading();
-  // remove popup
-  mapController.clearMapObject('shortestPopup');
-  // Clear routes just to be sure
-  mapController.clearRoutes();
+function calculateProfiles(places, profiles, update) {
+  !update && view.toggleMapLoading();
   const { origin, destination } = places;
   profiles.forEach(profile => {
-    calculateRoute(origin, destination, profile);
+    calculateRoute(origin, destination, profile, update);
   });
 }
 
@@ -159,8 +178,9 @@ function calculateProfiles(places, profiles) {
  * @param {Array[int, int]} origin - The LatLng Coords
  * @param {Array[int, int]} destination - The LagLng Coords
  * @param {String} profile - The routing profile
+ * @param {boolean} update - For my location, if we should do a silent update
  */
-function calculateRoute(origin, destination, profile) {
+function calculateRoute(origin, destination, profile, update) {
   // Swap around values for the API
   const originS = swapArrayValues(origin);
   const destinationS = swapArrayValues(destination);
@@ -174,7 +194,7 @@ function calculateRoute(origin, destination, profile) {
       const calculatedRoute = map.getSource(profile);
       if (calculatedRoute) {
         // Just set the data
-        calculatedRoute.setData(url);
+        calculatedRoute.setData(json.route);
       } else {
         // Add a new layer
         map.addLayer({
@@ -207,6 +227,8 @@ function calculateRoute(origin, destination, profile) {
         const middleFeature =
           json.route.features[Math.round(json.route.features.length / 2)];
         const LatLng = middleFeature.geometry.coordinates[0];
+        // if there's already a popup, clear it before adding a new one
+        mapController.clearMapObject('shortestPopup');
         mapController.addPopup(LatLng, text);
       }
 
@@ -220,7 +242,11 @@ function calculateRoute(origin, destination, profile) {
         const oldHandler = handlers.nav;
 
         // prepare the navigation stuff when a userposition is found
-        if (geolocController.userPosition) {
+        // and the destination isn't the userposition
+        const prepareToNavigate =
+          geolocController.userPosition &&
+          !geolocController.myLocationSelected['destination'];
+        if (prepareToNavigate) {
           const { destination } = places;
           // set origin as default start, use slice to copy
           const origin = geolocController.userPosition.slice();
@@ -239,18 +265,27 @@ function calculateRoute(origin, destination, profile) {
           };
         }
 
-        const lastFeature = json.route.features[json.route.features.length - 1];
-        const { properties: { distance, time } } = lastFeature;
-
         // Always hide the layers
         mapController.toggleLayer('GFR_routes', 'none');
         mapController.toggleLayer('GFR_symbols', 'none');
 
         // Activate none
-        document.querySelector('.routelist-none').click();
+        view.clearShowAllRoutes('none');
 
         // Show the navigation box, change the handler
-        view.showNavigationBox(oldHandler, handlers.nav, distance, time);
+
+        const lastFeature = json.route.features[json.route.features.length - 1];
+        const { properties: { distance, time } } = lastFeature;
+        view.showNavigationBox(
+          oldHandler,
+          handlers.nav,
+          distance,
+          time,
+          prepareToNavigate
+        );
+
+        // do not fit to bounds if updating
+        if (update) return;
 
         // only fit bounds once we know the map is fully resized
         setTimeout(() => {
@@ -293,12 +328,20 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
     places[place] = places[placeToSet];
     places[placeToSet] = oldPlace;
 
+    const oldMyLocatiodSelected = geolocController.myLocationSelected[place];
+    geolocController.myLocationSelected[place] =
+      geolocController.myLocationSelected[placeToSet];
+    geolocController.myLocationSelected[placeToSet] = oldMyLocatiodSelected;
+
     mapController.swapOriginDestMarkers();
   } else if (placeToSet === null) {
     onPlaceClear(place);
   } else {
     // set userposition as place
     places[place] = placeToSet;
+
+    // set flag to recalculate when changed
+    geolocController.myLocationSelected[place] = true;
   }
   const { origin, destination } = places;
   if (origin && destination) {
@@ -336,8 +379,10 @@ function onPlaceResult(place, result) {
     places[place] = setPoint(result);
     mapController.addMarker(place, places[place]);
 
-    // Calculate route if both are filled in
+    geolocController.myLocationSelected[place] = false;
+
     if (places.origin && places.destination) {
+      // Calculate route if both are filled in
       const { origin, destination } = places;
       // prepare the url
       router.prepareRouteplannerHistory(

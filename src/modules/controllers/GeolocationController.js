@@ -9,6 +9,10 @@ export default class GeolocationController {
     this.userHeading = 0;
     this.onUpdate = null;
     this.trackingMode = 'default';
+    this.myLocationSelected = {
+      origin: false,
+      destination: false
+    };
   }
 
   /*
