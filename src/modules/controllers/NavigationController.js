@@ -119,10 +119,17 @@ function onIntervalUpdate() {
   const { userPosition, userHeading } = router.geolocController;
   // don't do anything if we don't have any user location details
   if (!userPosition || !userHeading) {
+    console.log("this");
     return;
   }
+
+  const location = turf.point(router.geolocController.userPosition);
+  const closestPoint = pointOnRoute(result.route, location);
   const distance = distanceAtLocation(result.route, userPosition);
-  const instruction = instructionAt(result.instructions, distance * 1000);
+  const instruction = instructionAt(result.instructions, distance * 1000, closestPoint, location);
+  let distanceToNext = instruction.properties.distance - distance * 1000;
+  const remainingDistance = (totalDistance - distance) * 1000;
+  const remainingTime = remainingDistance / 3.6;
 
   // if the next instruction isn't an enter or stop, clear the interval
   const type = instruction.properties.type;
@@ -130,7 +137,23 @@ function onIntervalUpdate() {
     clearInterval(interval);
     interval = null;
   }
+
   navView.updateDirectionArrow(instruction, userPosition, userHeading);
+
+  let offset = 0;
+  if (distanceToNext < 1000) {
+    offset = (distanceToNext - 1000) * -1 / 20;
+  }
+
+  // update the view
+  navView.updateRouteStats(remainingDistance, remainingTime);
+  navView.updateCurrentRoadSquare(instruction);
+  navView.updateNextRoadSquare(instruction, offset);
+  navView.updateCurrentRoadColour(instruction, offset);
+  navView.updateNextRoadColour(instruction, offset);
+  navView.updateNextInstructionDistance(distanceToNext, offset);
+  navView.updateNextRoadDirection(instruction, offset);
+  navView.updateMessage(instruction);
 }
 
 /**
@@ -160,7 +183,7 @@ function update() {
   const location = turf.point(router.geolocController.userPosition);
   const closestPoint = pointOnRoute(result.route, location);
   let distance = distanceAtLocation(result.route, location);
-  let instruction = instructionAt(result.instructions, distance * 1000);
+  let instruction = instructionAt(result.instructions, distance * 1000, closestPoint, location);
   let distanceToNext = instruction.properties.distance - distance * 1000;
   const remainingDistance = (totalDistance - distance) * 1000;
   const remainingTime = remainingDistance / 3.6;
@@ -174,26 +197,6 @@ function update() {
     // navigation finished
     router.clearHistory();
     router.goToRouteplanner();
-  }
-
-  // if the user is more than 25m off route, show a direction arrow to navigate
-  // back to the route.
-  if (closestPoint.distance > 0.025) {
-    distanceToNext = closestPoint.distance * 1000;
-    distance += closestPoint.distance;
-    instruction = {
-      type: 'Feature',
-      properties: {
-        type: 'enter',
-        nextColour: instruction.properties.colour,
-        nextRef: instruction.properties.ref,
-        angle: degAngle[calculateAngle(location, closestPoint)]
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: closestPoint.point
-      }
-    };
   }
 
   let offset = 0;

@@ -1,4 +1,5 @@
 import turf from 'turf';
+import { degAngle } from '../constants';
 
 /*
 * Fetch a JSON
@@ -209,7 +210,6 @@ export function distanceAtLocation(route, location) {
       route.features[bestIndex]
     )
   );
-
   return length;
 }
 
@@ -218,14 +218,31 @@ export function distanceAtLocation(route, location) {
  * 
  * @param {Object} instructions - list of the instructions
  * @param {number} currentDistance - the distance to get the instruction for
+ * @param {Object} closestPoint - closest point on the route based on location
  */
-export function instructionAt(instructions, currentDistance) {
+export function instructionAt(instructions, currentDistance, closestPoint, location) {
   for (var i = 0; i < instructions.features.length; i++) {
     var instruction = instructions.features[i];
     if (instruction.properties.distance > currentDistance) {
+      if (closestPoint.distance > 0.025) {
+        instruction = {
+          type: 'Feature',
+          properties: {
+            type: 'enter',
+            nextColour: instruction.properties.colour,
+            nextRef: instruction.properties.ref,
+            angle: degAngle[calculateAngle(location, closestPoint)],
+            distance: closestPoint.distance * 1000 + currentDistance
+          },
+          geometry: {
+            type: 'Point',
+            coordinates: closestPoint.point
+          }
+        };
+      }
       return instruction;
     }
-  }
+  }  
 }
 
 export function calculateAngle(location, closestPoint) {
