@@ -162,7 +162,6 @@
 
     div:nth-child(2) {
       color: $white;
-      padding-right: 3em;
     }
   }
 
@@ -173,6 +172,10 @@
   div {
     display: inline-block;
   }
+}
+
+.nav-btn.visible-regular + .nav-list li {
+  padding-right: 3em;
 }
 
 .nav-box {
