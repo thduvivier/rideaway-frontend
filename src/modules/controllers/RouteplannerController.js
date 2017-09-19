@@ -384,7 +384,7 @@ function changeTrackingMode() {
     case 'centered':
       // if we were updating the heading => clear
       btn.querySelector('img').src = icons.Center;
-      btn.classList.add('center-btn--centered');
+      btn.classList.add('center-btn--active');
       if (updateHeading) {
         clearInterval(updateHeading);
         updateHeading = null;
@@ -398,6 +398,7 @@ function changeTrackingMode() {
       break;
     case 'tracking':
       btn.querySelector('img').src = icons.Navigate;
+      btn.classList.add('center-btn--active');
       if (!updateHeading) {
         updateHeading = setInterval(() => {
           console.log(geolocController.userHeading);
@@ -415,7 +416,7 @@ function changeTrackingMode() {
       updateHeading = null;
       break;
     case 'pitched-centered':
-      btn.classList.add('center-btn--centered');
+      btn.classList.add('center-btn--active');
       map.flyTo({ center: geolocController.userPosition, zoom: 15 });
       break;
     default:
@@ -530,11 +531,11 @@ function bindActions() {
     // if currently tracking => go to pitched default mode
     if (geolocController.trackingMode === 'centered') {
       geolocController.trackingMode = 'default';
-      btn.classList.remove('center-btn--centered');
+      btn.classList.remove('center-btn--active');
     } else if (geolocController.trackingMode === 'tracking') {
       geolocController.trackingMode = 'pitched';
       btn.querySelector('img').src = icons.Center;
-      btn.classList.remove('center-btn--centered');
+      btn.classList.remove('center-btn--active');
     }
     changeTrackingMode();
   });
