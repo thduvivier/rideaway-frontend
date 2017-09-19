@@ -2,10 +2,8 @@ import mapboxgl from 'mapbox-gl';
 import _ from 'lodash';
 
 import { urls, boundingBox, center } from '../../constants';
-
 import { swapArrayValues, fetchJSON, displayTime } from '../lib';
 import icons from '../../icons';
-
 import MapController from './MapController';
 import { createGeocoder, getReverseLookup } from './GeocoderController';
 import View from '../views/RouteplannerView';
@@ -21,6 +19,7 @@ let handlers = {
   nav: null
 };
 
+// Interval variable
 let updateHeading;
 
 let router;
@@ -29,6 +28,12 @@ let mapController;
 let geolocController;
 let view;
 
+/**
+ * 
+ * @param {Array[double, double]} origin - The origin
+ * @param {Array[double, double]} destination - The destination 
+ * @param {router} routerContext - The router
+ */
 export default function initialize(origin, destination, routerContext) {
   // set router and update function
   router = routerContext;
@@ -36,6 +41,7 @@ export default function initialize(origin, destination, routerContext) {
 
   // fresh load
   if (!map) {
+    // passed origin and destination, set values
     if (origin && destination) {
       origin = swapArrayValues(origin);
       destination = swapArrayValues(destination);
@@ -53,11 +59,13 @@ export default function initialize(origin, destination, routerContext) {
       view.toggleMainLoading();
     }
 
+    // set map for easy access
     map = mapController.map;
 
-    // bind our actions
+    // bind all of the actions (when the maps loads)
     bindActions();
   } else {
+    // when no origin or dest passed
     if (!origin || !destination) {
       clearAll();
       map.easeTo({
@@ -68,19 +76,21 @@ export default function initialize(origin, destination, routerContext) {
       });
       geolocController.trackingMode = 'default';
     }
+    // if origin has changed, change it and recalculate
     if (!_.isEqual(places.origin, swapArrayValues(origin))) {
       mapController.clearMapObject('originMarker');
       places.origin = swapArrayValues(origin);
       calculateProfiles(places, ['shortest', 'brussels']);
     }
-    changeTrackingMode();
   }
+  // look for tracking mode changes if navigation has changed it
+  changeTrackingMode();
 }
 
-/*
-* Updates the position variable and holds some other functions
-* @param Array[int, int] position - The position of the user
-*/
+/**
+ * Stracking function used by the routeplanner
+ * @param {Array[int, int]} position - The position of the user
+ */
 function startTracking(position) {
   // Get coords
   const LngLat = [position.coords.longitude, position.coords.latitude];
@@ -101,6 +111,9 @@ function startTracking(position) {
   }
 }
 
+/**
+ * Clears all the stuff that's showing if a route is calculated
+ */
 export function clearAll() {
   view.hideNavigationBox();
   mapController.clearAllMapObjectsAndRoutes();
@@ -110,11 +123,11 @@ export function clearAll() {
   places.destination = null;
 }
 
-/*
-* Calculates route for every profile passed
-* @param Object{origin: Array[int, int], destination: Array[int, int]} places - Origin / Dest
-* @param Array[string] profiles - Array of the profiles
-*/
+/**
+ * Calculates route for every profile passed
+ * @param {Object{origin: Array[int, int], destination: Array[int, int]}} places - Origin / Dest
+ * @param {Array[string]} profiles - Array of the profiles
+ */
 function calculateProfiles(places, profiles) {
   view.toggleMapLoading();
   // remove popup
@@ -127,12 +140,12 @@ function calculateProfiles(places, profiles) {
   });
 }
 
-/*
-* Calculates a route and shows it on the map
-* @param Array[int, int] origin - The LatLng Coords
-* @param Array[int, int] destination - The LagLng Coords
-* @param String profile - The routing profile
-*/
+/**
+ * Calculates a route and shows it on the map
+ * @param {Array[int, int]} origin - The LatLng Coords
+ * @param {Array[int, int]} destination - The LagLng Coords
+ * @param {String} profile - The routing profile
+ */
 function calculateRoute(origin, destination, profile) {
   // Swap around values for the API
   const originS = swapArrayValues(origin);
@@ -243,20 +256,21 @@ function calculateRoute(origin, destination, profile) {
     });
 }
 
-/*
-* Converts a result object to coordinates
-* @param Object{result: {geometry: coordinates: Array[Lat, Lng]}} result - The result from the geocoder
-* @returns Array[int, int] LatLng Array - Array with the coords
-*/
+/** 
+ * Converts a result object to coordinates
+ * @param Object{result: {geometry: coordinates: Array[Lat, Lng]}} result - The result from the geocoder
+ * @returns Array[int, int] LatLng Array - Array with the coords
+ */
 function setPoint(result) {
   return result.geometry.coordinates;
 }
 
-/*
-* Sets the origin/dest as the userPosition on default
-* if placeToSet is null, it clears the route
-* @param string place - Origin/Destination
-*/
+/**
+ * Sets the origin/dest as the userPosition on default
+ * if placeToSet is null, it clears the route
+ * @param {string} place - Origin/Destination
+ * @param {placeToSet} placeToSet - Place to set
+ */
 function setPlace(place, placeToSet = geolocController.userPosition) {
   // switches around origin and destination
   if (placeToSet === 'origin' || placeToSet === 'destination') {
@@ -282,6 +296,10 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
   }
 }
 
+/**
+ * When a place is cleared
+ * @param {string} place - Place
+ */
 function onPlaceClear(place) {
   mapController.clearRoutes();
   mapController.clearMapObjects([`${place}Marker`, 'shortestPopup']);
@@ -290,6 +308,11 @@ function onPlaceClear(place) {
   router.clearHistory();
 }
 
+/**
+ * When a result is selected
+ * @param {string} place 
+ * @param {Object} result 
+ */
 function onPlaceResult(place, result) {
   // result event fires twice for some reason, this prevents it
   // from executing our code twice, resulting in errors
@@ -318,6 +341,10 @@ function onPlaceResult(place, result) {
   }
 }
 
+/**
+ * Set clicked point on map
+ * @param {*} mapboxgl.map - The map
+ */
 function setMapClick(map) {
   map.on('click', e => {
     const LngLat = [e.lngLat.lng, e.lngLat.lat];
@@ -395,6 +422,9 @@ function changeTrackingMode() {
   }
 }
 
+/**
+ * Binds all of our actions on map load
+ */
 function bindActions() {
   const routeChosen = places.origin && places.destination;
 
