@@ -9,6 +9,11 @@ import turf from 'turf';
 export default class NavView {
   constructor() {}
 
+  /**
+   * Updates the display of the reference of the current route.
+   * 
+   * @param {Object} instruction - current instruction
+   */
   updateCurrentRoadSquare(instruction) {
     if (
       instruction.properties.type === 'enter' ||
@@ -22,6 +27,12 @@ export default class NavView {
     }
   }
 
+  /**
+   * Updates the display of the reference of the next route.
+   * 
+   * @param {Object} instruction - current instruction 
+   * @param {number} offset - offset based on distance to instruction
+   */
   updateNextRoadSquare(instruction, offset) {
     document.getElementById('next-instruction-road-ref').style['top'] =
       offset - 11 + 'vh';
@@ -40,6 +51,12 @@ export default class NavView {
     }
   }
 
+  /**
+   * Updates the displayed data about the remaining route.
+   * 
+   * @param {number} remainingDistance - remaining distance in meters.
+   * @param {number} remainingTime - remaining time in seconds.
+   */
   updateRouteStats(remainingDistance, remainingTime) {
     document.getElementById('total-distance').innerHTML = displayDistance(
       remainingDistance
@@ -49,6 +66,12 @@ export default class NavView {
     );
   }
 
+  /**
+   * Updates the display of the colour of the current route.
+   * 
+   * @param {Object} instruction - current instruction
+   * @param {number} offset - offset based on distance to instruction
+   */
   updateCurrentRoadColour(instruction, offset) {
     document.getElementById('current-road').style['height'] =
       80 - offset + 'vh';
@@ -63,6 +86,12 @@ export default class NavView {
     }
   }
 
+  /**
+   * Updates the display of the colour of the next route.
+   * 
+   * @param {Object} instruction - current instruction 
+   * @param {number} offset - offset based on distance to instruction
+   */
   updateNextRoadColour(instruction, offset) {
     document.getElementById('next-instruction').style['height'] =
       offset + 20 + 'vh';
@@ -76,6 +105,12 @@ export default class NavView {
     }
   }
 
+  /**
+   * Updates the display of the distance to the next instruction.
+   * 
+   * @param {number} distanceToNext - distance to next instruction
+   * @param {number} offset - offset based on distance to next instruction
+   */
   updateNextInstructionDistance(distanceToNext, offset) {
     document.getElementById('next-instruction-distance').style['top'] =
       offset + 20 + 'vh';
@@ -84,6 +119,12 @@ export default class NavView {
     ).innerHTML = displayDistance(distanceToNext);
   }
 
+  /**
+   * Updates the display of the turning indication of the next instruction.
+   * 
+   * @param {Object} instruction - next instruction 
+   * @param {number} offset - offset based on distance to next instruction
+   */
   updateNextRoadDirection(instruction, offset) {
     document.getElementById('next-instruction-arrow').style['top'] =
       offset + 1 + 'vh';
@@ -98,6 +139,13 @@ export default class NavView {
     }
   }
 
+  /**
+   * Updates the directional arrow to point to closest point on the route.
+   * 
+   * @param {Object} instruction - next instruction
+   * @param {Object} location - closest location on route
+   * @param {number} heading - current heading
+   */
   updateDirectionArrow(instruction, location, heading) {
     const arrow = document.getElementById('direction-arrow');
     if (
@@ -125,6 +173,11 @@ export default class NavView {
     }
   }
 
+  /**
+   * Updates the message displayed for certain instructions.
+   * 
+   * @param {Object} instruction - next instruction 
+   */
   updateMessage(instruction) {
     if (instruction.properties.type === 'leave') {
       document
