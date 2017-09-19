@@ -22,26 +22,19 @@
   box-sizing: border-box;
   box-shadow: $material_shadow;
 
+  .menu-top {
+    display: flex;
+    margin: 2em 0;
+  }
+
   .menu-btn-close {
     display: none;
     cursor: pointer;
-    margin-top: 0.67em;
+    height: 100%;
     float: right;
     width: 30px;
     height: 30px;
-    background: url('../icons/close.svg');
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-  }
-
-  .menu-arrowdown {
-    background: url('../icons/arrow-down.svg');
-    position: fixed;
-    height: 2.5em;
-    width: 2.5em;
-    bottom: 0;
-    left: calc(50% - 1.25em);
+    background: url('../icons/x-slim.svg');
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
@@ -49,9 +42,11 @@
 }
 
 .menu-title {
+  flex-grow: 1;
+  margin: 0;
   display: inline-block;
   color: $white;
-  font-size: 20px;
+  font-size: 25px;
 }
 
 .routelists {
@@ -69,6 +64,12 @@
   justify-content: center;
 }
 
+.routelist-radial {
+  // max 4 in width
+  max-width: 13.2em;
+  margin: 1em auto;
+}
+
 .routelist-top {
   color: $white;
   cursor: pointer;
@@ -77,17 +78,26 @@
   justify-content: space-around;
 
   div {
-    line-height: 94px;
-    width: 50%;
-    height: 100px;
+    line-height: calc(3em - 6px);
+    width: 40%;
+    height: 3em;
     box-sizing: border-box;
     border-color: transparent;
+    border-radius: 5px;
     border: solid 3px transparent;
+    background: $secondary_color;
+    text-transform: uppercase;
+  }
+
+  .routelist-top-item--active {
+    background: $grey;
+    opacity: 0.7;
+    border: solid 3px $white;
   }
 }
 
 .routelist-item {
-  margin: 0.2em;
+  margin: 0.3em;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -98,24 +108,15 @@
   font-size: 17px;
 }
 
-.routelist-item--active {
-  border: solid 3px $white !important;
-  border-radius: 10px;
-}
-
 .routelist-item--inactive {
   opacity: 0.7 !important;
   background-color: $grey !important;
 }
 
 .routelist-item-radial {
-  width: 3em;
-  height: 3em;
+  width: 2.5em;
+  height: 2.5em;
   border-radius: 5px;
-
-  span {
-    line-height: 51px;
-  }
 }
 
 .routelist-item-transverse {
@@ -126,8 +127,8 @@
 
 .routelist-item-loop {
   color: #000;
-  height: 3em;
-  width: 3em;
+  height: 2.5em;
+  width: 2.5em;
   border-radius: 50%;
 }
 
@@ -145,10 +146,6 @@
     transform: translateX(-85vw);
     transition: transform ease-in-out 0.5s;
 
-    .menu-top {
-      margin: 1em 0;
-    }
-
     .menu-btn-close {
       display: block;
     }
@@ -161,6 +158,6 @@
 
 @media (max-width: 400px) {
   .menu-title {
-    font-size: 16px;
+    font-size: 25px;
   }
 }

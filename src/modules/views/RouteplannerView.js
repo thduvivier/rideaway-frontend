@@ -31,8 +31,8 @@ export default class View {
       items.forEach(item => item.classList.remove('routelist-item--inactive'));
       document
         .querySelector('.routelist-none')
-        .classList.remove('routelist-item--active');
-      all.className += ' routelist-item--active';
+        .classList.remove('routelist-top-item--active');
+      all.className += ' routelist-top-item--active';
       this.mapController.removeFilter();
       this.collapseMenu();
       this.mapController.map.flyTo({
@@ -46,8 +46,8 @@ export default class View {
       items.forEach(item => item.classList.add('routelist-item--inactive'));
       document
         .querySelector('.routelist-all')
-        .classList.remove('routelist-item--active');
-      none.className += ' routelist-item--active';
+        .classList.remove('routelist-top-item--active');
+      none.className += ' routelist-top-item--active';
       this.mapController.toggleLayer('GFR_routes', 'none');
       this.mapController.toggleLayer('GFR_symbols', 'none');
       this.collapseMenu();
@@ -74,8 +74,8 @@ export default class View {
 
     // Event listener
     el.addEventListener('click', () => {
-      const active = document.querySelector('.routelist-item--active');
-      active && active.classList.remove('routelist-item--active');
+      const active = document.querySelector('.routelist-top-item--active');
+      active && active.classList.remove('routelist-top-item--active');
 
       // if all routes are selected, and one is clicked, select
       // the one clicked instead of deslecting it, feels better
