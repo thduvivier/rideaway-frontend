@@ -415,12 +415,11 @@ function changeTrackingMode() {
       btn.classList.add('center-btn--active');
       if (!updateHeading) {
         updateHeading = setInterval(() => {
-          console.log(geolocController.userHeading);
           map.easeTo({
             center: geolocController.userPosition,
             zoom: 18.5,
             pitch: 75,
-            bearing: geolocController.userHeading
+            bearing: geolocController.userHeading || 0
           });
         }, 100);
       }
