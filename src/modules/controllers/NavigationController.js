@@ -50,6 +50,8 @@ export default function initialize(origin, destination, routerContext) {
   // do not reinitialize if everything is already set
   if (_.isEqual(loc1, origin) && _.isEqual(loc2, destination)) {
     document.querySelector('.main-loading').classList.remove('visible');
+    // re-set interval update
+    interval = setInterval(onIntervalUpdate, 1000);
     return;
   }
 
@@ -87,6 +89,10 @@ export default function initialize(origin, destination, routerContext) {
   document
     .getElementById('close-navigation')
     .addEventListener('click', function() {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
       router.clearHistory();
       router.goToRouteplanner();
     });
@@ -94,6 +100,10 @@ export default function initialize(origin, destination, routerContext) {
   document.getElementById('goto-map').addEventListener('click', function() {
     router.geolocController.trackingMode = 'tracking';
     router.prepareRouteplannerHistory(loc1, loc2);
+    if (interval) {
+      clearInterval(interval);
+      interval = null;
+    }
     router.goToRouteplanner(loc1, loc2);
   });
 }
@@ -119,14 +129,19 @@ function onIntervalUpdate() {
   const { userPosition, userHeading } = router.geolocController;
   // don't do anything if we don't have any user location details
   if (!userPosition || !userHeading) {
-    console.log("this");
+    console.log('updating nav arrow');
     return;
   }
 
   const location = turf.point(router.geolocController.userPosition);
   const closestPoint = pointOnRoute(result.route, location);
   const distance = distanceAtLocation(result.route, userPosition);
-  const instruction = instructionAt(result.instructions, distance * 1000, closestPoint, location);
+  const instruction = instructionAt(
+    result.instructions,
+    distance * 1000,
+    closestPoint,
+    location
+  );
   let distanceToNext = instruction.properties.distance - distance * 1000;
   const remainingDistance = (totalDistance - distance) * 1000;
   const remainingTime = remainingDistance / 3.6;
@@ -183,7 +198,12 @@ function update() {
   const location = turf.point(router.geolocController.userPosition);
   const closestPoint = pointOnRoute(result.route, location);
   let distance = distanceAtLocation(result.route, location);
-  let instruction = instructionAt(result.instructions, distance * 1000, closestPoint, location);
+  let instruction = instructionAt(
+    result.instructions,
+    distance * 1000,
+    closestPoint,
+    location
+  );
   let distanceToNext = instruction.properties.distance - distance * 1000;
   const remainingDistance = (totalDistance - distance) * 1000;
   const remainingTime = remainingDistance / 3.6;
