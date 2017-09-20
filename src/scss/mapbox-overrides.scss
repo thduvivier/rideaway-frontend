@@ -95,10 +95,12 @@
 
 .mapboxgl-ctrl-attrib.mapboxgl-compact {
   margin: 0;
+  padding-right: 5px;
+  padding-left: 24px;
+}
 
-  a {
-    display: none;
-  }
+.mapboxgl-ctrl-attrib.mapboxgl-compact:after {
+  left: 0;
 }
 
 @media (max-width: 800px) {
