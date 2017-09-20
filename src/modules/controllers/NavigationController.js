@@ -112,6 +112,10 @@ export default function initialize(origin, destination, routerContext) {
  * Starts tracking your location and updating the screen.
  */
 function startTracking(position) {
+  // don't do anything if position isn't found yet
+  if (!position) {
+    return;
+  }
   this.userPosition = [position.coords.longitude, position.coords.latitude];
   // update
   update();
@@ -193,7 +197,7 @@ function update() {
     interval = setInterval(onIntervalUpdate, 1000);
   }
 
-  updateScreen(location, distance, instruction)
+  updateScreen(location, distance, instruction);
 }
 
 /**
