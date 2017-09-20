@@ -91,7 +91,7 @@
   position: absolute;
   margin: auto;
   z-index: 2;
-  background-color: $primary-color;
+  background-color: $secondary-color;
   border-radius: 50%;
   display: inline-block;
   height: 10vh;
@@ -150,7 +150,7 @@
 }
 
 #direction-arrow {
-  background-color: $primary-color;
+  background-color: $secondary-color;
   border-radius: 50%;
   position: relative;
   display: block;
@@ -159,15 +159,15 @@
   margin: 0 auto;
   width: 23vh;
   height: 23vh;
-  background-image: url('../icons/arrow.svg');
-  background-size: 75%;
+  background-image: url('../icons/marker-white.svg');
+  background-size: 50%;
   background-repeat: no-repeat;
-  background-position: bottom 50% center;
-  transform: rotate(90deg);
+  background-position: center;
   transition: transform ease-in-out 0.3s;
 }
 
 #total-distance {
+  color: $white;
   position: absolute;
   z-index: 2;
   bottom: 1vh;
@@ -175,6 +175,7 @@
 }
 
 #arrival-time {
+  color: $white;
   position: absolute;
   z-index: 2;
   bottom: 1vh;

@@ -3,7 +3,7 @@ import {
   displayDistance,
   calculateRotationAngle
 } from '../lib';
-import { angleDeg } from '../../constants';
+import { angleDeg, colors } from '../../constants';
 import turf from 'turf';
 
 export default class NavView {
@@ -82,7 +82,7 @@ export default class NavView {
         instruction.properties.colour;
     } else {
       document.getElementById('current-road').style['background-color'] =
-        'lightgrey';
+        colors.primary;
     }
   }
 
@@ -101,7 +101,7 @@ export default class NavView {
         instruction.properties.nextColour;
     } else {
       document.getElementById('next-instruction').style['background-color'] =
-        'lightgrey';
+        colors.primary;
     }
   }
 
@@ -167,7 +167,7 @@ export default class NavView {
       const calculatedDir = calculateRotationAngle(previousDir, dir);
       arrow.dataset.dir = calculatedDir;
 
-      arrow.style['transform'] = `rotate(${calculatedDir + 90}deg)`;
+      arrow.style['transform'] = `rotate(${calculatedDir}deg)`;
     } else {
       arrow.style['display'] = 'none';
     }
