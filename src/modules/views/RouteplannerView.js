@@ -386,9 +386,6 @@ export default class View {
     const navBox = document.querySelector('.nav-box');
     const button = document.querySelector('.center-btn');
 
-    // Move the center button up
-    button.classList.add('center-btn--navigating');
-
     // Set information in the navigation box
     document.querySelector('.nav-distance').innerHTML = displayDistance(
       distance
@@ -400,6 +397,9 @@ export default class View {
 
     // configure the navigation button
     if (showNavButton) {
+      // Make room for nav button
+
+      button.classList.add('center-btn--navigating');
       // Remove the old handler when starting navigation
       oldHandler && buttonNav.removeEventListener('click', oldHandler);
 
@@ -407,11 +407,12 @@ export default class View {
       buttonNav.addEventListener('click', navHandler);
       buttonNav.classList.add('visible-regular');
     } else {
+      button.classList.remove('center-btn--navigating');
       buttonNav.classList.remove('visible-regular');
     }
 
     // Show the navbox
-    navBox.style.transform = 'translateY(0)';
+    navBox.classList.add('nav-box--active');
 
     document.querySelector('#map').classList.add('map--route-calculated');
     // wait for the animation to finish, then resize the container
@@ -423,7 +424,7 @@ export default class View {
   */
   hideNavigationBox() {
     const navBox = document.querySelector('.nav-box');
-    navBox.style.transform = 'translateY(175px)';
+    navBox.classList.remove('nav-box--active');
     document
       .querySelector('.center-btn')
       .classList.remove('center-btn--navigating');
