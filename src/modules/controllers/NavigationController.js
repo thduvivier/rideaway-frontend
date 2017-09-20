@@ -119,7 +119,6 @@ function onIntervalUpdate() {
   const { userPosition, userHeading } = router.geolocController;
   // don't do anything if we don't have any user location details
   if (!userPosition || !userHeading) {
-    console.log("this");
     return;
   }
 
@@ -127,9 +126,6 @@ function onIntervalUpdate() {
   const closestPoint = pointOnRoute(result.route, location);
   const distance = distanceAtLocation(result.route, userPosition);
   const instruction = instructionAt(result.instructions, distance * 1000, closestPoint, location);
-  let distanceToNext = instruction.properties.distance - distance * 1000;
-  const remainingDistance = (totalDistance - distance) * 1000;
-  const remainingTime = remainingDistance / 3.6;
 
   // if the next instruction isn't an enter or stop, clear the interval
   const type = instruction.properties.type;
@@ -140,20 +136,7 @@ function onIntervalUpdate() {
 
   navView.updateDirectionArrow(instruction, userPosition, userHeading);
 
-  let offset = 0;
-  if (distanceToNext < 1000) {
-    offset = (distanceToNext - 1000) * -1 / 20;
-  }
-
-  // update the view
-  navView.updateRouteStats(remainingDistance, remainingTime);
-  navView.updateCurrentRoadSquare(instruction);
-  navView.updateNextRoadSquare(instruction, offset);
-  navView.updateCurrentRoadColour(instruction, offset);
-  navView.updateNextRoadColour(instruction, offset);
-  navView.updateNextInstructionDistance(distanceToNext, offset);
-  navView.updateNextRoadDirection(instruction, offset);
-  navView.updateMessage(instruction);
+  updateScreen(location, distance, instruction);
 }
 
 /**
@@ -184,14 +167,24 @@ function update() {
   const closestPoint = pointOnRoute(result.route, location);
   let distance = distanceAtLocation(result.route, location);
   let instruction = instructionAt(result.instructions, distance * 1000, closestPoint, location);
-  let distanceToNext = instruction.properties.distance - distance * 1000;
-  const remainingDistance = (totalDistance - distance) * 1000;
-  const remainingTime = remainingDistance / 3.6;
 
   // if we arrive at stop, set the interval again
   if (instruction.properties.type === 'stop' && !interval) {
     interval = setInterval(onIntervalUpdate, 1000);
   }
+
+  updateScreen(location, distance, instruction)
+}
+
+/**
+ * Updates the screen based on the given location.
+ * 
+ * @param {Object} location - the current location 
+ */
+function updateScreen(location, distance, instruction) {
+  let distanceToNext = instruction.properties.distance - distance * 1000;
+  const remainingDistance = (totalDistance - distance) * 1000;
+  const remainingTime = remainingDistance / 3.6;
 
   if (totalDistance - distance < 0.01) {
     // navigation finished
