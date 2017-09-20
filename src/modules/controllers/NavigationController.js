@@ -129,7 +129,6 @@ function onIntervalUpdate() {
   const { userPosition, userHeading } = router.geolocController;
   // don't do anything if we don't have any user location details
   if (!userPosition || !userHeading) {
-    console.log('updating nav arrow');
     return;
   }
 
