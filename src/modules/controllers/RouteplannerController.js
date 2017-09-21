@@ -329,6 +329,8 @@ function showBikeParking(destination) {
         mapController.clearCustomMarkerCollection('parkings');
       }
       mapController.addCustomMarkerCollection(icons.Parking, 'parkings', json);
+
+      // destination marker always on top
       mapController.mapObjects.destinationMarker.addTo(map);
     })
     .catch(() => {
