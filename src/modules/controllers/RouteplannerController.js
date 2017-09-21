@@ -2,7 +2,13 @@ import mapboxgl from 'mapbox-gl';
 import turf from 'turf';
 import _ from 'lodash';
 
-import { urls, boundingBox, center, intervalTimes } from '../../constants';
+import {
+  urls,
+  boundingBox,
+  center,
+  intervalTimes,
+  bikeParkingRadius
+} from '../../constants';
 import { swapArrayValues, fetchJSON, displayTime } from '../lib';
 import icons from '../../icons';
 import MapController from './MapController';
@@ -172,6 +178,9 @@ function calculateProfiles(places, profiles, update) {
   profiles.forEach(profile => {
     calculateRoute(origin, destination, profile, update);
   });
+
+  // do the API request for the parkings
+  showBikeParking(places.destination);
 }
 
 /**
@@ -300,9 +309,31 @@ function calculateRoute(origin, destination, profile, update) {
       // eslint-disable-next-line
       console.warn('Problem calculating route: ', ex);
       if (profile === 'brussels') {
+        mapController.clearRoutes();
+        mapController.clearMapObject('shortestPopup');
         view.toggleMapLoading();
         view.toggleErrorDialog();
       }
+    });
+}
+
+function showBikeParking(destination) {
+  // Construct the url
+  const url = `${urls.route}/parking?loc=${swapArrayValues(
+    destination
+  )}&radius=${bikeParkingRadius}`;
+  fetchJSON(url)
+    .then(json => {
+      // check if there are alredy markers, clear em first
+      if (mapController.customMarkers.parkings) {
+        mapController.clearCustomMarkerCollection('parkings');
+      }
+      mapController.addCustomMarkerCollection(icons.Parking, 'parkings', json);
+      mapController.mapObjects.destinationMarker.addTo(map);
+    })
+    .catch(() => {
+      // do nothing when no parkings are found
+      return;
     });
 }
 
@@ -361,6 +392,9 @@ function setPlace(place, placeToSet = geolocController.userPosition) {
 function onPlaceClear(place) {
   mapController.clearRoutes();
   mapController.clearMapObjects([`${place}Marker`, 'shortestPopup']);
+  if (place === 'destination') {
+    mapController.clearCustomMarkerCollection('parkings');
+  }
   places[place] = null;
   view.hideNavigationBox();
   router.clearHistory();

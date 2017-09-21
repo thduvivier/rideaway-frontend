@@ -14,6 +14,7 @@ export default class MapController {
       destinationMarker: null,
       shortestPopup: null
     };
+    this.customMarkers = {};
     this.userMarker = this.createUserMarker();
 
     // Create a mapbox
@@ -104,6 +105,8 @@ export default class MapController {
     Object.keys(this.mapObjects).forEach(key => {
       this.clearMapObject(key);
     });
+    // clear parkings
+    this.clearCustomMarkerCollection('parkings');
   }
 
   /**
@@ -210,6 +213,12 @@ export default class MapController {
     // Configure HTML marker
     const marker = geojson.features[0];
     let el = document.createElement('img');
+
+    // Fly to marker when clicked
+    el.addEventListener('click', () => {
+      this.map.flyTo({ center: marker.geometry.coordinates, zoom: 17 });
+    });
+
     el.className = 'marker';
     el.src = icons.LocatorYellow;
     el.style.width = marker.properties.iconSize[0] + 'px';
@@ -230,6 +239,35 @@ export default class MapController {
       .setLngLat(LatLng)
       .setDOMContent(div)
       .addTo(this.map);
+  }
+
+  /**
+   * Adds a custom marker, to be merged with the above function in the future
+   */
+  addCustomMarkerCollection(icon, name, geojson) {
+    this.customMarkers[name] = geojson.features.map(feature => {
+      // Configure HTML marker
+      let el = document.createElement('img');
+      el.className = 'marker';
+      el.src = icon;
+      el.style.width = '40px';
+      el.style.height = '40px';
+      return new mapboxgl.Marker(el, { offset: [0, -40 / 2] })
+        .setLngLat(feature.geometry.coordinates)
+        .addTo(this.map);
+    });
+  }
+
+  /**
+   * Clears a custom marker colletion
+   * @param {string} name 
+   */
+  clearCustomMarkerCollection(name) {
+    if (!this.customMarkers[name]) {
+      return;
+    }
+    this.customMarkers[name].forEach(marker => marker.remove());
+    this.customMarkers[name] = null;
   }
 
   /**

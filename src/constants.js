@@ -34,6 +34,9 @@ export const urls = {
   route: 'https://cyclerouting-api.osm.be'
 };
 
+// radius in meters
+export const bikeParkingRadius = 250;
+
 // Brussels
 export const center = { latlng: [4.355975, 50.860633], zoom: 11 };
 

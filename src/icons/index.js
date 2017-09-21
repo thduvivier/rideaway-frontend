@@ -14,6 +14,7 @@ import SwooshLeft from './swoosh-left.svg';
 import SwooshRight from './swoosh-right.svg';
 import Bike from './bike.svg';
 import ArrowDown from './arrow-down.svg';
+import Parking from './parking.svg';
 
 export default {
   Hamburger,
@@ -31,5 +32,6 @@ export default {
   SwooshLeft,
   SwooshRight,
   Bike,
-  ArrowDown
+  ArrowDown,
+  Parking
 };
