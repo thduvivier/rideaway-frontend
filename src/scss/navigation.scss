@@ -1,0 +1,236 @@
+.container {
+  font-family: 'Circular Std Black';
+  font-size: 24pt;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+}
+
+.navigation-screen {
+  display: none;
+}
+
+#next-instruction {
+  height: 20vh;
+  margin: 0 auto;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  width: 100vw;
+
+  #next-instruction-arrow {
+    position: absolute;
+    color: $white;
+    height: 45%;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
+  }
+  #next-instruction-road {
+    height: 45%;
+    text-align: center;
+    width: 100%;
+  }
+  #next-instruction-road-ref {
+    left: 0;
+    right: 0;
+    position: absolute;
+  }
+  #next-instruction-road > div {
+    margin: 0 auto;
+  }
+  #next-instruction-distance {
+    background-color: $white;
+    border-radius: 25px;
+    display: block;
+    height: 50px;
+    line-height: 50px;
+    margin: auto;
+    margin-top: -25px;
+    position: absolute;
+    text-align: center;
+    top: 50vh;
+    width: 40vw;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    color: $dark-grey;
+  }
+}
+
+#current-road {
+  height: 50vh;
+  position: absolute;
+  top: 50vh;
+  width: 100vw;
+}
+#current-road > div {
+  margin: auto;
+  position: relative;
+}
+
+#current-road-ref {
+  position: absolute;
+  margin: auto;
+  left: 0;
+  right: 0;
+  bottom: 25vh;
+}
+
+.road-square {
+  background-color: $white;
+  border-radius: 10px;
+  height: 10vh;
+  line-height: 10vh;
+  text-align: center;
+  width: 10vh;
+  overflow: hidden;
+}
+
+#goto-map {
+  top: 38vh;
+  background-image: url('../icons/discover-empty-white.svg');
+}
+
+#close-navigation {
+  top: 52vh;
+  background-image: url('../icons/x-slim.svg');
+}
+
+#current-road-message {
+  top: 10vh;
+  display: none;
+}
+
+.swoosh {
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  bottom: 5vh;
+  width: 100vw;
+  z-index: 3;
+}
+
+.swoosh-left {
+  float: left;
+  color: $white;
+  width: 25%;
+}
+
+.swoosh-right {
+  float: right;
+  color: $white;
+  width: 25%;
+}
+
+.direction-screen {
+  display: none;
+  z-index: 2;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: $primary-color;
+  justify-content: center;
+}
+
+.direction-instruction {
+  position: absolute;
+  display: flex;
+  margin-top: 5vh;
+  align-items: center;
+  justify-content: center;
+
+  div {
+    margin: 0 0.3em;
+
+    img {
+      vertical-align: middle;
+    }
+  }
+}
+
+.direction-box {
+  margin-top: 20vh;
+  width: 50vw;
+  height: 50vh;
+  background: $white;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0.5em;
+  box-sizing: border-box;
+  box-shadow: $material-shadow;
+
+  div {
+    text-align: center;
+  }
+}
+
+.message-box {
+  text-align: center;
+  color: $secondary-color;
+  font-size: 27px;
+}
+
+#direction-arrow {
+  background-color: $secondary-color;
+  border-radius: 50%;
+  margin: 0 auto;
+  height: 20vh;
+  width: 20vh;
+  background-image: url('../icons/marker-white.svg');
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform ease-in-out 0.3s;
+}
+
+.middle-centered {
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.routeinfo {
+  color: $white;
+  z-index: 3;
+  background: $secondary-color;
+  padding: 0.5em;
+  list-style: none;
+  border-radius: 10px;
+  font-size: 18px;
+  margin-left: 0.5em;
+  width: 18vw;
+  box-sizing: border-box;
+  box-shadow: $material-shadow;
+}
+
+.routeinfo-item {
+  margin: 0.5em 0;
+}
+
+.actionbuttons {
+  z-index: 3;
+  margin-right: 0.5em;
+  width: 15vw;
+}
+
+.round-button {
+  margin: 1em 0;
+  background-color: $secondary-color;
+  box-shadow: $material-shadow;
+  border-radius: 50%;
+  height: 15vw;
+  width: 100%;
+  text-align: center;
+  border: none;
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: bottom 50% center;
+}

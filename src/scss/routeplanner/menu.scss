@@ -1,0 +1,163 @@
+.menu-btn-open {
+  z-index: 1;
+  cursor: pointer;
+  display: none;
+  vertical-align: middle;
+  width: 40px;
+  height: 100%;
+  background: url('../icons/hamburger.svg');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.menu {
+  z-index: 4;
+  height: 100vh;
+  max-width: 20em;
+  width: 60vw;
+  background: $primary_color;
+  padding: 0 2em;
+  overflow: auto;
+  box-sizing: border-box;
+  box-shadow: $material_shadow;
+
+  .menu-top {
+    display: flex;
+    margin: 2em 0;
+  }
+
+  .menu-btn-close {
+    display: none;
+    cursor: pointer;
+    height: 100%;
+    float: right;
+    width: 30px;
+    height: 30px;
+    background: url('../icons/x-slim.svg');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+}
+
+.menu-title {
+  flex-grow: 1;
+  margin: 0;
+  display: inline-block;
+  color: $white;
+  font-size: 25px;
+}
+
+.routelists {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.routelist {
+  padding: 0;
+  list-style: none;
+  color: $white;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+}
+
+.routelist-radial {
+  // max 4 in width
+  max-width: 13.2em;
+  margin: 1em auto;
+}
+
+.routelist-top {
+  color: $white;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
+
+  div {
+    line-height: calc(3em - 6px);
+    width: 40%;
+    height: 3em;
+    box-sizing: border-box;
+    border-color: transparent;
+    border-radius: 5px;
+    border: solid 3px transparent;
+    background: $secondary_color;
+    text-transform: uppercase;
+  }
+
+  .routelist-top-item--active {
+    background: $grey;
+    opacity: 0.7;
+    border: solid 3px $white;
+  }
+}
+
+.routelist-item {
+  margin: 0.3em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.routelist-item--inactive {
+  opacity: 0.7 !important;
+  background-color: $grey !important;
+}
+
+.routelist-item-radial {
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 5px;
+}
+
+.routelist-item-transverse {
+  height: 2em;
+  width: 3em;
+  border-radius: 5px;
+}
+
+.routelist-item-loop {
+  color: #000;
+  height: 2.5em;
+  width: 2.5em;
+  border-radius: 50%;
+}
+
+@media (min-width: 800px) {
+  .menu {
+    transform: translateX(0) !important;
+  }
+}
+
+@media (max-width: 800px) {
+  .menu {
+    max-width: none;
+    width: 80vw;
+    position: absolute;
+    transform: translateX(-85vw);
+    transition: transform ease-in-out 0.5s;
+
+    .menu-btn-close {
+      display: block;
+    }
+  }
+
+  .menu-btn-open {
+    display: inline-block;
+  }
+}
+
+@media (max-width: 400px) {
+  .menu-title {
+    font-size: 25px;
+  }
+}

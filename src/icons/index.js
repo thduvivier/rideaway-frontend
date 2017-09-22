@@ -9,6 +9,12 @@ import DiscoverFilled from './discover-full.svg';
 import NavigateFilled from './navigate-full.svg';
 import LocatorYellow from './locator-yellow.svg';
 import Center from './center.svg';
+import Arrow from './arrow.svg';
+import SwooshLeft from './swoosh-left.svg';
+import SwooshRight from './swoosh-right.svg';
+import Bike from './bike.svg';
+import ArrowDown from './arrow-down.svg';
+import Parking from './parking.svg';
 
 export default {
   Hamburger,
@@ -21,5 +27,11 @@ export default {
   DiscoverFilled,
   NavigateFilled,
   LocatorYellow,
-  Center
+  Center,
+  Arrow,
+  SwooshLeft,
+  SwooshRight,
+  Bike,
+  ArrowDown,
+  Parking
 };

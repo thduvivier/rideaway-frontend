@@ -15,12 +15,13 @@ const extractSass = new ExtractTextPlugin({
 
 const prodPlugins = [
   new OfflinePlugin({
-    publicPath: 'https://osoc17.github.io/rideaway-frontend',
+    publicPath: 'https://osoc.osm.be',
     caches: {
       main: ['main.*.css', 'app.*.js'],
       additional: [':externals:'],
       optional: [':rest:']
     },
+    events: true,
     externals: ['./'],
     ServiceWorker: {
       navigateFallbackURL: './'
@@ -42,7 +43,7 @@ module.exports = {
   entry: './src/app.js',
   output: {
     path: __dirname + '/build',
-    filename: 'app.bundle.js'
+    filename: 'app.bundle.[hash].js'
   },
   module: {
     noParse: /(mapbox-gl)\.js$/,
@@ -74,9 +75,8 @@ module.exports = {
       {
         test: /\.(jpg|png|svg|woff)$/,
         loader: 'file-loader',
-        // don't use [hash] because of seperation
         options: {
-          name: 'static/[name].[ext]'
+          name: 'static/[name].[hash].[ext]'
         }
       }
     ]
@@ -84,6 +84,7 @@ module.exports = {
   devServer: {
     contentBase: __dirname + '/build',
     compress: true,
+    disableHostCheck: true,
     host: '0.0.0.0',
     hot: true,
     port: 3000,
@@ -94,7 +95,6 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: 'public/manifest.json' },
       { from: 'public/locales', to: 'locales' },
-      { from: 'public/nav' },
       { from: 'public/favicons' },
       { from: 'public/landing' }
     ]),

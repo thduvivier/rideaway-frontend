@@ -34,5 +34,45 @@ export const urls = {
   route: 'https://cyclerouting-api.osm.be'
 };
 
+// radius in meters
+export const bikeParkingRadius = 250;
+
 // Brussels
 export const center = { latlng: [4.355975, 50.860633], zoom: 11 };
+
+export const boundingBox = [
+  3.9784240723,
+  50.6485897217,
+  4.7282409668,
+  51.0552073386
+];
+
+export const bounds = [
+  [boundingBox[0], boundingBox[1]],
+  [boundingBox[2], boundingBox[3]]
+];
+
+export const angleDeg = {
+  sharpleft: -45,
+  left: 0,
+  slightlyleft: 45,
+  straighton: 90,
+  slightlyright: 135,
+  right: 180,
+  sharpright: 225
+};
+
+export const degAngle = {
+  270: 'sharpleft',
+  0: 'left',
+  45: 'slightlyleft',
+  90: 'straighton',
+  135: 'slightlyright',
+  180: 'right',
+  225: 'sharpright'
+};
+
+// update intervals in ms
+export const intervalTimes = {
+  userHeading: 250
+};

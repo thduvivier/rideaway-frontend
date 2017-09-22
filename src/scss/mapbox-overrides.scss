@@ -1,16 +1,23 @@
 // All the mapbox overrides, mostly for the geocoder
 
+.mapboxgl-popup-close-button {
+  display: none;
+}
+
 .mapboxgl-ctrl-top-right {
+  position: absolute;
+  top: -120px;
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  z-index: auto;
+  z-index: 2;
+  box-sizing: border-box;
   background: $primary_color;
   padding: 1em;
   pointer-events: all;
-  height: 100px;
+  height: 120px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 
   .mapboxgl-ctrl {
@@ -24,6 +31,8 @@
   box-shadow: none;
   font-family: 'Circular Std Black';
   min-width: 0;
+  width: 50%;
+  max-width: 20em;
 
   .geocoder-pin-right * {
     z-index: auto;
@@ -42,7 +51,7 @@
     &:before {
       bottom: 100%;
       border: solid transparent;
-      content: "";
+      content: '';
       height: 0;
       width: 0;
       position: absolute;
@@ -75,7 +84,7 @@
 }
 
 .mapboxgl-ctrl-bottom-left {
-  z-index: 1;
+  z-index: 0;
 }
 
 .mapboxgl-ctrl-attrib {
@@ -86,10 +95,12 @@
 
 .mapboxgl-ctrl-attrib.mapboxgl-compact {
   margin: 0;
+  padding-right: 5px;
+  padding-left: 24px;
+}
 
-  a {
-    display: none;
-  }
+.mapboxgl-ctrl-attrib.mapboxgl-compact:after {
+  left: 0;
 }
 
 @media (max-width: 800px) {
@@ -104,12 +115,12 @@
 
       &:nth-of-type(2) {
         top: 0.5em;
-        right: 0.5em;
+        right: 2em;
       }
 
-      &:nth-of-type(3) {
+      &:nth-of-type(4) {
         bottom: 0.5em;
-        right: 0.5em;
+        right: 2em;
       }
     }
   }
