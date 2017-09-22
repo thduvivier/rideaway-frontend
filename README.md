@@ -32,6 +32,10 @@ $ npm run dev
 $ npm run prod
 ```
 
+### Extra information
+The `deploy.sh` script is used by travisci (see `.travis.yml`) to automatically push changes to the gh-pages branch of the repository.
+What it does is detect changes to master and push a production version of the webapp to the gh-pages branch and add a CNAME record. Check out the script for more documentation.
+
 ## Project information
 
 This project is an excellent demonstration of the power of OSM to support an advanced mobile app that assists in the navigation of cyclists through the Brussel’s regional cycling network.
