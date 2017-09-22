@@ -1,10 +1,10 @@
 CACHE MANIFEST
-#ver:9/11/2017, 9:02:13 AM
+#ver:9/22/2017, 12:14:06 PM
 #plugin:4.8.3
 
 CACHE:
-https://osoc17.github.io/rideaway-frontend/main.9a52be42c2eb4ff5790b3e6de01d0f1a.css
-https://osoc17.github.io/rideaway-frontend/app.bundle.js
+https://osoc.osm.be/main.92d8de784ed1b97dc66d31d3d54322cc.css
+https://osoc.osm.be/app.bundle.49c20bf4d225b59c3c40.js
 
 NETWORK:
 *

@@ -10,3 +10,5 @@ nav-arrival = Arrivée
 instr-enter = Entre les itinéraires cyclables
 instr-leave = Depart les itinéraires cyclables
 instr-destination = Destination
+error-title = Oups...
+error-content = Nous ne pouvions pas calculer une route pour vous.
