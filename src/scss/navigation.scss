@@ -39,24 +39,25 @@
   }
   #next-instruction-road > div {
     margin: 0 auto;
-  }
-  #next-instruction-distance {
-    background-color: $white;
-    border-radius: 25px;
-    display: block;
-    height: 50px;
-    line-height: 50px;
-    margin: auto;
-    margin-top: -25px;
-    position: absolute;
-    text-align: center;
-    top: 50vh;
-    width: 40vw;
-    z-index: 2;
-    left: 0;
-    right: 0;
-    color: $dark-grey;
-  }
+  }  
+}
+
+#next-instruction-distance {
+  background-color: $white;
+  border-radius: 25px;
+  display: block;
+  height: 50px;
+  line-height: 50px;
+  margin: auto;
+  margin-top: -25px;
+  position: absolute;
+  text-align: center;
+  top: 50vh;
+  width: 40vw;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  color: $dark-grey;
 }
 
 #current-road {
