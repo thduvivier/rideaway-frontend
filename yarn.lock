@@ -1946,9 +1946,9 @@ extglob@^0.3.1:
   dependencies:
     is-extglob "^1.0.0"
 
-extract-text-webpack-plugin@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/extract-text-webpack-plugin/-/extract-text-webpack-plugin-3.0.0.tgz#90caa7907bc449f335005e3ac7532b41b00de612"
+extract-text-webpack-plugin@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/extract-text-webpack-plugin/-/extract-text-webpack-plugin-3.0.2.tgz#5f043eaa02f9750a9258b78c0a6e0dc1408fb2f7"
   dependencies:
     async "^2.4.1"
     loader-utils "^1.1.0"
@@ -2561,7 +2561,7 @@ interpret@^1.0.0:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.0.4.tgz#820cdd588b868ffb191a809506d6c9c8f212b1b0"
 
-"intl-pluralrules@github:projectfluent/IntlPluralRules#module":
+intl-pluralrules@projectfluent/IntlPluralRules#module:
   version "0.1.0"
   resolved "https://codeload.github.com/projectfluent/IntlPluralRules/tar.gz/94cb0fa1c23ad943bc5aafef43cea132fa51d68b"
 
